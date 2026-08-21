@@ -1,58 +1,1080 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no">
 
-  <title>Detective Pihu</title>
+<title>Midnight Detectives 3D</title>
 
-  <link rel="stylesheet" href="./style.css">
+<style>
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  background: #090b16;
+  color: white;
+  touch-action: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* ---------- START SCREEN ---------- */
+
+#startScreen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+  background:
+    radial-gradient(circle at center, #252b55, #080914 70%);
+}
+
+.startBox {
+  width: min(520px, 94vw);
+  text-align: center;
+  padding: 30px 20px;
+  background: rgba(0,0,0,.45);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 22px;
+}
+
+.startBox h1 {
+  font-size: clamp(30px, 8vw, 55px);
+  margin: 0 0 5px;
+}
+
+.startBox h2 {
+  margin: 5px 0 20px;
+  font-weight: normal;
+  color: #d4d8ff;
+}
+
+#startButton {
+  border: 0;
+  border-radius: 16px;
+  padding: 16px 28px;
+  min-height: 55px;
+  font-size: 20px;
+  font-weight: bold;
+  background: #f4d35e;
+  color: #171717;
+  cursor: pointer;
+}
+
+#startButton:active {
+  transform: scale(.97);
+}
+
+/* ---------- GAME ---------- */
+
+#game {
+  display: none;
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      to bottom,
+      #343b66 0%,
+      #252b4d 47%,
+      #181b2e 48%,
+      #090b13 100%
+    );
+}
+
+/* Room perspective */
+
+#leftWall {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 34%;
+  height: 100%;
+  background: linear-gradient(90deg,#111426,#3c4470);
+  clip-path: polygon(0 0,100% 23%,100% 77%,0 100%);
+}
+
+#rightWall {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 34%;
+  height: 100%;
+  background: linear-gradient(270deg,#111426,#3c4470);
+  clip-path: polygon(0 23%,100% 0,100% 100%,0 77%);
+}
+
+#floor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 42%;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,.04) 0px,
+      rgba(255,255,255,.04) 1px,
+      transparent 1px,
+      transparent 70px
+    ),
+    linear-gradient(#252a3c,#080a10);
+}
+
+/* ---------- DOOR ---------- */
+
+#door {
+  position: absolute;
+  left: 50%;
+  top: 36%;
+  transform: translate(-50%,-50%);
+  width: 135px;
+  height: 205px;
+  border: 7px solid #211712;
+  border-radius: 5px;
+  background:
+    linear-gradient(90deg,#34241c,#563a29,#34241c);
+  box-shadow:
+    inset 0 0 20px rgba(0,0,0,.8),
+    0 12px 30px rgba(0,0,0,.5);
+}
+
+#doorKnob {
+  position: absolute;
+  right: 13px;
+  top: 105px;
+  width: 15px;
+  height: 15px;
+  background: #d3ae55;
+  border-radius: 50%;
+}
+
+#doorLock {
+  position: absolute;
+  top: 65px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 31px;
+}
+
+/* ---------- TABLE ---------- */
+
+#table {
+  position: absolute;
+  width: 330px;
+  height: 85px;
+  left: 50%;
+  top: 63%;
+  transform: translate(-50%,-50%);
+  background: #5b3b28;
+  border: 7px solid #2e1d14;
+  border-radius: 8px;
+}
+
+.tableLeg {
+  position: absolute;
+  width: 25px;
+  height: 150px;
+  background: #392519;
+  top: 75px;
+}
+
+.tableLeg.one {
+  left: 20px;
+}
+
+.tableLeg.two {
+  right: 20px;
+}
+
+/* ---------- CLUES ---------- */
+
+.clue {
+  position: absolute;
+  transform: translate(-50%,-50%);
+  font-size: 48px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform .15s, filter .15s, opacity .3s;
+}
+
+.clue:hover,
+.clue.selected {
+  transform: translate(-50%,-50%) scale(1.18);
+  filter: drop-shadow(0 0 12px white);
+}
+
+.clue.found {
+  opacity: .25;
+}
+
+#blueberry {
+  left: 35%;
+  top: 72%;
+}
+
+#water {
+  left: 57%;
+  top: 74%;
+}
+
+#thread {
+  left: 67%;
+  top: 67%;
+}
+
+#lego {
+  left: 27%;
+  top: 64%;
+}
+
+#muffin {
+  left: 50%;
+  top: 58%;
+  font-size: 63px;
+}
+
+/* ---------- CROSSHAIR ---------- */
+
+#crosshair {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  transform: translate(-50%,-50%);
+  pointer-events: none;
+  z-index: 20;
+}
+
+#crosshair::before,
+#crosshair::after {
+  content: "";
+  position: absolute;
+  background: white;
+}
+
+#crosshair::before {
+  width: 28px;
+  height: 2px;
+  left: 0;
+  top: 13px;
+}
+
+#crosshair::after {
+  height: 28px;
+  width: 2px;
+  left: 13px;
+  top: 0;
+}
+
+/* ---------- HUD ---------- */
+
+#hud {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 30;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.hudBox {
+  padding: 9px 12px;
+  border-radius: 12px;
+  background: rgba(0,0,0,.58);
+  border: 1px solid rgba(255,255,255,.15);
+  backdrop-filter: blur(6px);
+}
+
+#message {
+  position: absolute;
+  z-index: 30;
+  left: 50%;
+  bottom: 112px;
+  transform: translateX(-50%);
+  width: min(90%,600px);
+  min-height: 50px;
+  padding: 12px 15px;
+  border-radius: 13px;
+  text-align: center;
+  background: rgba(0,0,0,.7);
+}
+
+/* ---------- CONTROLS ---------- */
+
+#controls {
+  position: absolute;
+  left: 15px;
+  right: 15px;
+  bottom: 14px;
+  z-index: 40;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+}
+
+#movement {
+  display: grid;
+  grid-template-columns: 55px 55px 55px;
+  grid-template-rows: 55px 55px;
+  gap: 5px;
+}
+
+.controlButton {
+  min-width: 55px;
+  min-height: 55px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 14px;
+  color: white;
+  background: rgba(255,255,255,.15);
+  font-size: 23px;
+  backdrop-filter: blur(5px);
+}
+
+.controlButton:active {
+  transform: scale(.94);
+  background: rgba(255,255,255,.3);
+}
+
+#investigate {
+  min-width: 135px;
+  padding: 12px;
+  font-size: 17px;
+}
+
+/* ---------- INVENTORY ---------- */
+
+#inventoryPanel {
+  position: absolute;
+  z-index: 60;
+  top: 65px;
+  right: 12px;
+  width: min(280px,80vw);
+  padding: 15px;
+  border-radius: 14px;
+  background: rgba(8,10,20,.95);
+  border: 1px solid rgba(255,255,255,.2);
+  display: none;
+}
+
+#inventoryPanel h3 {
+  margin-top: 0;
+}
+
+#inventoryList {
+  padding-left: 22px;
+}
+
+/* ---------- PUZZLE ---------- */
+
+#puzzle {
+  position: absolute;
+  z-index: 80;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0,0,0,.82);
+}
+
+.puzzleBox {
+  width: min(500px,94vw);
+  padding: 24px;
+  border-radius: 20px;
+  background: #171a2c;
+  border: 1px solid #4c5279;
+  text-align: center;
+}
+
+.puzzleBox input {
+  width: 100%;
+  min-height: 50px;
+  margin: 15px 0;
+  padding: 12px;
+  border-radius: 10px;
+  border: 0;
+  font-size: 18px;
+}
+
+.puzzleBox button {
+  min-height: 50px;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 12px;
+  background: #f4d35e;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Smaller screens */
+
+@media (max-width: 500px) {
+  .clue {
+    font-size: 39px;
+  }
+
+  #muffin {
+    font-size: 52px;
+  }
+
+  #table {
+    width: 250px;
+  }
+
+  #message {
+    bottom: 105px;
+    font-size: 14px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-  <main class="game">
+<!-- START -->
 
-    <h1>🕵🏽‍♀️ Detective Pihu</h1>
-    <h2>Case #001: The Missing Blueberry Muffin</h2>
+<div id="startScreen">
+  <div class="startBox">
+    <div style="font-size:55px">🕵🏽‍♀️🌙</div>
 
-    <section class="stats">
-      <div>⭐ Score: <span id="score">0</span></div>
-      <div>❤️ Lives: <span id="lives">3</span></div>
-      <div>🔎 Clue: <span id="clueNumber">1</span></div>
-    </section>
+    <h1>MIDNIGHT DETECTIVES</h1>
 
-    <section id="storyBox" class="card"></section>
+    <h2>Case #001: The Missing Muffin</h2>
 
-    <section class="card puzzle">
+    <p>
+      Explore the room, investigate clues and solve the mystery.
+    </p>
 
-      <div id="questionBox"></div>
+    <button id="startButton">
+      START GAME
+    </button>
+
+    <p style="font-size:13px;opacity:.7">
+      iPad: tap clues or use INVESTIGATE.<br>
+      Computer: arrow keys also work.
+    </p>
+  </div>
+</div>
+
+<!-- GAME -->
+
+<div id="game">
+
+  <div id="leftWall"></div>
+  <div id="rightWall"></div>
+  <div id="floor"></div>
+
+  <div id="door">
+    <div id="doorLock">🔒</div>
+    <div id="doorKnob"></div>
+  </div>
+
+  <div id="table">
+    <div class="tableLeg one"></div>
+    <div class="tableLeg two"></div>
+  </div>
+
+  <div
+    id="muffin"
+    class="clue"
+    data-name="Muffin"
+    data-message="The blueberry muffin is missing! Only the wrapper remains."
+  >
+    🧁
+  </div>
+
+  <div
+    id="blueberry"
+    class="clue"
+    data-name="Squashed blueberry"
+    data-message="A squashed blueberry! Someone stepped near it."
+  >
+    🫐
+  </div>
+
+  <div
+    id="water"
+    class="clue"
+    data-name="Three drops of water"
+    data-message="Exactly three drops of water. Strange..."
+  >
+    💧
+  </div>
+
+  <div
+    id="thread"
+    class="clue"
+    data-name="Red thread"
+    data-message="A tiny red thread with a golden sparkle."
+  >
+    🧵
+  </div>
+
+  <div
+    id="lego"
+    class="clue"
+    data-name="Blue LEGO"
+    data-message="A blue LEGO brick. Was someone walking through Digu's LEGO?"
+  >
+    🧩
+  </div>
+
+  <div id="crosshair"></div>
+
+  <div id="hud">
+    <div class="hudBox">
+      🔎 Clues:
+      <strong id="clueCount">0</strong>/4
+    </div>
+
+    <div class="hudBox" id="bagButton" style="pointer-events:auto;cursor:pointer">
+      🎒 Detective Bag
+    </div>
+  </div>
+
+  <div id="message">
+    Search the kitchen. Four important clues are hidden here.
+  </div>
+
+  <div id="inventoryPanel">
+    <h3>🎒 Detective Bag</h3>
+
+    <ul id="inventoryList">
+      <li>No evidence yet.</li>
+    </ul>
+
+    <button class="controlButton" id="closeBag">
+      Close
+    </button>
+  </div>
+
+  <div id="controls">
+
+    <div id="movement">
+      <div></div>
+      <button class="controlButton" data-move="up">▲</button>
+      <div></div>
+
+      <button class="controlButton" data-move="left">◀</button>
+      <button class="controlButton" data-move="down">▼</button>
+      <button class="controlButton" data-move="right">▶</button>
+    </div>
+
+    <button
+      class="controlButton"
+      id="investigate"
+    >
+      🔎 INVESTIGATE
+    </button>
+
+  </div>
+
+  <div id="puzzle">
+    <div class="puzzleBox">
+
+      <div style="font-size:45px">🔐</div>
+
+      <h2>THE DOOR PUZZLE</h2>
+
+      <p>
+        Your clues reveal a suspicious object.
+      </p>
+
+      <p>
+        I am small.<br>
+        I am blue.<br>
+        Stepping on me REALLY hurts.<br>
+        What am I?
+      </p>
 
       <input
-        id="answerInput"
-        type="text"
+        id="answer"
         placeholder="Type your answer..."
         autocomplete="off"
       >
 
-      <div class="buttons">
-        <button id="submitBtn">Submit</button>
-        <button id="hintBtn">Hint</button>
-        <button id="restartBtn">Restart</button>
-      </div>
+      <button id="submitAnswer">
+        UNLOCK
+      </button>
 
-      <div id="message"></div>
+      <p id="puzzleMessage"></p>
 
-    </section>
+    </div>
+  </div>
 
-    <section class="card">
-      <h3>🎒 Detective Bag</h3>
-      <div id="inventoryItems">Empty</div>
-    </section>
+</div>
 
-  </main>
+<script>
+(() => {
 
-  <script src="./script.js"></script>
+  const startScreen =
+    document.getElementById("startScreen");
+
+  const startButton =
+    document.getElementById("startButton");
+
+  const game =
+    document.getElementById("game");
+
+  const message =
+    document.getElementById("message");
+
+  const clueCount =
+    document.getElementById("clueCount");
+
+  const clues =
+    [...document.querySelectorAll(".clue")];
+
+  const bagButton =
+    document.getElementById("bagButton");
+
+  const inventoryPanel =
+    document.getElementById("inventoryPanel");
+
+  const inventoryList =
+    document.getElementById("inventoryList");
+
+  const closeBag =
+    document.getElementById("closeBag");
+
+  const investigate =
+    document.getElementById("investigate");
+
+  const puzzle =
+    document.getElementById("puzzle");
+
+  const answer =
+    document.getElementById("answer");
+
+  const submitAnswer =
+    document.getElementById("submitAnswer");
+
+  const puzzleMessage =
+    document.getElementById("puzzleMessage");
+
+  const doorLock =
+    document.getElementById("doorLock");
+
+
+  let found = new Set();
+
+  let selectedClue = null;
+
+  let viewX = 0;
+
+  let viewY = 0;
+
+
+  /* START GAME */
+
+  startButton.addEventListener("click", () => {
+
+    startScreen.style.display = "none";
+
+    game.style.display = "block";
+
+    message.textContent =
+      "🕵🏽‍♀️ Detective Pihu: search the kitchen for four clues.";
+
+  });
+
+
+  /* SELECT CLUE */
+
+  clues.forEach(clue => {
+
+    clue.addEventListener("click", () => {
+
+      clues.forEach(c =>
+        c.classList.remove("selected")
+      );
+
+      clue.classList.add("selected");
+
+      selectedClue = clue;
+
+      message.textContent =
+        "You spotted something. Tap INVESTIGATE.";
+
+    });
+
+  });
+
+
+  /* INVESTIGATE */
+
+  investigate.addEventListener("click", () => {
+
+    if (!selectedClue) {
+
+      message.textContent =
+        "Look around and tap a suspicious object first. 🔎";
+
+      return;
+
+    }
+
+    const name =
+      selectedClue.dataset.name;
+
+    const clueMessage =
+      selectedClue.dataset.message;
+
+
+    message.textContent =
+      "🔎 " + clueMessage;
+
+
+    if (
+      name !== "Muffin" &&
+      !found.has(name)
+    ) {
+
+      found.add(name);
+
+      selectedClue.classList.add("found");
+
+      clueCount.textContent =
+        found.size;
+
+      updateInventory();
+
+    }
+
+
+    if (found.size >= 4) {
+
+      setTimeout(() => {
+
+        message.textContent =
+          "🔐 You found all four clues. The locked door is reacting...";
+
+      }, 600);
+
+      setTimeout(() => {
+
+        puzzle.style.display = "flex";
+
+        answer.focus();
+
+      }, 1600);
+
+    }
+
+  });
+
+
+  /* INVENTORY */
+
+  function updateInventory() {
+
+    inventoryList.innerHTML = "";
+
+    if (found.size === 0) {
+
+      inventoryList.innerHTML =
+        "<li>No evidence yet.</li>";
+
+      return;
+
+    }
+
+    found.forEach(item => {
+
+      const li =
+        document.createElement("li");
+
+      li.textContent = item;
+
+      inventoryList.appendChild(li);
+
+    });
+
+  }
+
+
+  bagButton.addEventListener("click", () => {
+
+    inventoryPanel.style.display = "block";
+
+  });
+
+
+  closeBag.addEventListener("click", () => {
+
+    inventoryPanel.style.display = "none";
+
+  });
+
+
+  /* PUZZLE */
+
+  function checkAnswer() {
+
+    const playerAnswer =
+      answer.value
+        .trim()
+        .toLowerCase();
+
+
+    if (
+      playerAnswer === "lego" ||
+      playerAnswer === "blue lego" ||
+      playerAnswer === "lego brick"
+    ) {
+
+      puzzleMessage.textContent =
+        "✅ CORRECT!";
+
+      doorLock.textContent =
+        "🔓";
+
+
+      setTimeout(() => {
+
+        puzzle.style.display =
+          "none";
+
+        message.innerHTML =
+          "🚪 The door unlocks!<br><strong>CASE CONTINUES...</strong>";
+
+      }, 900);
+
+    }
+
+    else {
+
+      puzzleMessage.textContent =
+        "❌ Not quite. Check your Detective Bag.";
+
+    }
+
+  }
+
+
+  submitAnswer.addEventListener(
+    "click",
+    checkAnswer
+  );
+
+
+  answer.addEventListener(
+    "keydown",
+    event => {
+
+      if (event.key === "Enter") {
+
+        checkAnswer();
+
+      }
+
+    }
+  );
+
+
+  /* FAKE FIRST-PERSON MOVEMENT */
+
+  function move(direction) {
+
+    const amount = 10;
+
+    if (direction === "left")
+      viewX -= amount;
+
+    if (direction === "right")
+      viewX += amount;
+
+    if (direction === "up")
+      viewY -= amount;
+
+    if (direction === "down")
+      viewY += amount;
+
+
+    viewX =
+      Math.max(-50, Math.min(50, viewX));
+
+    viewY =
+      Math.max(-25, Math.min(25, viewY));
+
+
+    const objects = [
+      ...clues,
+      document.getElementById("door"),
+      document.getElementById("table")
+    ];
+
+
+    objects.forEach(object => {
+
+      object.style.marginLeft =
+        (-viewX) + "px";
+
+      object.style.marginTop =
+        (-viewY) + "px";
+
+    });
+
+  }
+
+
+  document
+    .querySelectorAll("[data-move]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          move(
+            button.dataset.move
+          );
+
+        }
+      );
+
+    });
+
+
+  /* KEYBOARD */
+
+  window.addEventListener(
+    "keydown",
+    event => {
+
+      if (event.key === "ArrowLeft")
+        move("left");
+
+      if (event.key === "ArrowRight")
+        move("right");
+
+      if (event.key === "ArrowUp")
+        move("up");
+
+      if (event.key === "ArrowDown")
+        move("down");
+
+    }
+  );
+
+
+  /* SWIPE TO LOOK */
+
+  let touchStartX = null;
+
+  let touchStartY = null;
+
+
+  game.addEventListener(
+    "touchstart",
+    event => {
+
+      if (
+        event.target.closest("button") ||
+        event.target.closest(".clue")
+      ) return;
+
+
+      const touch =
+        event.touches[0];
+
+      touchStartX =
+        touch.clientX;
+
+      touchStartY =
+        touch.clientY;
+
+    },
+    { passive: true }
+  );
+
+
+  game.addEventListener(
+    "touchmove",
+    event => {
+
+      if (
+        touchStartX === null ||
+        touchStartY === null
+      ) return;
+
+
+      const touch =
+        event.touches[0];
+
+
+      const dx =
+        touch.clientX -
+        touchStartX;
+
+      const dy =
+        touch.clientY -
+        touchStartY;
+
+
+      if (Math.abs(dx) > 25) {
+
+        move(
+          dx > 0
+            ? "right"
+            : "left"
+        );
+
+        touchStartX =
+          touch.clientX;
+
+      }
+
+
+      if (Math.abs(dy) > 25) {
+
+        move(
+          dy > 0
+            ? "down"
+            : "up"
+        );
+
+        touchStartY =
+          touch.clientY;
+
+      }
+
+    },
+    { passive: true }
+  );
+
+
+  game.addEventListener(
+    "touchend",
+    () => {
+
+      touchStartX = null;
+
+      touchStartY = null;
+
+    }
+  );
+
+})();
+</script>
 
 </body>
 </html>
