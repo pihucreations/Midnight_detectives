@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Detective Pihu</title>
+
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+  <main class="game">
+
+    <h1>🕵🏽‍♀️ Detective Pihu</h1>
+    <h2>Case #001: The Missing Blueberry Muffin</h2>
+
+    <section class="stats">
+      <div>⭐ Score: <span id="score">0</span></div>
+      <div>❤️ Lives: <span id="lives">3</span></div>
+      <div>🔎 Clue: <span id="clueNumber">1</span></div>
+    </section>
+
+    <section id="storyBox" class="card"></section>
+
+    <section class="card puzzle">
+
+      <div id="questionBox"></div>
+
+      <input
+        id="answerInput"
+        type="text"
+        placeholder="Type your answer..."
+        autocomplete="off"
+      >
+
+      <div class="buttons">
+        <button id="submitBtn">Submit</button>
+        <button id="hintBtn">Hint</button>
+        <button id="restartBtn">Restart</button>
+      </div>
+
+      <div id="message"></div>
+
+    </section>
+
+    <section class="card">
+      <h3>🎒 Detective Bag</h3>
+      <div id="inventoryItems">Empty</div>
+    </section>
+
+  </main>
+
+  <script src="./script.js"></script>
+
+</body>
+</html>
