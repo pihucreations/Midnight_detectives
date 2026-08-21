@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
 <title>Midnight Detectives 3D</title>
 
@@ -26,7 +25,7 @@ button {
   font-family: inherit;
 }
 
-/* ---------- START SCREEN ---------- */
+/* START SCREEN */
 
 #startScreen {
   position: fixed;
@@ -36,8 +35,7 @@ button {
   align-items: center;
   justify-content: center;
   padding: 25px;
-  background:
-    radial-gradient(circle at center, #252b55, #080914 70%);
+  background: radial-gradient(circle at center, #252b55, #080914 70%);
 }
 
 .startBox {
@@ -72,11 +70,7 @@ button {
   cursor: pointer;
 }
 
-#startButton:active {
-  transform: scale(.97);
-}
-
-/* ---------- GAME ---------- */
+/* GAME */
 
 #game {
   display: none;
@@ -84,7 +78,6 @@ button {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-
   background:
     linear-gradient(
       to bottom,
@@ -94,8 +87,6 @@ button {
       #090b13 100%
     );
 }
-
-/* Room perspective */
 
 #leftWall {
   position: absolute;
@@ -134,7 +125,7 @@ button {
     linear-gradient(#252a3c,#080a10);
 }
 
-/* ---------- DOOR ---------- */
+/* DOOR */
 
 #door {
   position: absolute;
@@ -170,7 +161,7 @@ button {
   font-size: 31px;
 }
 
-/* ---------- TABLE ---------- */
+/* TABLE */
 
 #table {
   position: absolute;
@@ -200,7 +191,7 @@ button {
   right: 20px;
 }
 
-/* ---------- CLUES ---------- */
+/* CLUES */
 
 .clue {
   position: absolute;
@@ -211,7 +202,6 @@ button {
   transition: transform .15s, filter .15s, opacity .3s;
 }
 
-.clue:hover,
 .clue.selected {
   transform: translate(-50%,-50%) scale(1.18);
   filter: drop-shadow(0 0 12px white);
@@ -247,41 +237,7 @@ button {
   font-size: 63px;
 }
 
-/* ---------- CROSSHAIR ---------- */
-
-#crosshair {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 28px;
-  height: 28px;
-  transform: translate(-50%,-50%);
-  pointer-events: none;
-  z-index: 20;
-}
-
-#crosshair::before,
-#crosshair::after {
-  content: "";
-  position: absolute;
-  background: white;
-}
-
-#crosshair::before {
-  width: 28px;
-  height: 2px;
-  left: 0;
-  top: 13px;
-}
-
-#crosshair::after {
-  height: 28px;
-  width: 2px;
-  left: 13px;
-  top: 0;
-}
-
-/* ---------- HUD ---------- */
+/* HUD */
 
 #hud {
   position: absolute;
@@ -292,7 +248,6 @@ button {
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  pointer-events: none;
 }
 
 .hudBox {
@@ -317,7 +272,7 @@ button {
   background: rgba(0,0,0,.7);
 }
 
-/* ---------- CONTROLS ---------- */
+/* CONTROLS */
 
 #controls {
   position: absolute;
@@ -345,12 +300,6 @@ button {
   color: white;
   background: rgba(255,255,255,.15);
   font-size: 23px;
-  backdrop-filter: blur(5px);
-}
-
-.controlButton:active {
-  transform: scale(.94);
-  background: rgba(255,255,255,.3);
 }
 
 #investigate {
@@ -359,7 +308,7 @@ button {
   font-size: 17px;
 }
 
-/* ---------- INVENTORY ---------- */
+/* INVENTORY */
 
 #inventoryPanel {
   position: absolute;
@@ -374,15 +323,11 @@ button {
   display: none;
 }
 
-#inventoryPanel h3 {
-  margin-top: 0;
-}
-
 #inventoryList {
   padding-left: 22px;
 }
 
-/* ---------- PUZZLE ---------- */
+/* PUZZLE */
 
 #puzzle {
   position: absolute;
@@ -424,7 +369,39 @@ button {
   font-weight: bold;
 }
 
-/* Smaller screens */
+/* ROOM TWO */
+
+#wardrobe {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+  width: 190px;
+  height: 300px;
+  background: linear-gradient(90deg,#39251b,#67442e,#39251b);
+  border: 8px solid #21160f;
+  border-radius: 8px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.6);
+  cursor: pointer;
+}
+
+#wardrobe::after {
+  content: "🟡  🟡";
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 20px;
+}
+
+#agentBanana {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  font-size: 90px;
+}
 
 @media (max-width: 500px) {
   .clue {
@@ -449,14 +426,11 @@ button {
 
 <body>
 
-<!-- START -->
-
 <div id="startScreen">
   <div class="startBox">
     <div style="font-size:55px">🕵🏽‍♀️🌙</div>
 
     <h1>MIDNIGHT DETECTIVES</h1>
-
     <h2>Case #001: The Missing Muffin</h2>
 
     <p>
@@ -466,15 +440,8 @@ button {
     <button id="startButton">
       START GAME
     </button>
-
-    <p style="font-size:13px;opacity:.7">
-      iPad: tap clues or use INVESTIGATE.<br>
-      Computer: arrow keys also work.
-    </p>
   </div>
 </div>
-
-<!-- GAME -->
 
 <div id="game">
 
@@ -532,12 +499,10 @@ button {
     id="lego"
     class="clue"
     data-name="Blue LEGO"
-    data-message="A blue LEGO brick. Was someone walking through Digu's LEGO?"
+    data-message="A blue LEGO brick. Someone stepped near Digu's LEGO."
   >
     🧩
   </div>
-
-  <div id="crosshair"></div>
 
   <div id="hud">
     <div class="hudBox">
@@ -545,7 +510,7 @@ button {
       <strong id="clueCount">0</strong>/4
     </div>
 
-    <div class="hudBox" id="bagButton" style="pointer-events:auto;cursor:pointer">
+    <div class="hudBox" id="bagButton" style="cursor:pointer">
       🎒 Detective Bag
     </div>
   </div>
@@ -567,8 +532,8 @@ button {
   </div>
 
   <div id="controls">
-
     <div id="movement">
+
       <div></div>
       <button class="controlButton" data-move="up">▲</button>
       <div></div>
@@ -576,29 +541,24 @@ button {
       <button class="controlButton" data-move="left">◀</button>
       <button class="controlButton" data-move="down">▼</button>
       <button class="controlButton" data-move="right">▶</button>
+
     </div>
 
-    <button
-      class="controlButton"
-      id="investigate"
-    >
+    <button class="controlButton" id="investigate">
       🔎 INVESTIGATE
     </button>
-
   </div>
 
   <div id="puzzle">
     <div class="puzzleBox">
+      <div id="puzzleIcon" style="font-size:45px">🔐</div>
 
-      <div style="font-size:45px">🔐</div>
+      <h2 id="puzzleTitle">
+        THE DOOR PUZZLE
+      </h2>
 
-      <h2>THE DOOR PUZZLE</h2>
-
-      <p>
-        Your clues reveal a suspicious object.
-      </p>
-
-      <p>
+      <p id="puzzleText">
+        Your clues reveal a suspicious object.<br><br>
         I am small.<br>
         I am blue.<br>
         Stepping on me REALLY hurts.<br>
@@ -616,7 +576,6 @@ button {
       </button>
 
       <p id="puzzleMessage"></p>
-
     </div>
   </div>
 
@@ -625,238 +584,228 @@ button {
 <script>
 (() => {
 
-  const startScreen =
-    document.getElementById("startScreen");
+const startScreen = document.getElementById("startScreen");
+const startButton = document.getElementById("startButton");
+const game = document.getElementById("game");
 
-  const startButton =
-    document.getElementById("startButton");
+const message = document.getElementById("message");
+const clueCount = document.getElementById("clueCount");
 
-  const game =
-    document.getElementById("game");
+const clues = [...document.querySelectorAll(".clue")];
 
-  const message =
-    document.getElementById("message");
+const bagButton = document.getElementById("bagButton");
+const inventoryPanel = document.getElementById("inventoryPanel");
+const inventoryList = document.getElementById("inventoryList");
+const closeBag = document.getElementById("closeBag");
 
-  const clueCount =
-    document.getElementById("clueCount");
+const investigate = document.getElementById("investigate");
 
-  const clues =
-    [...document.querySelectorAll(".clue")];
+const puzzle = document.getElementById("puzzle");
+const puzzleIcon = document.getElementById("puzzleIcon");
+const puzzleTitle = document.getElementById("puzzleTitle");
+const puzzleText = document.getElementById("puzzleText");
 
-  const bagButton =
-    document.getElementById("bagButton");
+const answer = document.getElementById("answer");
+const submitAnswer = document.getElementById("submitAnswer");
+const puzzleMessage = document.getElementById("puzzleMessage");
 
-  const inventoryPanel =
-    document.getElementById("inventoryPanel");
+const door = document.getElementById("door");
+const doorLock = document.getElementById("doorLock");
+const table = document.getElementById("table");
 
-  const inventoryList =
-    document.getElementById("inventoryList");
+let found = new Set();
+let selectedClue = null;
 
-  const closeBag =
-    document.getElementById("closeBag");
-
-  const investigate =
-    document.getElementById("investigate");
-
-  const puzzle =
-    document.getElementById("puzzle");
-
-  const answer =
-    document.getElementById("answer");
-
-  const submitAnswer =
-    document.getElementById("submitAnswer");
-
-  const puzzleMessage =
-    document.getElementById("puzzleMessage");
-
-  const doorLock =
-    document.getElementById("doorLock");
+let currentPuzzle = "door";
 
 
-  let found = new Set();
+startButton.onclick = () => {
 
-  let selectedClue = null;
+  startScreen.style.display = "none";
+  game.style.display = "block";
 
-  let viewX = 0;
+  message.textContent =
+    "🕵🏽‍♀️ Detective Pihu: search the kitchen for four clues.";
 
-  let viewY = 0;
+};
 
 
-  /* START GAME */
+clues.forEach(clue => {
 
-  startButton.addEventListener("click", () => {
+  clue.onclick = () => {
 
-    startScreen.style.display = "none";
+    clues.forEach(c =>
+      c.classList.remove("selected")
+    );
 
-    game.style.display = "block";
+    clue.classList.add("selected");
+    selectedClue = clue;
 
     message.textContent =
-      "🕵🏽‍♀️ Detective Pihu: search the kitchen for four clues.";
+      "You spotted something. Tap INVESTIGATE.";
 
-  });
+  };
 
-
-  /* SELECT CLUE */
-
-  clues.forEach(clue => {
-
-    clue.addEventListener("click", () => {
-
-      clues.forEach(c =>
-        c.classList.remove("selected")
-      );
-
-      clue.classList.add("selected");
-
-      selectedClue = clue;
-
-      message.textContent =
-        "You spotted something. Tap INVESTIGATE.";
-
-    });
-
-  });
+});
 
 
-  /* INVESTIGATE */
+investigate.onclick = () => {
 
-  investigate.addEventListener("click", () => {
-
-    if (!selectedClue) {
-
-      message.textContent =
-        "Look around and tap a suspicious object first. 🔎";
-
-      return;
-
-    }
-
-    const name =
-      selectedClue.dataset.name;
-
-    const clueMessage =
-      selectedClue.dataset.message;
-
+  if (!selectedClue) {
 
     message.textContent =
-      "🔎 " + clueMessage;
+      "Tap a suspicious object first. 🔎";
 
+    return;
+  }
 
-    if (
-      name !== "Muffin" &&
-      !found.has(name)
-    ) {
+  const name = selectedClue.dataset.name;
+  const clueMessage = selectedClue.dataset.message;
 
-      found.add(name);
+  message.textContent = "🔎 " + clueMessage;
 
-      selectedClue.classList.add("found");
+  if (
+    name !== "Muffin" &&
+    !found.has(name)
+  ) {
 
-      clueCount.textContent =
-        found.size;
+    found.add(name);
 
-      updateInventory();
+    selectedClue.classList.add("found");
 
-    }
+    clueCount.textContent =
+      found.size;
 
-
-    if (found.size >= 4) {
-
-      setTimeout(() => {
-
-        message.textContent =
-          "🔐 You found all four clues. The locked door is reacting...";
-
-      }, 600);
-
-      setTimeout(() => {
-
-        puzzle.style.display = "flex";
-
-        answer.focus();
-
-      }, 1600);
-
-    }
-
-  });
-
-
-  /* INVENTORY */
-
-  function updateInventory() {
-
-    inventoryList.innerHTML = "";
-
-    if (found.size === 0) {
-
-      inventoryList.innerHTML =
-        "<li>No evidence yet.</li>";
-
-      return;
-
-    }
-
-    found.forEach(item => {
-
-      const li =
-        document.createElement("li");
-
-      li.textContent = item;
-
-      inventoryList.appendChild(li);
-
-    });
+    updateInventory();
 
   }
 
+  if (found.size >= 4) {
 
-  bagButton.addEventListener("click", () => {
+    setTimeout(() => {
 
-    inventoryPanel.style.display = "block";
+      showDoorPuzzle();
+
+    }, 700);
+
+  }
+
+};
+
+
+function updateInventory() {
+
+  inventoryList.innerHTML = "";
+
+  if (found.size === 0) {
+
+    inventoryList.innerHTML =
+      "<li>No evidence yet.</li>";
+
+    return;
+
+  }
+
+  found.forEach(item => {
+
+    const li = document.createElement("li");
+
+    li.textContent = item;
+
+    inventoryList.appendChild(li);
 
   });
 
-
-  closeBag.addEventListener("click", () => {
-
-    inventoryPanel.style.display = "none";
-
-  });
+}
 
 
-  /* PUZZLE */
+bagButton.onclick = () => {
 
-  function checkAnswer() {
+  inventoryPanel.style.display = "block";
 
-    const playerAnswer =
-      answer.value
-        .trim()
-        .toLowerCase();
+};
 
+
+closeBag.onclick = () => {
+
+  inventoryPanel.style.display = "none";
+
+};
+
+
+function showDoorPuzzle() {
+
+  currentPuzzle = "door";
+
+  puzzleIcon.textContent = "🔐";
+  puzzleTitle.textContent = "THE DOOR PUZZLE";
+
+  puzzleText.innerHTML =
+    "Your clues reveal a suspicious object.<br><br>" +
+    "I am small.<br>" +
+    "I am blue.<br>" +
+    "Stepping on me REALLY hurts.<br>" +
+    "What am I?";
+
+  answer.value = "";
+  puzzleMessage.textContent = "";
+
+  submitAnswer.textContent = "UNLOCK";
+
+  puzzle.style.display = "flex";
+
+}
+
+
+function showBananaPuzzle() {
+
+  currentPuzzle = "banana";
+
+  puzzleIcon.textContent = "🐒";
+  puzzleTitle.textContent = "QUESTION AGENT BANANA";
+
+  puzzleText.innerHTML =
+    "Agent Banana says:<br><br>" +
+    "\"I found the muffin AFTER the thief dropped it!\"<br><br>" +
+    "He shows you a photograph.<br>" +
+    "The thief is wearing one GREEN object on their foot.<br><br>" +
+    "<strong>What object should Detective Pihu search for?</strong>";
+
+  answer.value = "";
+  puzzleMessage.textContent = "";
+
+  submitAnswer.textContent = "ANSWER";
+
+  puzzle.style.display = "flex";
+
+}
+
+
+submitAnswer.onclick = () => {
+
+  const response =
+    answer.value.trim().toLowerCase();
+
+  if (currentPuzzle === "door") {
 
     if (
-      playerAnswer === "lego" ||
-      playerAnswer === "blue lego" ||
-      playerAnswer === "lego brick"
+      response === "lego" ||
+      response === "blue lego" ||
+      response === "lego brick"
     ) {
 
       puzzleMessage.textContent =
-        "✅ CORRECT!";
+        "✅ CORRECT! Door unlocked!";
 
-      doorLock.textContent =
-        "🔓";
-
+      doorLock.textContent = "🔓";
 
       setTimeout(() => {
 
-        puzzle.style.display =
-          "none";
+        puzzle.style.display = "none";
 
-        message.innerHTML =
-          "🚪 The door unlocks!<br><strong>CASE CONTINUES...</strong>";
+        openDoor();
 
-      }, 900);
+      }, 800);
 
     }
 
@@ -869,209 +818,179 @@ button {
 
   }
 
+  else if (currentPuzzle === "banana") {
 
-  submitAnswer.addEventListener(
-    "click",
-    checkAnswer
-  );
+    if (
+      response === "slipper" ||
+      response === "green slipper" ||
+      response === "shoe"
+    ) {
 
+      puzzleMessage.textContent =
+        "✅ Correct! Search for the green slipper! 👟";
 
-  answer.addEventListener(
-    "keydown",
-    event => {
+      setTimeout(() => {
 
-      if (event.key === "Enter") {
+        puzzle.style.display = "none";
 
-        checkAnswer();
+        showGreenSlipper();
 
-      }
+      }, 900);
 
     }
-  );
 
+    else {
 
-  /* FAKE FIRST-PERSON MOVEMENT */
+      puzzleMessage.textContent =
+        "❌ Look carefully at what the thief was wearing on their foot.";
 
-  function move(direction) {
-
-    const amount = 10;
-
-    if (direction === "left")
-      viewX -= amount;
-
-    if (direction === "right")
-      viewX += amount;
-
-    if (direction === "up")
-      viewY -= amount;
-
-    if (direction === "down")
-      viewY += amount;
-
-
-    viewX =
-      Math.max(-50, Math.min(50, viewX));
-
-    viewY =
-      Math.max(-25, Math.min(25, viewY));
-
-
-    const objects = [
-      ...clues,
-      document.getElementById("door"),
-      document.getElementById("table")
-    ];
-
-
-    objects.forEach(object => {
-
-      object.style.marginLeft =
-        (-viewX) + "px";
-
-      object.style.marginTop =
-        (-viewY) + "px";
-
-    });
+    }
 
   }
 
-
-  document
-    .querySelectorAll("[data-move]")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          move(
-            button.dataset.move
-          );
-
-        }
-      );
-
-    });
+};
 
 
-  /* KEYBOARD */
+answer.addEventListener("keydown", event => {
 
-  window.addEventListener(
-    "keydown",
-    event => {
+  if (event.key === "Enter") {
 
-      if (event.key === "ArrowLeft")
-        move("left");
+    submitAnswer.click();
 
-      if (event.key === "ArrowRight")
-        move("right");
+  }
 
-      if (event.key === "ArrowUp")
-        move("up");
-
-      if (event.key === "ArrowDown")
-        move("down");
-
-    }
-  );
+});
 
 
-  /* SWIPE TO LOOK */
+function openDoor() {
 
-  let touchStartX = null;
+  message.innerHTML =
+    "🚪 <strong>THE DOOR OPENS...</strong>";
 
-  let touchStartY = null;
+  door.style.transition =
+    "transform 1s ease, opacity 1s ease";
 
+  door.style.transform =
+    "translate(-50%, -50%) rotateY(80deg)";
 
-  game.addEventListener(
-    "touchstart",
-    event => {
+  door.style.opacity = "0.2";
 
-      if (
-        event.target.closest("button") ||
-        event.target.closest(".clue")
-      ) return;
+  setTimeout(() => {
 
+    startRoomTwo();
 
-      const touch =
-        event.touches[0];
+  }, 1200);
 
-      touchStartX =
-        touch.clientX;
-
-      touchStartY =
-        touch.clientY;
-
-    },
-    { passive: true }
-  );
+}
 
 
-  game.addEventListener(
-    "touchmove",
-    event => {
+function startRoomTwo() {
 
-      if (
-        touchStartX === null ||
-        touchStartY === null
-      ) return;
+  clues.forEach(clue => {
+    clue.style.display = "none";
+  });
+
+  table.style.display = "none";
+  door.style.display = "none";
+
+  game.style.background =
+    "linear-gradient(to bottom,#15182a 0%,#10121e 55%,#05060b 100%)";
+
+  const wardrobe =
+    document.createElement("div");
+
+  wardrobe.id = "wardrobe";
+
+  game.appendChild(wardrobe);
+
+  message.innerHTML =
+    "🌙 <strong>ROOM TWO</strong><br>" +
+    "You hear scratching inside the wardrobe...<br>" +
+    "Tap the wardrobe.";
+
+  wardrobe.onclick = () => {
+
+    message.innerHTML =
+      "Creeeeak... 🚪😳";
+
+    setTimeout(() => {
+
+      wardrobe.style.display = "none";
+
+      const banana =
+        document.createElement("div");
+
+      banana.id = "agentBanana";
+      banana.textContent = "🐒";
+      banana.style.display = "block";
+
+      game.appendChild(banana);
+
+      message.innerHTML =
+        "🐒 <strong>AGENT BANANA!</strong><br>" +
+        "He is holding half of the missing muffin. 🧁";
+
+      setTimeout(() => {
+
+        showBananaPuzzle();
+
+      }, 1200);
+
+    }, 700);
+
+  };
+
+}
 
 
-      const touch =
-        event.touches[0];
+function showGreenSlipper() {
+
+  const oldBanana =
+    document.getElementById("agentBanana");
+
+  if (oldBanana) {
+    oldBanana.style.display = "none";
+  }
+
+  const slipper =
+    document.createElement("div");
+
+  slipper.textContent = "👟";
+  slipper.style.position = "absolute";
+  slipper.style.left = "50%";
+  slipper.style.top = "55%";
+  slipper.style.transform = "translate(-50%,-50%)";
+  slipper.style.fontSize = "90px";
+
+  game.appendChild(slipper);
+
+  message.innerHTML =
+    "👟 <strong>NEW EVIDENCE:</strong> Green slipper<br>" +
+    "You found the thief's next clue!";
+
+  setTimeout(() => {
+
+    message.innerHTML =
+      "🕵🏽‍♀️ Case #001 continues...<br>" +
+      "The slipper has the letter <strong>M</strong> written inside.";
+
+  }, 1400);
+
+}
 
 
-      const dx =
-        touch.clientX -
-        touchStartX;
+document
+  .querySelectorAll("[data-move]")
+  .forEach(button => {
 
-      const dy =
-        touch.clientY -
-        touchStartY;
+    button.onclick = () => {
 
+      message.textContent =
+        "You look around the room... 🔎";
 
-      if (Math.abs(dx) > 25) {
+    };
 
-        move(
-          dx > 0
-            ? "right"
-            : "left"
-        );
-
-        touchStartX =
-          touch.clientX;
-
-      }
-
-
-      if (Math.abs(dy) > 25) {
-
-        move(
-          dy > 0
-            ? "down"
-            : "up"
-        );
-
-        touchStartY =
-          touch.clientY;
-
-      }
-
-    },
-    { passive: true }
-  );
-
-
-  game.addEventListener(
-    "touchend",
-    () => {
-
-      touchStartX = null;
-
-      touchStartY = null;
-
-    }
-  );
+  });
 
 })();
 </script>
