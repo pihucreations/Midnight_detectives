@@ -1,999 +1,264 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-
-<title>Midnight Detectives 3D</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Blue Diamond Mystery</title>
 
 <style>
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
+body{
+  font-family:Arial;
+  background:#101425;
+  color:white;
+  text-align:center;
+  margin:0;
 }
-
-body {
-  margin: 0;
-  overflow: hidden;
-  font-family: Arial, sans-serif;
-  background: #090b16;
-  color: white;
-  touch-action: none;
+#game{
+  max-width:700px;
+  margin:auto;
+  padding:20px;
 }
-
-button {
-  font-family: inherit;
+button,input{
+  padding:12px;
+  margin:6px;
+  font-size:16px;
+  border-radius:10px;
+  border:0;
 }
+button{cursor:pointer;background:#e2c875}
+#choices button{display:block;margin:8px auto;width:80%}
 
-/* START SCREEN */
-
-#startScreen {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 25px;
-  background: radial-gradient(circle at center, #252b55, #080914 70%);
+/* HOTEL MAP */
+#map{
+  display:none;
+  grid-template-columns:repeat(4,80px);
+  gap:5px;
+  justify-content:center;
+  margin:20px;
 }
-
-.startBox {
-  width: min(520px, 94vw);
-  text-align: center;
-  padding: 30px 20px;
-  background: rgba(0,0,0,.45);
-  border: 1px solid rgba(255,255,255,.2);
-  border-radius: 22px;
+.room{
+  height:70px;
+  background:#303650;
+  border:2px solid #596080;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
 }
-
-.startBox h1 {
-  font-size: clamp(30px, 8vw, 55px);
-  margin: 0 0 5px;
+.player{
+  background:#d4af37;
+  color:#111;
+  font-weight:bold;
 }
-
-.startBox h2 {
-  margin: 5px 0 20px;
-  font-weight: normal;
-  color: #d4d8ff;
-}
-
-#startButton {
-  border: 0;
-  border-radius: 16px;
-  padding: 16px 28px;
-  min-height: 55px;
-  font-size: 20px;
-  font-weight: bold;
-  background: #f4d35e;
-  color: #171717;
-  cursor: pointer;
-}
-
-/* GAME */
-
-#game {
-  display: none;
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background:
-    linear-gradient(
-      to bottom,
-      #343b66 0%,
-      #252b4d 47%,
-      #181b2e 48%,
-      #090b13 100%
-    );
-}
-
-#leftWall {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 34%;
-  height: 100%;
-  background: linear-gradient(90deg,#111426,#3c4470);
-  clip-path: polygon(0 0,100% 23%,100% 77%,0 100%);
-}
-
-#rightWall {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 34%;
-  height: 100%;
-  background: linear-gradient(270deg,#111426,#3c4470);
-  clip-path: polygon(0 23%,100% 0,100% 100%,0 77%);
-}
-
-#floor {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 42%;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      rgba(255,255,255,.04) 0px,
-      rgba(255,255,255,.04) 1px,
-      transparent 1px,
-      transparent 70px
-    ),
-    linear-gradient(#252a3c,#080a10);
-}
-
-/* DOOR */
-
-#door {
-  position: absolute;
-  left: 50%;
-  top: 36%;
-  transform: translate(-50%,-50%);
-  width: 135px;
-  height: 205px;
-  border: 7px solid #211712;
-  border-radius: 5px;
-  background:
-    linear-gradient(90deg,#34241c,#563a29,#34241c);
-  box-shadow:
-    inset 0 0 20px rgba(0,0,0,.8),
-    0 12px 30px rgba(0,0,0,.5);
-}
-
-#doorKnob {
-  position: absolute;
-  right: 13px;
-  top: 105px;
-  width: 15px;
-  height: 15px;
-  background: #d3ae55;
-  border-radius: 50%;
-}
-
-#doorLock {
-  position: absolute;
-  top: 65px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 31px;
-}
-
-/* TABLE */
-
-#table {
-  position: absolute;
-  width: 330px;
-  height: 85px;
-  left: 50%;
-  top: 63%;
-  transform: translate(-50%,-50%);
-  background: #5b3b28;
-  border: 7px solid #2e1d14;
-  border-radius: 8px;
-}
-
-.tableLeg {
-  position: absolute;
-  width: 25px;
-  height: 150px;
-  background: #392519;
-  top: 75px;
-}
-
-.tableLeg.one {
-  left: 20px;
-}
-
-.tableLeg.two {
-  right: 20px;
-}
-
-/* CLUES */
-
-.clue {
-  position: absolute;
-  transform: translate(-50%,-50%);
-  font-size: 48px;
-  cursor: pointer;
-  user-select: none;
-  transition: transform .15s, filter .15s, opacity .3s;
-}
-
-.clue.selected {
-  transform: translate(-50%,-50%) scale(1.18);
-  filter: drop-shadow(0 0 12px white);
-}
-
-.clue.found {
-  opacity: .25;
-}
-
-#blueberry {
-  left: 35%;
-  top: 72%;
-}
-
-#water {
-  left: 57%;
-  top: 74%;
-}
-
-#thread {
-  left: 67%;
-  top: 67%;
-}
-
-#lego {
-  left: 27%;
-  top: 64%;
-}
-
-#muffin {
-  left: 50%;
-  top: 58%;
-  font-size: 63px;
-}
-
-/* HUD */
-
-#hud {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  right: 12px;
-  z-index: 30;
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.hudBox {
-  padding: 9px 12px;
-  border-radius: 12px;
-  background: rgba(0,0,0,.58);
-  border: 1px solid rgba(255,255,255,.15);
-  backdrop-filter: blur(6px);
-}
-
-#message {
-  position: absolute;
-  z-index: 30;
-  left: 50%;
-  bottom: 112px;
-  transform: translateX(-50%);
-  width: min(90%,600px);
-  min-height: 50px;
-  padding: 12px 15px;
-  border-radius: 13px;
-  text-align: center;
-  background: rgba(0,0,0,.7);
-}
-
-/* CONTROLS */
-
-#controls {
-  position: absolute;
-  left: 15px;
-  right: 15px;
-  bottom: 14px;
-  z-index: 40;
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-}
-
-#movement {
-  display: grid;
-  grid-template-columns: 55px 55px 55px;
-  grid-template-rows: 55px 55px;
-  gap: 5px;
-}
-
-.controlButton {
-  min-width: 55px;
-  min-height: 55px;
-  border: 1px solid rgba(255,255,255,.18);
-  border-radius: 14px;
-  color: white;
-  background: rgba(255,255,255,.15);
-  font-size: 23px;
-}
-
-#investigate {
-  min-width: 135px;
-  padding: 12px;
-  font-size: 17px;
-}
-
-/* INVENTORY */
-
-#inventoryPanel {
-  position: absolute;
-  z-index: 60;
-  top: 65px;
-  right: 12px;
-  width: min(280px,80vw);
-  padding: 15px;
-  border-radius: 14px;
-  background: rgba(8,10,20,.95);
-  border: 1px solid rgba(255,255,255,.2);
-  display: none;
-}
-
-#inventoryList {
-  padding-left: 22px;
-}
-
-/* PUZZLE */
-
-#puzzle {
-  position: absolute;
-  z-index: 80;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(0,0,0,.82);
-}
-
-.puzzleBox {
-  width: min(500px,94vw);
-  padding: 24px;
-  border-radius: 20px;
-  background: #171a2c;
-  border: 1px solid #4c5279;
-  text-align: center;
-}
-
-.puzzleBox input {
-  width: 100%;
-  min-height: 50px;
-  margin: 15px 0;
-  padding: 12px;
-  border-radius: 10px;
-  border: 0;
-  font-size: 18px;
-}
-
-.puzzleBox button {
-  min-height: 50px;
-  padding: 10px 20px;
-  border: 0;
-  border-radius: 12px;
-  background: #f4d35e;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-/* ROOM TWO */
-
-#wardrobe {
-  position: absolute;
-  left: 50%;
-  top: 45%;
-  transform: translate(-50%, -50%);
-  width: 190px;
-  height: 300px;
-  background: linear-gradient(90deg,#39251b,#67442e,#39251b);
-  border: 8px solid #21160f;
-  border-radius: 8px;
-  box-shadow: 0 20px 40px rgba(0,0,0,.6);
-  cursor: pointer;
-}
-
-#wardrobe::after {
-  content: "🟡  🟡";
-  position: absolute;
-  top: 48%;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 20px;
-}
-
-#agentBanana {
-  display: none;
-  position: absolute;
-  left: 50%;
-  top: 46%;
-  transform: translate(-50%, -50%);
-  font-size: 90px;
-}
-
-@media (max-width: 500px) {
-  .clue {
-    font-size: 39px;
-  }
-
-  #muffin {
-    font-size: 52px;
-  }
-
-  #table {
-    width: 250px;
-  }
-
-  #message {
-    bottom: 105px;
-    font-size: 14px;
-  }
-}
+#controls{display:none}
 </style>
 </head>
 
 <body>
-
-<div id="startScreen">
-  <div class="startBox">
-    <div style="font-size:55px">🕵🏽‍♀️🌙</div>
-
-    <h1>MIDNIGHT DETECTIVES</h1>
-    <h2>Case #001: The Missing Muffin</h2>
-
-    <p>
-      Explore the room, investigate clues and solve the mystery.
-    </p>
-
-    <button id="startButton">
-      START GAME
-    </button>
-  </div>
-</div>
-
 <div id="game">
 
-  <div id="leftWall"></div>
-  <div id="rightWall"></div>
-  <div id="floor"></div>
+<h1>💎 The Blue Diamond Mystery</h1>
 
-  <div id="door">
-    <div id="doorLock">🔒</div>
-    <div id="doorKnob"></div>
-  </div>
+<div id="story">
+  <p>You have just arrived at the luxurious Blackwood Grand Hotel.</p>
 
-  <div id="table">
-    <div class="tableLeg one"></div>
-    <div class="tableLeg two"></div>
-  </div>
+  <input id="name" placeholder="What is your name?">
+  <button onclick="start()">Check in</button>
+</div>
 
-  <div
-    id="muffin"
-    class="clue"
-    data-name="Muffin"
-    data-message="The blueberry muffin is missing! Only the wrapper remains."
-  >
-    🧁
-  </div>
+<div id="choices"></div>
 
-  <div
-    id="blueberry"
-    class="clue"
-    data-name="Squashed blueberry"
-    data-message="A squashed blueberry! Someone stepped near it."
-  >
-    🫐
-  </div>
+<div id="map"></div>
 
-  <div
-    id="water"
-    class="clue"
-    data-name="Three drops of water"
-    data-message="Exactly three drops of water. Strange..."
-  >
-    💧
-  </div>
+<div id="controls">
+  <button onclick="move(0,-1)">⬆️</button><br>
+  <button onclick="move(-1,0)">⬅️</button>
+  <button onclick="investigate()">🔎</button>
+  <button onclick="move(1,0)">➡️</button><br>
+  <button onclick="move(0,1)">⬇️</button>
+</div>
 
-  <div
-    id="thread"
-    class="clue"
-    data-name="Red thread"
-    data-message="A tiny red thread with a golden sparkle."
-  >
-    🧵
-  </div>
-
-  <div
-    id="lego"
-    class="clue"
-    data-name="Blue LEGO"
-    data-message="A blue LEGO brick. Someone stepped near Digu's LEGO."
-  >
-    🧩
-  </div>
-
-  <div id="hud">
-    <div class="hudBox">
-      🔎 Clues:
-      <strong id="clueCount">0</strong>/4
-    </div>
-
-    <div class="hudBox" id="bagButton" style="cursor:pointer">
-      🎒 Detective Bag
-    </div>
-  </div>
-
-  <div id="message">
-    Search the kitchen. Four important clues are hidden here.
-  </div>
-
-  <div id="inventoryPanel">
-    <h3>🎒 Detective Bag</h3>
-
-    <ul id="inventoryList">
-      <li>No evidence yet.</li>
-    </ul>
-
-    <button class="controlButton" id="closeBag">
-      Close
-    </button>
-  </div>
-
-  <div id="controls">
-    <div id="movement">
-
-      <div></div>
-      <button class="controlButton" data-move="up">▲</button>
-      <div></div>
-
-      <button class="controlButton" data-move="left">◀</button>
-      <button class="controlButton" data-move="down">▼</button>
-      <button class="controlButton" data-move="right">▶</button>
-
-    </div>
-
-    <button class="controlButton" id="investigate">
-      🔎 INVESTIGATE
-    </button>
-  </div>
-
-  <div id="puzzle">
-    <div class="puzzleBox">
-      <div id="puzzleIcon" style="font-size:45px">🔐</div>
-
-      <h2 id="puzzleTitle">
-        THE DOOR PUZZLE
-      </h2>
-
-      <p id="puzzleText">
-        Your clues reveal a suspicious object.<br><br>
-        I am small.<br>
-        I am blue.<br>
-        Stepping on me REALLY hurts.<br>
-        What am I?
-      </p>
-
-      <input
-        id="answer"
-        placeholder="Type your answer..."
-        autocomplete="off"
-      >
-
-      <button id="submitAnswer">
-        UNLOCK
-      </button>
-
-      <p id="puzzleMessage"></p>
-    </div>
-  </div>
+<p id="location"></p>
 
 </div>
 
 <script>
-(() => {
 
-const startScreen = document.getElementById("startScreen");
-const startButton = document.getElementById("startButton");
-const game = document.getElementById("game");
+let player="";
+let refusals=0;
+let x=1,y=1;
 
-const message = document.getElementById("message");
-const clueCount = document.getElementById("clueCount");
+const rooms=[
+ ["Room 12","Room 13","Library","Stairs"],
+ ["Restaurant","Ballroom","Lounge","Garden"],
+ ["Kitchen","Lobby","Lift","Office"],
+ ["Storage","Hall","Bar","Exit"]
+];
 
-const clues = [...document.querySelectorAll(".clue")];
+function say(text){
+ document.getElementById("story").innerHTML="<p>"+text+"</p>";
+}
 
-const bagButton = document.getElementById("bagButton");
-const inventoryPanel = document.getElementById("inventoryPanel");
-const inventoryList = document.getElementById("inventoryList");
-const closeBag = document.getElementById("closeBag");
+function options(buttons){
+ choices.innerHTML="";
+ buttons.forEach(([text,action])=>{
+   let b=document.createElement("button");
+   b.textContent=text;
+   b.onclick=action;
+   choices.appendChild(b);
+ });
+}
 
-const investigate = document.getElementById("investigate");
+function start(){
+ player=name.value.trim();
+ if(!player)return alert("Enter your name first!");
 
-const puzzle = document.getElementById("puzzle");
-const puzzleIcon = document.getElementById("puzzleIcon");
-const puzzleTitle = document.getElementById("puzzleTitle");
-const puzzleText = document.getElementById("puzzleText");
+ say(
+  `${player}, you check into the Blackwood Grand Hotel.
+  That evening, a scream comes from the ballroom.<br><br>
+  Lady Celestine Ashbourne, a wealthy aristocrat,
+  discovers that the famous BLUE DIAMOND on her clutch has vanished. 💎
+  <br><br>
+  "£1,000 to whoever finds my diamond!" she announces.`
+ );
 
-const answer = document.getElementById("answer");
-const submitAnswer = document.getElementById("submitAnswer");
-const puzzleMessage = document.getElementById("puzzleMessage");
+ options([
+  ["🔎 I'll investigate",begin],
+  ["🙅 No thanks",refuse]
+ ]);
+}
 
-const door = document.getElementById("door");
-const doorLock = document.getElementById("doorLock");
-const table = document.getElementById("table");
+function refuse(){
+ refusals++;
 
-let found = new Set();
-let selectedClue = null;
+ if(refusals===1){
+  say(
+   `You decide it is none of your business.<br><br>
+   Later, hotel security knocks on your door.
+   A guest claims they saw someone matching YOUR description
+   beside Lady Celestine's table before the theft. 😳
+   <br><br>You are now a suspect.`
+  );
+ }
+ else if(refusals===2){
+  say(
+   `You still refuse.<br><br>
+   A note slides beneath your hotel-room door:
+   <br><br><b>
+   I KNOW YOU ARE INNOCENT.<br>
+   I KNOW WHO TOOK THE DIAMOND.<br>
+   MIDNIGHT. ROOM 13.
+   </b>`
+  );
+ }
+ else{
+  say(
+   `You ignore that too. 😂<br><br>
+   The next morning you open your suitcase...
+   <br><br>💎 <b>THE BLUE DIAMOND IS INSIDE.</b>
+   <br><br>
+   Except when you examine it, you realise it is FAKE.
+   Someone is trying to frame you.
+   <br><br>
+   You now need to find the real diamond before security searches your room.`
+  );
 
-let currentPuzzle = "door";
+  options([["😳 Fine! Investigate",begin]]);
+  return;
+ }
 
+ options([
+  ["🔎 Okay, I'll investigate",begin],
+  ["🙅 Still no",refuse]
+ ]);
+}
 
-startButton.onclick = () => {
+function begin(){
+ choices.innerHTML="";
 
-  startScreen.style.display = "none";
-  game.style.display = "block";
+ say(
+  `<b>INVESTIGATION STARTED</b><br>
+  Walk around the hotel.
+  Press 🔎 when you want to investigate your current room.`
+ );
 
-  message.textContent =
-    "🕵🏽‍♀️ Detective Pihu: search the kitchen for four clues.";
+ map.style.display="grid";
+ controls.style.display="block";
 
-};
+ drawMap();
+}
 
+function drawMap(){
+ map.innerHTML="";
 
-clues.forEach(clue => {
+ rooms.forEach((row,ry)=>
+  row.forEach((room,rx)=>{
+   let d=document.createElement("div");
+   d.className="room"+(x===rx&&y===ry?" player":"");
+   d.textContent=x===rx&&y===ry ? "🕵️ "+room : room;
+   map.appendChild(d);
+  })
+ );
 
-  clue.onclick = () => {
+ location.textContent="You are in: "+rooms[y][x];
+}
 
-    clues.forEach(c =>
-      c.classList.remove("selected")
-    );
+function move(dx,dy){
+ let nx=x+dx, ny=y+dy;
 
-    clue.classList.add("selected");
-    selectedClue = clue;
+ if(nx<0||nx>3||ny<0||ny>3)return;
 
-    message.textContent =
-      "You spotted something. Tap INVESTIGATE.";
+ x=nx;
+ y=ny;
+ drawMap();
+}
 
-  };
+function investigate(){
 
+ let room=rooms[y][x];
+
+ const clues={
+
+  "Ballroom":
+  `You examine Lady Celestine's table.
+   Her silver clutch is here, but the diamond setting is EMPTY.
+   You find a torn piece of white fabric underneath the chair. 🧤`,
+
+  "Garden":
+  `Near the fountain you discover muddy footprints.
+   Strangely, they lead TOWARDS the hotel, not away from it. 👣`,
+
+  "Kitchen":
+  `A waiter tells you someone entered the kitchen at 9:15 PM
+   carrying a blue velvet bag.`,
+
+  "Room 13":
+  `The door is unlocked.
+   Inside is an empty room... except for a note:
+   <br><b>"The thief never left the ballroom."</b> 😳`,
+
+  "Library":
+  `You find the guest list.
+   Four people were sitting close enough to Lady Celestine
+   to reach her clutch.`,
+
+  "Office":
+  `The security log shows the ballroom cameras went offline
+   for exactly 7 minutes.`
+
+ };
+
+ say(clues[room] ||
+     `You search the ${room}, but nothing important jumps out... yet.`);
+
+}
+
+document.addEventListener("keydown",e=>{
+ if(e.key==="ArrowUp")move(0,-1);
+ if(e.key==="ArrowDown")move(0,1);
+ if(e.key==="ArrowLeft")move(-1,0);
+ if(e.key==="ArrowRight")move(1,0);
 });
 
-
-investigate.onclick = () => {
-
-  if (!selectedClue) {
-
-    message.textContent =
-      "Tap a suspicious object first. 🔎";
-
-    return;
-  }
-
-  const name = selectedClue.dataset.name;
-  const clueMessage = selectedClue.dataset.message;
-
-  message.textContent = "🔎 " + clueMessage;
-
-  if (
-    name !== "Muffin" &&
-    !found.has(name)
-  ) {
-
-    found.add(name);
-
-    selectedClue.classList.add("found");
-
-    clueCount.textContent =
-      found.size;
-
-    updateInventory();
-
-  }
-
-  if (found.size >= 4) {
-
-    setTimeout(() => {
-
-      showDoorPuzzle();
-
-    }, 700);
-
-  }
-
-};
-
-
-function updateInventory() {
-
-  inventoryList.innerHTML = "";
-
-  if (found.size === 0) {
-
-    inventoryList.innerHTML =
-      "<li>No evidence yet.</li>";
-
-    return;
-
-  }
-
-  found.forEach(item => {
-
-    const li = document.createElement("li");
-
-    li.textContent = item;
-
-    inventoryList.appendChild(li);
-
-  });
-
-}
-
-
-bagButton.onclick = () => {
-
-  inventoryPanel.style.display = "block";
-
-};
-
-
-closeBag.onclick = () => {
-
-  inventoryPanel.style.display = "none";
-
-};
-
-
-function showDoorPuzzle() {
-
-  currentPuzzle = "door";
-
-  puzzleIcon.textContent = "🔐";
-  puzzleTitle.textContent = "THE DOOR PUZZLE";
-
-  puzzleText.innerHTML =
-    "Your clues reveal a suspicious object.<br><br>" +
-    "I am small.<br>" +
-    "I am blue.<br>" +
-    "Stepping on me REALLY hurts.<br>" +
-    "What am I?";
-
-  answer.value = "";
-  puzzleMessage.textContent = "";
-
-  submitAnswer.textContent = "UNLOCK";
-
-  puzzle.style.display = "flex";
-
-}
-
-
-function showBananaPuzzle() {
-
-  currentPuzzle = "banana";
-
-  puzzleIcon.textContent = "🐒";
-  puzzleTitle.textContent = "QUESTION AGENT BANANA";
-
-  puzzleText.innerHTML =
-    "Agent Banana says:<br><br>" +
-    "\"I found the muffin AFTER the thief dropped it!\"<br><br>" +
-    "He shows you a photograph.<br>" +
-    "The thief is wearing one GREEN object on their foot.<br><br>" +
-    "<strong>What object should Detective Pihu search for?</strong>";
-
-  answer.value = "";
-  puzzleMessage.textContent = "";
-
-  submitAnswer.textContent = "ANSWER";
-
-  puzzle.style.display = "flex";
-
-}
-
-
-submitAnswer.onclick = () => {
-
-  const response =
-    answer.value.trim().toLowerCase();
-
-  if (currentPuzzle === "door") {
-
-    if (
-      response === "lego" ||
-      response === "blue lego" ||
-      response === "lego brick"
-    ) {
-
-      puzzleMessage.textContent =
-        "✅ CORRECT! Door unlocked!";
-
-      doorLock.textContent = "🔓";
-
-      setTimeout(() => {
-
-        puzzle.style.display = "none";
-
-        openDoor();
-
-      }, 800);
-
-    }
-
-    else {
-
-      puzzleMessage.textContent =
-        "❌ Not quite. Check your Detective Bag.";
-
-    }
-
-  }
-
-  else if (currentPuzzle === "banana") {
-
-    if (
-      response === "slipper" ||
-      response === "green slipper" ||
-      response === "shoe"
-    ) {
-
-      puzzleMessage.textContent =
-        "✅ Correct! Search for the green slipper! 👟";
-
-      setTimeout(() => {
-
-        puzzle.style.display = "none";
-
-        showGreenSlipper();
-
-      }, 900);
-
-    }
-
-    else {
-
-      puzzleMessage.textContent =
-        "❌ Look carefully at what the thief was wearing on their foot.";
-
-    }
-
-  }
-
-};
-
-
-answer.addEventListener("keydown", event => {
-
-  if (event.key === "Enter") {
-
-    submitAnswer.click();
-
-  }
-
-});
-
-
-function openDoor() {
-
-  message.innerHTML =
-    "🚪 <strong>THE DOOR OPENS...</strong>";
-
-  door.style.transition =
-    "transform 1s ease, opacity 1s ease";
-
-  door.style.transform =
-    "translate(-50%, -50%) rotateY(80deg)";
-
-  door.style.opacity = "0.2";
-
-  setTimeout(() => {
-
-    startRoomTwo();
-
-  }, 1200);
-
-}
-
-
-function startRoomTwo() {
-
-  clues.forEach(clue => {
-    clue.style.display = "none";
-  });
-
-  table.style.display = "none";
-  door.style.display = "none";
-
-  game.style.background =
-    "linear-gradient(to bottom,#15182a 0%,#10121e 55%,#05060b 100%)";
-
-  const wardrobe =
-    document.createElement("div");
-
-  wardrobe.id = "wardrobe";
-
-  game.appendChild(wardrobe);
-
-  message.innerHTML =
-    "🌙 <strong>ROOM TWO</strong><br>" +
-    "You hear scratching inside the wardrobe...<br>" +
-    "Tap the wardrobe.";
-
-  wardrobe.onclick = () => {
-
-    message.innerHTML =
-      "Creeeeak... 🚪😳";
-
-    setTimeout(() => {
-
-      wardrobe.style.display = "none";
-
-      const banana =
-        document.createElement("div");
-
-      banana.id = "agentBanana";
-      banana.textContent = "🐒";
-      banana.style.display = "block";
-
-      game.appendChild(banana);
-
-      message.innerHTML =
-        "🐒 <strong>AGENT BANANA!</strong><br>" +
-        "He is holding half of the missing muffin. 🧁";
-
-      setTimeout(() => {
-
-        showBananaPuzzle();
-
-      }, 1200);
-
-    }, 700);
-
-  };
-
-}
-
-
-function showGreenSlipper() {
-
-  const oldBanana =
-    document.getElementById("agentBanana");
-
-  if (oldBanana) {
-    oldBanana.style.display = "none";
-  }
-
-  const slipper =
-    document.createElement("div");
-
-  slipper.textContent = "👟";
-  slipper.style.position = "absolute";
-  slipper.style.left = "50%";
-  slipper.style.top = "55%";
-  slipper.style.transform = "translate(-50%,-50%)";
-  slipper.style.fontSize = "90px";
-
-  game.appendChild(slipper);
-
-  message.innerHTML =
-    "👟 <strong>NEW EVIDENCE:</strong> Green slipper<br>" +
-    "You found the thief's next clue!";
-
-  setTimeout(() => {
-
-    message.innerHTML =
-      "🕵🏽‍♀️ Case #001 continues...<br>" +
-      "The slipper has the letter <strong>M</strong> written inside.";
-
-  }, 1400);
-
-}
-
-
-document
-  .querySelectorAll("[data-move]")
-  .forEach(button => {
-
-    button.onclick = () => {
-
-      message.textContent =
-        "You look around the room... 🔎";
-
-    };
-
-  });
-
-})();
 </script>
-
 </body>
 </html>
