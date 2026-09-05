@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,6 +8,7 @@
 <title>The Blue Diamond Mystery</title>
 
 <style>
+
 body{
   margin:0;
   font-family:Arial,sans-serif;
@@ -101,6 +103,11 @@ button{
   background:#79aee8;
 }
 
+#notebookButton{
+  display:none;
+  background:#c79cf2;
+}
+
 #message{
   max-width:600px;
   margin:15px auto;
@@ -117,6 +124,53 @@ button{
   background:#252d47;
   border-radius:10px;
 }
+
+#notebook{
+  display:none;
+  max-width:650px;
+  margin:20px auto;
+  padding:15px;
+  background:#f1e5bd;
+  color:#222;
+  border-radius:12px;
+  text-align:left;
+}
+
+#notebook h2,
+#notebook h3{
+  text-align:center;
+}
+
+.noteCard{
+  background:white;
+  padding:12px;
+  margin:10px 0;
+  border-radius:10px;
+}
+
+.notebookTabs{
+  text-align:center;
+}
+
+.notebookTabs button{
+  background:#5e4b32;
+  color:white;
+}
+
+.suspicionButton{
+  font-size:14px;
+  padding:8px;
+}
+
+.ruleBox{
+  background:#1d253d;
+  max-width:620px;
+  margin:15px auto;
+  padding:15px;
+  border-radius:12px;
+  text-align:left;
+}
+
 </style>
 </head>
 
@@ -126,43 +180,75 @@ button{
 
 <h1>💎 The Blue Diamond Mystery</h1>
 
-<div id="setup">
+<div id="rules">
 
-  <h2>Create your character</h2>
+<h2>🎮 How to Play</h2>
 
-  <input id="nameInput" placeholder="Enter your name">
+<div class="ruleBox">
 
-  <h3>Choose your character</h3>
+<p><b>Your mission:</b> Find out who stole Lady Celestine's Blue Diamond.</p>
 
-  <div>
-    <button class="character" data-character="👧🏻">👧🏻</button>
-    <button class="character" data-character="👦🏽">👦🏽</button>
-    <button class="character" data-character="👩🏾">👩🏾</button>
-    <button class="character" data-character="👨🏻">👨🏻</button>
-    <button class="character" data-character="🧑🏼">🧑🏼</button>
-    <button class="character" data-character="👩🏽">👩🏽</button>
-  </div>
+<p>⬆️ ⬇️ ⬅️ ➡️ <b>Move:</b> Use the arrow buttons to walk around.</p>
 
-  <h3>Child or adult?</h3>
+<p>🚪 <b>Doors:</b> Walk onto a door to enter another room.</p>
 
-  <button id="childButton">🧒 Child</button>
-  <button id="adultButton">🧑 Adult</button>
+<p>💬 <b>People:</b> Stand beside somebody and press Talk.</p>
 
-  <h3>Why are you staying here?</h3>
+<p>🔎 <b>Objects:</b> Stand beside an object and press Inspect.</p>
 
-  <select id="reason">
-    <option>🏖️ Holiday</option>
-    <option>🎂 Birthday trip</option>
-    <option>👨‍👩‍👧 Visiting family</option>
-    <option>🎭 Seeing a show</option>
-    <option>🧳 Travelling with family</option>
-  </select>
+<p>📓 <b>Notebook:</b> Your notebook remembers suspects, evidence and mysteries.</p>
 
-  <br><br>
+<p>🚨 <b>Contradictions:</b> If someone's story does not match the evidence, your notebook may spot it.</p>
 
-  <button id="startButton">🏨 Check into hotel</button>
+<p>⚖️ <b>Accusations:</b> You need enough evidence before you can prove who did it.</p>
+
+<p><b>Important:</b> Explore carefully. Some clues only make sense after you talk to someone!</p>
 
 </div>
+
+<button id="rulesButton">✅ I understand — Start</button>
+
+</div>
+
+
+<div id="setup" style="display:none">
+
+<h2>Create your character</h2>
+
+<input id="nameInput" placeholder="Enter your name">
+
+<h3>Choose your character</h3>
+
+<div>
+<button class="character" data-character="👧🏻">👧🏻</button>
+<button class="character" data-character="👦🏽">👦🏽</button>
+<button class="character" data-character="👩🏾">👩🏾</button>
+<button class="character" data-character="👨🏻">👨🏻</button>
+<button class="character" data-character="🧑🏼">🧑🏼</button>
+<button class="character" data-character="👩🏽">👩🏽</button>
+</div>
+
+<h3>Child or adult?</h3>
+
+<button id="childButton">🧒 Child</button>
+<button id="adultButton">🧑 Adult</button>
+
+<h3>Why are you staying here?</h3>
+
+<select id="reason">
+<option>🏖️ Holiday</option>
+<option>🎂 Birthday trip</option>
+<option>👨‍👩‍👧 Visiting family</option>
+<option>🎭 Seeing a show</option>
+<option>🧳 Travelling with family</option>
+</select>
+
+<br><br>
+
+<button id="startButton">🏨 Check into hotel</button>
+
+</div>
+
 
 <div id="choices"></div>
 
@@ -170,55 +256,104 @@ button{
 
 <div id="room"></div>
 
+
 <div id="controls">
 
-  <button data-move="0,-1">⬆️</button>
+<button data-move="0,-1">⬆️</button>
 
-  <br>
+<br>
 
-  <button data-move="-1,0">⬅️</button>
+<button data-move="-1,0">⬅️</button>
 
-  <button id="talkButton">💬 Talk</button>
+<button id="talkButton">💬 Talk</button>
 
-  <button id="inspectButton">🔎 Inspect</button>
+<button id="inspectButton">🔎 Inspect</button>
 
-  <button data-move="1,0">➡️</button>
+<button data-move="1,0">➡️</button>
 
-  <br>
+<br>
 
-  <button data-move="0,1">⬇️</button>
+<button data-move="0,1">⬇️</button>
+
+<br>
+
+<button id="notebookButton">📓 Notebook</button>
 
 </div>
+
 
 <div id="message">
-Create your character to begin.
+Read the rules to begin.
 </div>
+
 
 <div id="evidenceBox">
 🎒 Evidence:
 <span id="evidence">Nothing yet</span>
 </div>
 
+
+<div id="notebook">
+
+<h2>📓 Detective Notebook</h2>
+
+<div class="notebookTabs">
+
+<button data-tab="suspects">👥 Suspects</button>
+<button data-tab="evidence">🔎 Evidence</button>
+<button data-tab="contradictions">🚨 Contradictions</button>
+<button data-tab="mysteries">❓ Mysteries</button>
+<button data-tab="accuse">⚖️ Accuse</button>
+
 </div>
+
+<div id="notebookContent"></div>
+
+<div style="text-align:center">
+<button id="closeNotebook">⬅️ Back to Hotel</button>
+</div>
+
+</div>
+
+</div>
+
 
 <script>
 
+/* =========================
+ELEMENTS
+========================= */
+
+const rules = document.getElementById("rules");
 const setup = document.getElementById("setup");
+
 const nameInput = document.getElementById("nameInput");
+
 const childButton = document.getElementById("childButton");
 const adultButton = document.getElementById("adultButton");
 const startButton = document.getElementById("startButton");
 
 const roomElement = document.getElementById("room");
 const roomNameElement = document.getElementById("roomName");
+
 const controls = document.getElementById("controls");
 
 const talkButton = document.getElementById("talkButton");
 const inspectButton = document.getElementById("inspectButton");
+const notebookButton = document.getElementById("notebookButton");
 
 const choicesBox = document.getElementById("choices");
 const messageBox = document.getElementById("message");
-const evidenceBox = document.getElementById("evidence");
+
+const evidenceText = document.getElementById("evidence");
+
+const notebook = document.getElementById("notebook");
+const notebookContent = document.getElementById("notebookContent");
+
+
+/* =========================
+PLAYER
+========================= */
 
 let playerName = "";
 let playerCharacter = "";
@@ -232,27 +367,61 @@ let playerY = 4;
 let nearbyPerson = null;
 let nearbyObject = null;
 
-let evidence = [];
-
 const width = 7;
 const height = 6;
 
 
-/* -----------------------
-CHARACTER CREATOR
------------------------ */
+/* =========================
+DETECTIVE DATA
+========================= */
 
-document.querySelectorAll(".character").forEach(button => {
+let evidence = [];
+
+let talkedTo = [];
+
+let suspicions = {
+  Marco:"not sure",
+  Clara:"not sure",
+  Harris:"not sure",
+  Sebastian:"not sure"
+};
+
+
+/* =========================
+RULES
+========================= */
+
+document.getElementById("rulesButton")
+.addEventListener("click", () => {
+
+  rules.style.display = "none";
+  setup.style.display = "block";
+
+  showMessage(
+    "Create your character to begin."
+  );
+
+});
+
+
+/* =========================
+CHARACTER CREATOR
+========================= */
+
+document.querySelectorAll(".character")
+.forEach(button => {
 
   button.addEventListener("click", () => {
 
-    document.querySelectorAll(".character").forEach(other => {
+    document.querySelectorAll(".character")
+    .forEach(other => {
       other.classList.remove("selected");
     });
 
     button.classList.add("selected");
 
-    playerCharacter = button.dataset.character;
+    playerCharacter =
+      button.dataset.character;
 
   });
 
@@ -281,7 +450,8 @@ adultButton.addEventListener("click", () => {
 
 startButton.addEventListener("click", () => {
 
-  playerName = nameInput.value.trim();
+  playerName =
+    nameInput.value.trim();
 
   if(playerName === ""){
     alert("Enter your name first!");
@@ -305,15 +475,16 @@ startButton.addEventListener("click", () => {
 });
 
 
-/* -----------------------
+/* =========================
 STORY
------------------------ */
+========================= */
 
 function startStory(){
 
   showMessage(`
-    ${playerCharacter} <b>${playerName}</b> arrives at the
-    Blackwood Grand Hotel.
+    ${playerCharacter}
+    <b>${playerName}</b>
+    arrives at the Blackwood Grand Hotel.
     <br><br>
 
     Suddenly...
@@ -322,7 +493,8 @@ function startStory(){
     😱 <b>"MY DIAMOND!"</b>
     <br><br>
 
-    Lady Celestine's famous blue diamond has vanished.
+    Lady Celestine's famous
+    Blue Diamond has vanished.
     💎
   `);
 
@@ -351,11 +523,12 @@ function guardianStops(){
     🧑‍🧑‍🧒 <b>Your guardian:</b>
     <br><br>
 
-    "Absolutely not!"
+    "Absolutely NOT!"
     😑
     <br><br>
 
-    "You are not investigating a stolen diamond."
+    "You are not investigating
+    a stolen diamond."
   `);
 
   showChoices([
@@ -373,8 +546,6 @@ function mysteriousNote(){
     <br><br>
 
     Then you notice a folded note.
-    <br><br>
-
     📜
     <br><br>
 
@@ -398,11 +569,11 @@ function adultSuspect(){
     You decide to stay out of it.
     <br><br>
 
-    Then hotel security approaches.
+    Hotel security approaches.
     <br><br>
 
-    "A witness saw someone matching your description
-    near Lady Celestine."
+    "Someone matching your description
+    was seen near Lady Celestine."
     😳
   `);
 
@@ -413,237 +584,260 @@ function adultSuspect(){
 }
 
 
-/* -----------------------
+/* =========================
 ROOM DATA
------------------------ */
+========================= */
 
 const rooms = {
 
-  Ballroom: {
+Ballroom:{
 
-    people: [
-      {
-        name:"Lady Celestine",
-        icon:"👒",
-        x:5,
-        y:1,
-        text:`
-          👒 <b>Lady Celestine</b>
-          <br><br>
-          "Someone cut the diamond from my clutch!"
-        `
-      },
+people:[
 
-      {
-        name:"Marco",
-        icon:"🎹",
-        x:1,
-        y:1,
-        text:`
-          🎹 <b>Marco the Pianist</b>
-          <br><br>
-          "I never left the piano."
-          <br><br>
-          He looks nervous. 🤨
-        `
-      }
-    ],
+{
+name:"Lady Celestine",
+icon:"👒",
+x:5,
+y:1,
+id:"Celestine",
+text:`
+👒 <b>Lady Celestine</b>
+<br><br>
+"The diamond was still attached
+to my clutch at 9:10."
+`
+},
 
-    objects: [
-      {
-        name:"Silver Clutch",
-        icon:"👜",
-        x:5,
-        y:2,
-        clue:"✂️ Cut diamond chain",
-        text:`
-          👜 You inspect the clutch.
-          <br><br>
-          The chain wasn't opened.
-          <br><br>
-          It was <b>cut</b>. ✂️
-        `
-      }
-    ],
+{
+name:"Marco",
+icon:"🎹",
+x:1,
+y:1,
+id:"Marco",
+text:`
+🎹 <b>Marco the Pianist</b>
+<br><br>
+"I never left the piano.
+Not even once."
+`
+}
 
-    doors: [
-      {x:3,y:0,to:"Library",startX:3,startY:4},
-      {x:6,y:3,to:"Garden",startX:1,startY:3},
-      {x:0,y:3,to:"Kitchen",startX:5,startY:3}
-    ]
+],
 
-  },
+objects:[
 
+{
+name:"Silver Clutch",
+icon:"👜",
+x:5,
+y:2,
+clue:"✂️ Cut diamond chain",
+text:`
+👜 You examine the clutch.
+<br><br>
+The diamond chain was
+<b>cut cleanly.</b>
+✂️
+`
+}
 
-  Library: {
+],
 
-    people: [
-      {
-        name:"Sebastian",
-        icon:"🎩",
-        x:2,
-        y:2,
-        text:`
-          🎩 <b>Sebastian</b>
-          <br><br>
-          "I was in the library all evening."
-          <br><br>
-          Hmm... 👀
-        `
-      }
-    ],
+doors:[
+{x:3,y:0,to:"Library",startX:3,startY:4},
+{x:6,y:3,to:"Garden",startX:1,startY:3},
+{x:0,y:3,to:"Kitchen",startX:5,startY:3}
+]
 
-    objects: [
-      {
-        name:"Library Record",
-        icon:"📖",
-        x:5,
-        y:1,
-        clue:"📖 Sebastian's library record",
-        text:`
-          📖 The record says:
-          <br><br>
-          Sebastian borrowed a book at 8:40.
-          <br>
-          He returned it at <b>8:55.</b>
-          <br><br>
-          So he was NOT here all evening. 😳
-        `
-      }
-    ],
-
-    doors: [
-      {x:3,y:5,to:"Ballroom",startX:3,startY:1},
-      {x:6,y:3,to:"Room 13",startX:1,startY:3}
-    ]
-
-  },
+},
 
 
-  Garden: {
+Library:{
 
-    people: [
-      {
-        name:"Clara",
-        icon:"🎭",
-        x:4,
-        y:2,
-        text:`
-          🎭 <b>Clara Vale</b>
-          <br><br>
-          "Yes, I was in the garden.
-          That's why my shoes are muddy."
-        `
-      }
-    ],
+people:[
 
-    objects: [
-      {
-        name:"Footprints",
-        icon:"👣",
-        x:2,
-        y:3,
-        clue:"👣 Footprints leading inside",
-        text:`
-          👣 Muddy footprints.
-          <br><br>
-          They lead <b>towards</b> the hotel.
-          <br><br>
-          Not away from it. 🤔
-        `
-      }
-    ],
+{
+name:"Sebastian",
+icon:"🎩",
+x:2,
+y:2,
+id:"Sebastian",
+text:`
+🎩 <b>Sebastian</b>
+<br><br>
+"I was in this library
+the entire evening."
+`
+}
 
-    doors: [
-      {x:0,y:3,to:"Ballroom",startX:5,startY:3}
-    ]
+],
 
-  },
+objects:[
 
+{
+name:"Library Record",
+icon:"📖",
+x:5,
+y:1,
+clue:"📖 Sebastian returned his book at 8:55",
+text:`
+📖 The library record says:
+<br><br>
+Sebastian borrowed a book at 8:40.
+<br><br>
+He returned it at
+<b>8:55.</b>
+😳
+`
+}
 
-  Kitchen: {
+],
 
-    people: [
-      {
-        name:"Mr Harris",
-        icon:"🍷",
-        x:2,
-        y:2,
-        text:`
-          🍷 <b>Mr Harris</b>
-          <br><br>
-          "I was serving drinks all evening."
-          <br><br>
-          He keeps looking at the blue bag. 👀
-        `
-      }
-    ],
+doors:[
+{x:3,y:5,to:"Ballroom",startX:3,startY:1},
+{x:6,y:3,to:"Room 13",startX:1,startY:3}
+]
 
-    objects: [
-      {
-        name:"Blue Bag",
-        icon:"🛍️",
-        x:4,
-        y:1,
-        clue:"🛍️ Blue velvet bag",
-        text:`
-          🛍️ You inspect the blue velvet bag.
-          <br><br>
-          Something shiny is caught inside the lining.
-          ✨
-        `
-      }
-    ],
-
-    doors: [
-      {x:6,y:3,to:"Ballroom",startX:1,startY:3}
-    ]
-
-  },
+},
 
 
-  "Room 13": {
+Garden:{
 
-    people: [],
+people:[
 
-    objects: [
-      {
-        name:"Secret Note",
-        icon:"📜",
-        x:2,
-        y:1,
-        clue:"📜 Code 413",
-        text:`
-          📜 The note says:
-          <br><br>
-          <b>4 - 1 - 3</b>
-          <br><br>
-          A code?
-          😈
-        `
-      },
+{
+name:"Clara Vale",
+icon:"🎭",
+x:4,
+y:2,
+id:"Clara",
+text:`
+🎭 <b>Clara Vale</b>
+<br><br>
+"I was outside in the garden.
+That's why my shoes are muddy."
+`
+}
 
-      {
-        name:"Locked Box",
-        icon:"📦",
-        x:4,
-        y:2,
-        special:"box"
-      }
-    ],
+],
 
-    doors: [
-      {x:0,y:3,to:"Library",startX:5,startY:3}
-    ]
+objects:[
 
-  }
+{
+name:"Footprints",
+icon:"👣",
+x:2,
+y:3,
+clue:"👣 Muddy footprints lead INTO the hotel",
+text:`
+👣 You examine the footprints.
+<br><br>
+They lead
+<b>towards the hotel.</b>
+<br><br>
+Not away from it.
+🤔
+`
+}
+
+],
+
+doors:[
+{x:0,y:3,to:"Ballroom",startX:5,startY:3}
+]
+
+},
+
+
+Kitchen:{
+
+people:[
+
+{
+name:"Mr Harris",
+icon:"🍷",
+x:2,
+y:2,
+id:"Harris",
+text:`
+🍷 <b>Mr Harris</b>
+<br><br>
+"I was serving drinks.
+I never carried any blue bag."
+`
+}
+
+],
+
+objects:[
+
+{
+name:"Blue Velvet Bag",
+icon:"🛍️",
+x:4,
+y:1,
+clue:"🛍️ Blue velvet bag",
+text:`
+🛍️ You inspect the bag.
+<br><br>
+Something shiny is caught
+inside the lining.
+✨
+`
+}
+
+],
+
+doors:[
+{x:6,y:3,to:"Ballroom",startX:1,startY:3}
+]
+
+},
+
+
+"Room 13":{
+
+people:[],
+
+objects:[
+
+{
+name:"Secret Note",
+icon:"📜",
+x:2,
+y:1,
+clue:"📜 Code 413",
+text:`
+📜 The note says:
+<br><br>
+<b>4 - 1 - 3</b>
+<br><br>
+It looks like a code.
+`
+},
+
+{
+name:"Locked Box",
+icon:"📦",
+x:4,
+y:2,
+special:"box"
+}
+
+],
+
+doors:[
+{x:0,y:3,to:"Library",startX:5,startY:3}
+]
+
+}
 
 };
 
 
-/* -----------------------
+/* =========================
 ENTER HOTEL
------------------------ */
+========================= */
 
 function enterHotel(){
 
@@ -656,6 +850,7 @@ function enterHotel(){
 
   roomElement.style.display = "grid";
   controls.style.display = "block";
+  notebookButton.style.display = "inline-block";
 
   showMessage(`
     🎮 <b>Investigation started!</b>
@@ -668,6 +863,8 @@ function enterHotel(){
     💬 Stand beside people.
     <br>
     🔎 Stand beside objects.
+    <br>
+    📓 Use your notebook whenever you want.
   `);
 
   drawRoom();
@@ -675,43 +872,68 @@ function enterHotel(){
 }
 
 
-/* -----------------------
+/* =========================
 DRAW ROOM
------------------------ */
+========================= */
 
 function drawRoom(){
 
   roomElement.innerHTML = "";
 
-  roomNameElement.textContent = "🏨 " + currentRoom;
+  roomNameElement.textContent =
+    "🏨 " + currentRoom;
 
   const data = rooms[currentRoom];
 
-  for(let y=0; y<height; y++){
+  for(let y=0;y<height;y++){
 
-    for(let x=0; x<width; x++){
+    for(let x=0;x<width;x++){
 
-      const tile = document.createElement("div");
+      const tile =
+        document.createElement("div");
 
       tile.className = "tile";
 
-      const person = data.people.find(p => p.x === x && p.y === y);
-      const object = data.objects.find(o => o.x === x && o.y === y);
-      const door = data.doors.find(d => d.x === x && d.y === y);
+      const person =
+        data.people.find(
+          p => p.x===x && p.y===y
+        );
 
-      if(playerX === x && playerY === y){
+      const object =
+        data.objects.find(
+          o => o.x===x && o.y===y
+        );
 
-        tile.textContent = playerCharacter;
+      const door =
+        data.doors.find(
+          d => d.x===x && d.y===y
+        );
 
-      }else if(person){
+      if(
+        playerX===x &&
+        playerY===y
+      ){
 
-        tile.textContent = person.icon;
+        tile.textContent =
+          playerCharacter;
 
-      }else if(object){
+      }
 
-        tile.textContent = object.icon;
+      else if(person){
 
-      }else if(door){
+        tile.textContent =
+          person.icon;
+
+      }
+
+      else if(object){
+
+        tile.textContent =
+          object.icon;
+
+      }
+
+      else if(door){
 
         tile.textContent = "🚪";
         tile.classList.add("door");
@@ -729,9 +951,9 @@ function drawRoom(){
 }
 
 
-/* -----------------------
+/* =========================
 MOVEMENT
------------------------ */
+========================= */
 
 function move(dx,dy){
 
@@ -739,39 +961,52 @@ function move(dx,dy){
   const newY = playerY + dy;
 
   if(
-    newX < 0 ||
-    newX >= width ||
-    newY < 0 ||
-    newY >= height
+    newX<0 ||
+    newX>=width ||
+    newY<0 ||
+    newY>=height
   ){
     return;
   }
 
-  const data = rooms[currentRoom];
+  const data =
+    rooms[currentRoom];
 
   const personThere =
-    data.people.find(p => p.x === newX && p.y === newY);
+    data.people.find(
+      p => p.x===newX && p.y===newY
+    );
 
   const objectThere =
-    data.objects.find(o => o.x === newX && o.y === newY);
+    data.objects.find(
+      o => o.x===newX && o.y===newY
+    );
 
   if(personThere || objectThere){
     return;
   }
 
   const doorThere =
-    data.doors.find(d => d.x === newX && d.y === newY);
+    data.doors.find(
+      d => d.x===newX && d.y===newY
+    );
 
   if(doorThere){
 
-    currentRoom = doorThere.to;
-    playerX = doorThere.startX;
-    playerY = doorThere.startY;
+    currentRoom =
+      doorThere.to;
+
+    playerX =
+      doorThere.startX;
+
+    playerY =
+      doorThere.startY;
 
     clearChoices();
 
     showMessage(`
-      🚪 You enter the <b>${currentRoom}</b>.
+      🚪 You enter the
+      <b>${currentRoom}</b>.
     `);
 
     drawRoom();
@@ -787,45 +1022,53 @@ function move(dx,dy){
 }
 
 
-/* -----------------------
-MOVEMENT BUTTONS
------------------------ */
+/* =========================
+ARROWS
+========================= */
 
-document.querySelectorAll("[data-move]").forEach(button => {
+document
+.querySelectorAll("[data-move]")
+.forEach(button => {
 
   button.addEventListener("click", () => {
 
-    const parts = button.dataset.move.split(",");
+    const parts =
+      button.dataset.move.split(",");
 
-    const dx = Number(parts[0]);
-    const dy = Number(parts[1]);
-
-    move(dx,dy);
+    move(
+      Number(parts[0]),
+      Number(parts[1])
+    );
 
   });
 
 });
 
 
-/* -----------------------
-NEARBY PEOPLE + OBJECTS
------------------------ */
+/* =========================
+NEARBY
+========================= */
 
 function checkNearby(){
 
   nearbyPerson = null;
   nearbyObject = null;
 
-  const data = rooms[currentRoom];
+  const data =
+    rooms[currentRoom];
 
   for(const person of data.people){
 
     const distance =
-      Math.abs(playerX - person.x) +
-      Math.abs(playerY - person.y);
+      Math.abs(playerX-person.x)
+      +
+      Math.abs(playerY-person.y);
 
-    if(distance === 1){
-      nearbyPerson = person;
+    if(distance===1){
+
+      nearbyPerson =
+        person;
+
       break;
     }
 
@@ -834,11 +1077,15 @@ function checkNearby(){
   for(const object of data.objects){
 
     const distance =
-      Math.abs(playerX - object.x) +
-      Math.abs(playerY - object.y);
+      Math.abs(playerX-object.x)
+      +
+      Math.abs(playerY-object.y);
 
-    if(distance === 1){
-      nearbyObject = object;
+    if(distance===1){
+
+      nearbyObject =
+        object;
+
       break;
     }
 
@@ -846,32 +1093,40 @@ function checkNearby(){
 
   if(nearbyPerson){
 
-    talkButton.style.display = "inline-block";
-    talkButton.textContent = "💬 " + nearbyPerson.name;
+    talkButton.style.display =
+      "inline-block";
+
+    talkButton.textContent =
+      "💬 " + nearbyPerson.name;
 
   }else{
 
-    talkButton.style.display = "none";
+    talkButton.style.display =
+      "none";
 
   }
 
   if(nearbyObject){
 
-    inspectButton.style.display = "inline-block";
-    inspectButton.textContent = "🔎 " + nearbyObject.name;
+    inspectButton.style.display =
+      "inline-block";
+
+    inspectButton.textContent =
+      "🔎 " + nearbyObject.name;
 
   }else{
 
-    inspectButton.style.display = "none";
+    inspectButton.style.display =
+      "none";
 
   }
 
 }
 
 
-/* -----------------------
+/* =========================
 TALK
------------------------ */
+========================= */
 
 talkButton.addEventListener("click", () => {
 
@@ -879,16 +1134,30 @@ talkButton.addEventListener("click", () => {
     return;
   }
 
+  if(
+    !talkedTo.includes(
+      nearbyPerson.id
+    )
+  ){
+
+    talkedTo.push(
+      nearbyPerson.id
+    );
+
+  }
+
   clearChoices();
 
-  showMessage(nearbyPerson.text);
+  showMessage(
+    nearbyPerson.text
+  );
 
 });
 
 
-/* -----------------------
+/* =========================
 INSPECT
------------------------ */
+========================= */
 
 inspectButton.addEventListener("click", () => {
 
@@ -896,39 +1165,48 @@ inspectButton.addEventListener("click", () => {
     return;
   }
 
-  if(nearbyObject.special === "box"){
+  if(
+    nearbyObject.special==="box"
+  ){
 
     lockedBox();
-
     return;
   }
 
-  showMessage(nearbyObject.text);
+  clearChoices();
+
+  showMessage(
+    nearbyObject.text
+  );
 
   if(nearbyObject.clue){
-    addEvidence(nearbyObject.clue);
+
+    addEvidence(
+      nearbyObject.clue
+    );
+
   }
 
 });
 
 
-/* -----------------------
+/* =========================
 LOCKED BOX
------------------------ */
+========================= */
 
 function lockedBox(){
 
   showMessage(`
-    📦 The box has three number wheels.
+    📦 Three number wheels.
     <br><br>
-    What code will you try?
+    What is the code?
   `);
 
   showChoices([
-    ["413", openBox],
-    ["431", wrongCode],
-    ["314", wrongCode],
-    ["134", wrongCode]
+    ["413",openBox],
+    ["431",wrongCode],
+    ["314",wrongCode],
+    ["134",wrongCode]
   ]);
 
 }
@@ -938,8 +1216,6 @@ function wrongCode(){
 
   showMessage(`
     ❌ Wrong code.
-    <br><br>
-    Try again.
   `);
 
 }
@@ -950,55 +1226,637 @@ function openBox(){
   clearChoices();
 
   showMessage(`
-    🔓 <b>CLICK!</b>
+    🔓 CLICK!
     <br><br>
 
-    Inside is a torn white glove.
-    🧤
+    Inside is...
     <br><br>
 
-    That's suspicious...
+    🧤 <b>A torn white glove.</b>
   `);
 
-  addEvidence("🧤 Torn white glove");
+  addEvidence(
+    "🧤 Torn white glove"
+  );
 
 }
 
 
-/* -----------------------
+/* =========================
 EVIDENCE
------------------------ */
+========================= */
 
 function addEvidence(clue){
 
   if(!evidence.includes(clue)){
+
     evidence.push(clue);
+
   }
 
-  if(evidence.length === 0){
+  evidenceText.textContent =
+    evidence.join(" | ");
 
-    evidenceBox.textContent = "Nothing yet";
+}
 
-  }else{
 
-    evidenceBox.textContent = evidence.join(" | ");
+/* =========================
+NOTEBOOK
+========================= */
+
+notebookButton.addEventListener(
+"click",
+() => {
+
+  roomElement.style.display =
+    "none";
+
+  controls.style.display =
+    "none";
+
+  notebook.style.display =
+    "block";
+
+  showNotebook("suspects");
+
+});
+
+
+document
+.getElementById("closeNotebook")
+.addEventListener("click", () => {
+
+  notebook.style.display =
+    "none";
+
+  roomElement.style.display =
+    "grid";
+
+  controls.style.display =
+    "block";
+
+  drawRoom();
+
+});
+
+
+document
+.querySelectorAll("[data-tab]")
+.forEach(button => {
+
+  button.addEventListener(
+    "click",
+    () => {
+
+      showNotebook(
+        button.dataset.tab
+      );
+
+    }
+  );
+
+});
+
+
+function showNotebook(tab){
+
+  if(tab==="suspects"){
+    suspectsPage();
+  }
+
+  if(tab==="evidence"){
+    evidencePage();
+  }
+
+  if(tab==="contradictions"){
+    contradictionsPage();
+  }
+
+  if(tab==="mysteries"){
+    mysteriesPage();
+  }
+
+  if(tab==="accuse"){
+    accusationPage();
+  }
+
+}
+
+
+/* =========================
+SUSPECTS PAGE
+========================= */
+
+function suspectsPage(){
+
+  notebookContent.innerHTML =
+  "<h3>👥 Suspects</h3>";
+
+  const suspects = [
+    "Marco",
+    "Clara",
+    "Harris",
+    "Sebastian"
+  ];
+
+  suspects.forEach(name => {
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "noteCard";
+
+    let statement =
+      "You have not questioned this person yet.";
+
+    if(
+      talkedTo.includes(name)
+    ){
+
+      if(name==="Marco"){
+        statement =
+        `"I never left the piano."`;
+      }
+
+      if(name==="Clara"){
+        statement =
+        `"I was in the garden."`;
+      }
+
+      if(name==="Harris"){
+        statement =
+        `"I never carried a blue bag."`;
+      }
+
+      if(name==="Sebastian"){
+        statement =
+        `"I was in the library all evening."`;
+      }
+
+    }
+
+    card.innerHTML = `
+      <b>${name}</b>
+      <br><br>
+
+      Statement:
+      ${statement}
+      <br><br>
+
+      Your opinion:
+      <b>${suspicions[name]}</b>
+      <br>
+    `;
+
+    ["⭐ Suspicious","❓ Not sure","✅ Probably innocent"]
+    .forEach(choice => {
+
+      const button =
+        document.createElement("button");
+
+      button.className =
+        "suspicionButton";
+
+      button.textContent =
+        choice;
+
+      button.onclick = () => {
+
+        if(choice.includes("Suspicious")){
+          suspicions[name]="suspicious";
+        }
+
+        if(choice.includes("Not sure")){
+          suspicions[name]="not sure";
+        }
+
+        if(choice.includes("innocent")){
+          suspicions[name]="probably innocent";
+        }
+
+        suspectsPage();
+
+      };
+
+      card.appendChild(button);
+
+    });
+
+    notebookContent.appendChild(card);
+
+  });
+
+}
+
+
+/* =========================
+EVIDENCE PAGE
+========================= */
+
+function evidencePage(){
+
+  notebookContent.innerHTML =
+  "<h3>🔎 Evidence</h3>";
+
+  if(evidence.length===0){
+
+    notebookContent.innerHTML += `
+      <div class="noteCard">
+      You haven't found any evidence yet.
+      </div>
+    `;
+
+    return;
+  }
+
+  evidence.forEach(clue => {
+
+    notebookContent.innerHTML += `
+      <div class="noteCard">
+      ${clue}
+      </div>
+    `;
+
+  });
+
+}
+
+
+/* =========================
+CONTRADICTIONS
+========================= */
+
+function contradictionsPage(){
+
+  notebookContent.innerHTML =
+  "<h3>🚨 Contradictions</h3>";
+
+  let found = false;
+
+  if(
+    talkedTo.includes("Sebastian")
+    &&
+    evidence.includes(
+      "📖 Sebastian returned his book at 8:55"
+    )
+  ){
+
+    found = true;
+
+    notebookContent.innerHTML += `
+      <div class="noteCard">
+
+      🚨 <b>Sebastian's story doesn't match!</b>
+      <br><br>
+
+      Sebastian says he was in
+      the library all evening.
+      <br><br>
+
+      But the library record shows
+      he returned his book at 8:55.
+
+      </div>
+    `;
+
+  }
+
+  if(
+    talkedTo.includes("Harris")
+    &&
+    evidence.includes(
+      "🛍️ Blue velvet bag"
+    )
+  ){
+
+    found = true;
+
+    notebookContent.innerHTML += `
+      <div class="noteCard">
+
+      🚨 <b>Mr Harris may be hiding something.</b>
+      <br><br>
+
+      He says he never carried
+      a blue bag.
+      <br><br>
+
+      But a blue velvet bag
+      is sitting in the kitchen.
+
+      </div>
+    `;
+
+  }
+
+  if(!found){
+
+    notebookContent.innerHTML += `
+      <div class="noteCard">
+
+      No contradictions discovered yet.
+      <br><br>
+
+      Try talking to people AND
+      finding evidence.
+
+      </div>
+    `;
 
   }
 
 }
 
 
-/* -----------------------
+/* =========================
+MYSTERIES
+========================= */
+
+function mysteriesPage(){
+
+  notebookContent.innerHTML =
+  "<h3>❓ Mysteries</h3>";
+
+  notebookContent.innerHTML += `
+    <div class="noteCard">
+
+    ${evidence.includes("🧤 Torn white glove")
+      ? "✅"
+      : "❓"}
+
+    Who owns the torn white glove?
+
+    </div>
+
+    <div class="noteCard">
+
+    ${evidence.includes("📜 Code 413")
+      ? "✅"
+      : "❓"}
+
+    What is hidden in Room 13?
+
+    </div>
+
+    <div class="noteCard">
+
+    ${evidence.includes("🛍️ Blue velvet bag")
+      ? "✅"
+      : "❓"}
+
+    Why is there a blue velvet bag
+    in the kitchen?
+
+    </div>
+
+    <div class="noteCard">
+
+    ❓ Who actually stole the diamond?
+
+    </div>
+  `;
+
+}
+
+
+/* =========================
+ACCUSATION
+========================= */
+
+function accusationPage(){
+
+  notebookContent.innerHTML = `
+    <h3>⚖️ Make an Accusation</h3>
+
+    <div class="noteCard">
+
+    <p>
+    You need evidence before
+    making a serious accusation.
+    </p>
+
+    <label>I accuse:</label>
+
+    <select id="accused">
+
+    <option value="">
+    Choose someone
+    </option>
+
+    <option value="Marco">
+    🎹 Marco
+    </option>
+
+    <option value="Clara">
+    🎭 Clara
+    </option>
+
+    <option value="Harris">
+    🍷 Mr Harris
+    </option>
+
+    <option value="Sebastian">
+    🎩 Sebastian
+    </option>
+
+    </select>
+
+    <br><br>
+
+    <label>Because:</label>
+
+    <select id="reasonAccuse">
+
+    <option value="">
+    Choose a reason
+    </option>
+
+    <option value="lied">
+    They lied about where they were
+    </option>
+
+    <option value="bag">
+    They are connected to the blue bag
+    </option>
+
+    <option value="mud">
+    They had muddy shoes
+    </option>
+
+    <option value="glove">
+    They are connected to the glove
+    </option>
+
+    </select>
+
+    <br><br>
+
+    <button id="makeAccusation">
+    ⚖️ Make Accusation
+    </button>
+
+    </div>
+  `;
+
+  document
+  .getElementById("makeAccusation")
+  .onclick = makeAccusation;
+
+}
+
+
+function makeAccusation(){
+
+  const accused =
+    document.getElementById("accused").value;
+
+  const reason =
+    document.getElementById("reasonAccuse").value;
+
+
+  if(
+    accused==="" ||
+    reason===""
+  ){
+
+    alert(
+      "Choose a suspect AND a reason!"
+    );
+
+    return;
+  }
+
+
+  const enoughEvidence =
+    evidence.includes(
+      "📖 Sebastian returned his book at 8:55"
+    )
+    &&
+    evidence.includes(
+      "🧤 Torn white glove"
+    )
+    &&
+    talkedTo.includes(
+      "Sebastian"
+    );
+
+
+  if(
+    accused==="Sebastian"
+    &&
+    reason==="lied"
+    &&
+    enoughEvidence
+  ){
+
+    winGame();
+
+  }else{
+
+    notebookContent.innerHTML = `
+      <h3>⚖️ Accusation Failed</h3>
+
+      <div class="noteCard">
+
+      ❌ Lady Celestine shakes her head.
+      <br><br>
+
+      "That theory does not explain
+      all the evidence."
+      <br><br>
+
+      You need to investigate more.
+
+      </div>
+
+      <div style="text-align:center">
+
+      <button onclick="accusationPage()">
+      🔁 Try another accusation
+      </button>
+
+      </div>
+    `;
+
+  }
+
+}
+
+
+/* =========================
+ENDING
+========================= */
+
+function winGame(){
+
+  notebookContent.innerHTML = `
+    <h2>🎉 CASE SOLVED!</h2>
+
+    <div class="noteCard">
+
+    You accuse
+    <b>🎩 Sebastian.</b>
+    <br><br>
+
+    Sebastian says:
+    <br><br>
+
+    "You can't prove anything!"
+    😠
+    <br><br>
+
+    But you show everyone
+    the library record.
+    📖
+    <br><br>
+
+    Sebastian lied about being
+    in the library all evening.
+    <br><br>
+
+    Then you reveal the torn glove.
+    🧤
+    <br><br>
+
+    Hotel security searches his room...
+    <br><br>
+
+    💎 <b>THE BLUE DIAMOND!</b>
+    <br><br>
+
+    Lady Celestine keeps her promise
+    and gives you the
+    <b>£1,000 reward.</b>
+    💷
+    <br><br>
+
+    <b>${playerName}, you solved
+    The Blue Diamond Mystery!</b>
+
+    </div>
+  `;
+
+}
+
+
+/* =========================
 HELPERS
------------------------ */
+========================= */
 
 function showMessage(text){
-  messageBox.innerHTML = text;
+
+  messageBox.innerHTML =
+    text;
+
 }
 
 
 function clearChoices(){
-  choicesBox.innerHTML = "";
+
+  choicesBox.innerHTML =
+    "";
+
 }
 
 
@@ -1008,13 +1866,20 @@ function showChoices(options){
 
   options.forEach(option => {
 
-    const button = document.createElement("button");
+    const button =
+      document.createElement("button");
 
-    button.textContent = option[0];
+    button.textContent =
+      option[0];
 
-    button.addEventListener("click", option[1]);
+    button.addEventListener(
+      "click",
+      option[1]
+    );
 
-    choicesBox.appendChild(button);
+    choicesBox.appendChild(
+      button
+    );
 
   });
 
