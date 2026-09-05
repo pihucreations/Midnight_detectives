@@ -1,69 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>The Blue Diamond Mystery</title>
 
 <style>
+
 body{
   margin:0;
   font-family:Arial,sans-serif;
-  background:#101426;
+  background:#11182b;
   color:white;
   text-align:center;
 }
+
 #game{
-  max-width:700px;
+  max-width:750px;
   margin:auto;
   padding:20px;
 }
-button,input{
-  font-size:16px;
+
+button,
+input{
+  font-size:17px;
   padding:12px;
   margin:6px;
   border:0;
   border-radius:10px;
 }
+
 button{
-  background:#e5c86b;
+  background:#e7c864;
   cursor:pointer;
 }
+
+.character{
+  font-size:40px;
+  background:#29324a;
+  border:3px solid transparent;
+}
+
+.character.selected{
+  border:3px solid gold;
+  background:#485575;
+}
+
 #choices button{
   display:block;
-  width:80%;
+  width:85%;
   margin:10px auto;
 }
-#map{
+
+#ballroom{
   display:none;
-  grid-template-columns:repeat(4,1fr);
-  gap:6px;
+
+  grid-template-columns:repeat(7,1fr);
+  grid-template-rows:repeat(6,55px);
+
+  gap:3px;
+
+  max-width:600px;
   margin:20px auto;
-  max-width:500px;
-}
-.room{
-  min-height:70px;
-  background:#303750;
-  border:2px solid #59617c;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:5px;
-}
-.player{
-  background:#e5c86b;
-  color:#111;
-  font-weight:bold;
-}
-#controls{
-  display:none;
-}
-#inventory{
-  margin:15px;
-  padding:12px;
-  background:#1c2138;
+
+  background:#755b42;
+  padding:8px;
+
+  border:5px solid #c6a45a;
   border-radius:12px;
 }
+
+.tile{
+  background:#d7c6a4;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  font-size:27px;
+  border-radius:5px;
+}
+
+.wall{
+  background:#40372f;
+}
+
+#controls{
+  display:none;
+  margin-top:15px;
+}
+
+#talkButton{
+  display:none;
+  background:#70c88b;
+}
+
+#message{
+  background:#1d253d;
+  padding:15px;
+  margin:15px auto;
+  border-radius:12px;
+  max-width:600px;
+  min-height:60px;
+}
+
+.small{
+  font-size:14px;
+  color:#ccc;
+}
+
 </style>
 </head>
 
@@ -73,401 +119,1157 @@ button{
 
 <h1>💎 The Blue Diamond Mystery</h1>
 
-<div id="story">
-  <p>You arrive at the luxurious Blackwood Grand Hotel.</p>
+<div id="setup">
 
-  <input id="nameInput" placeholder="What is your name?">
+<h2>Who are you?</h2>
 
-  <button id="checkInBtn">Check in</button>
+<input id="nameInput" placeholder="Enter your name">
+
+<h3>Choose your character</h3>
+
+<div id="characters">
+
+<button class="character" data-character="👧🏻">👧🏻</button>
+<button class="character" data-character="👦🏽">👦🏽</button>
+<button class="character" data-character="👩🏾">👩🏾</button>
+<button class="character" data-character="👨🏻">👨🏻</button>
+<button class="character" data-character="🧑🏼">🧑🏼</button>
+<button class="character" data-character="👩🏽">👩🏽</button>
+
 </div>
+
+<h3>Are you a child or an adult?</h3>
+
+<button id="childButton">🧒 Child</button>
+<button id="adultButton">🧑 Adult</button>
+
+<h3>Why are you staying at the hotel?</h3>
+
+<select id="reason">
+
+<option value="holiday">🏖️ Holiday</option>
+<option value="birthday">🎂 Birthday trip</option>
+<option value="family">👨‍👩‍👧 Visiting family</option>
+<option value="show">🎭 Seeing a show</option>
+<option value="parent">🧳 Travelling with family</option>
+
+</select>
+
+<br><br>
+
+<button id="startButton">🏨 Check into hotel</button>
+
+</div>
+
+
+<div id="story"></div>
 
 <div id="choices"></div>
 
-<div id="map"></div>
+
+<div id="ballroom"></div>
+
 
 <div id="controls">
-  <button data-move="0,-1">⬆️</button><br>
 
-  <button data-move="-1,0">⬅️</button>
+<button data-move="0,-1">⬆️</button>
 
-  <button id="investigateBtn">🔎 Investigate</button>
+<br>
 
-  <button data-move="1,0">➡️</button><br>
+<button data-move="-1,0">⬅️</button>
 
-  <button data-move="0,1">⬇️</button>
-</div>
+<button id="talkButton">💬 Talk</button>
 
-<p id="location"></p>
+<button data-move="1,0">➡️</button>
 
-<div id="inventory">
-  🎒 Evidence:
-  <span id="evidence">None yet</span>
-</div>
+<br>
+
+<button data-move="0,1">⬇️</button>
 
 </div>
+
+
+<div id="message">
+Create your character to begin.
+</div>
+
+</div>
+
 
 <script>
-const story=document.getElementById("story");
-const choices=document.getElementById("choices");
-const map=document.getElementById("map");
-const controls=document.getElementById("controls");
-const locationText=document.getElementById("location");
-const evidenceText=document.getElementById("evidence");
 
-let player="";
-let refusals=0;
-let x=1;
-let y=1;
-let evidence=[];
-let suspectStageStarted=false;
+/* -------------------------
+PLAYER INFORMATION
+------------------------- */
 
-const rooms=[
-  ["Room 12","Room 13","Library","Stairs"],
-  ["Restaurant","Ballroom","Lounge","Garden"],
-  ["Kitchen","Lobby","Lift","Office"],
-  ["Storage","Hall","Bar","Exit"]
-];
+let playerName="";
+let playerCharacter="";
+let playerAge="";
+let playerReason="";
 
-const clues={
-  "Ballroom":
-  "You find a torn piece of white glove under Lady Celestine's chair. 🧤",
+let refusalCount=0;
 
-  "Garden":
-  "You find muddy footprints leading TOWARDS the hotel. 👣",
 
-  "Kitchen":
-  "A waiter says someone entered carrying a blue velvet bag.",
+/* -------------------------
+CHARACTER CHOOSING
+------------------------- */
 
-  "Room 13":
-  "A note says: 'The thief never left the ballroom.' 😳",
+const characterButtons=
+document.querySelectorAll(".character");
 
-  "Library":
-  "The guest list shows four people were sitting close enough to reach the clutch.",
+characterButtons.forEach(button=>{
 
-  "Office":
-  "The security cameras were switched off for exactly seven minutes."
-};
+  button.addEventListener("click",()=>{
 
-function show(text){
-  story.innerHTML="<p>"+text+"</p>";
-}
+    characterButtons.forEach(b=>
+      b.classList.remove("selected")
+    );
 
-function buttons(list){
-  choices.innerHTML="";
+    button.classList.add("selected");
 
-  list.forEach(item=>{
-    const b=document.createElement("button");
-    b.textContent=item[0];
-    b.onclick=item[1];
-    choices.appendChild(b);
+    playerCharacter=
+    button.dataset.character;
+
   });
-}
 
-document.getElementById("checkInBtn").onclick=()=>{
+});
 
-  player=document.getElementById("nameInput").value.trim();
 
-  if(!player){
+document.getElementById("childButton")
+.addEventListener("click",()=>{
+
+  playerAge="child";
+
+  document.getElementById("childButton").textContent=
+  "✅ 🧒 Child";
+
+  document.getElementById("adultButton").textContent=
+  "🧑 Adult";
+
+});
+
+
+document.getElementById("adultButton")
+.addEventListener("click",()=>{
+
+  playerAge="adult";
+
+  document.getElementById("adultButton").textContent=
+  "✅ 🧑 Adult";
+
+  document.getElementById("childButton").textContent=
+  "🧒 Child";
+
+});
+
+
+/* -------------------------
+START GAME
+------------------------- */
+
+document.getElementById("startButton")
+.addEventListener("click",()=>{
+
+  playerName=
+  document.getElementById("nameInput")
+  .value.trim();
+
+  playerReason=
+  document.getElementById("reason").value;
+
+
+  if(!playerName){
+
     alert("Enter your name first!");
+
     return;
   }
 
-  show(`
-    Welcome to the Blackwood Grand Hotel, ${player}.<br><br>
 
-    During dinner, a scream comes from the ballroom.<br><br>
+  if(!playerCharacter){
 
-    Lady Celestine Ashbourne, a wealthy aristocrat,
-    is staring at her silver clutch.<br><br>
+    alert("Choose a character!");
 
-    The famous BLUE DIAMOND attached to it has vanished. 💎<br><br>
+    return;
+  }
 
-    "£1,000 to whoever finds it!" she announces.<br><br>
 
-    Do you want to get involved?
+  if(!playerAge){
+
+    alert("Choose child or adult!");
+
+    return;
+  }
+
+
+  document.getElementById("setup")
+  .style.display="none";
+
+
+  hotelArrival();
+
+});
+
+
+/* -------------------------
+HOTEL ARRIVAL
+------------------------- */
+
+function hotelArrival(){
+
+  message(`
+    ${playerCharacter} <b>${playerName}</b>
+    arrives at the magnificent
+    Blackwood Grand Hotel.
+    <br><br>
+    Huge chandeliers hang from the ceiling.
+    A pianist plays in the ballroom.
+    Waiters carry silver trays between the guests.
+    <br><br>
+    Then suddenly...
+    <br><br>
+    <b>AAAAAAAH!</b> 😱
   `);
 
-  buttons([
-    ["🔎 Yes, investigate",beginInvestigation],
-    ["🙅 No, stay out of it",refuse]
+
+  choices([
+    [
+      "😳 See what happened",
+      diamondMissing
+    ]
   ]);
-};
 
-function refuse(){
+}
 
-  refusals++;
 
-  if(refusals===1){
+/* -------------------------
+DIAMOND DISAPPEARS
+------------------------- */
 
-    show(`
-      You stay out of it.<br><br>
+function diamondMissing(){
 
-      Later, hotel security knocks on your door.<br><br>
+  message(`
+    Lady Celestine Ashbourne
+    is standing beside her table.
+    <br><br>
 
-      A witness claims they saw someone matching your description
-      near Lady Celestine before the diamond vanished. 😳<br><br>
+    👒 "MY DIAMOND!"
+    <br><br>
 
-      You are now a suspect.<br><br>
+    Attached to her silver clutch
+    was the famous
+    <b>Blue Ashbourne Diamond.</b>
+    💎
+    <br><br>
 
-      Investigate to clear your name?
-    `);
+    It has vanished.
+    <br><br>
 
-  }else if(refusals===2){
+    "£1,000 to whoever finds it!"
+    she announces.
+  `);
 
-    show(`
-      You STILL refuse. 😂<br><br>
 
-      A note slides under your door:<br><br>
+  if(playerAge==="child"){
 
-      <b>
-      I KNOW YOU ARE INNOCENT.<br>
-      I KNOW WHO TOOK THE DIAMOND.<br>
-      MIDNIGHT. ROOM 13.
-      </b><br><br>
+    choices([
+      [
+        "🔎 I want to investigate!",
+        guardianStopsYou
+      ],
 
-      Will you investigate now?
-    `);
+      [
+        "😇 Stay out of it",
+        guardianMystery
+      ]
+    ]);
 
   }else{
 
-    show(`
-      You ignore that too.<br><br>
+    choices([
+      [
+        "🔎 Investigate",
+        startBallroom
+      ],
 
-      The next morning you open your suitcase...<br><br>
-
-      💎 <b>THE BLUE DIAMOND IS INSIDE.</b><br><br>
-
-      But it is FAKE.<br><br>
-
-      Someone is trying to frame you.<br><br>
-
-      Now you have to find the real diamond before security searches your room.
-    `);
-
-    buttons([
-      ["😳 Fine! Investigate",beginInvestigation]
+      [
+        "🙅 Stay out of it",
+        adultRefuses
+      ]
     ]);
 
-    return;
   }
 
-  buttons([
-    ["🔎 Investigate",beginInvestigation],
-    ["🙅 Still no",refuse]
-  ]);
 }
 
-function beginInvestigation(){
 
-  choices.innerHTML="";
+/* -------------------------
+CHILD STORY
+------------------------- */
 
-  show(`
-    <b>INVESTIGATION STARTED</b><br><br>
+function guardianStopsYou(){
 
-    Walk around the hotel using the arrows.<br>
-    Press 🔎 Investigate in different rooms.<br><br>
+  message(`
+    Before you can even move...
+    <br><br>
 
-    Find all 6 important clues.
+    🧑‍🧑‍🧒
+    <b>Your guardian appears.</b>
+    <br><br>
+
+    "Absolutely NOT!"
+    <br><br>
+
+    "A valuable diamond has disappeared,
+    hotel security is investigating,
+    and you are staying right here."
+    😑
+    <br><br>
+
+    You glance towards the ballroom.
+    <br><br>
+
+    Something VERY strange is happening there...
   `);
 
-  map.style.display="grid";
+
+  choices([
+    [
+      "😇 Fine. I won't investigate.",
+      guardianMystery
+    ],
+
+    [
+      "🤔 But I could help!",
+      guardianArgument
+    ],
+
+    [
+      "🤫 Investigate secretly",
+      secretInvestigation
+    ]
+  ]);
+
+}
+
+
+function guardianArgument(){
+
+  message(`
+    "I could help!"
+    you say.
+    <br><br>
+
+    Your guardian folds their arms.
+    <br><br>
+
+    "No."
+    <br><br>
+
+    Then a waiter rushes past.
+    <br><br>
+
+    Something drops from his pocket.
+    <br><br>
+
+    🗝️
+    <br><br>
+
+    A tiny brass key.
+    <br><br>
+
+    He doesn't notice.
+  `);
+
+
+  choices([
+    [
+      "🗝️ Pick up the key",
+      secretInvestigation
+    ],
+
+    [
+      "😇 Leave it alone",
+      guardianMystery
+    ]
+  ]);
+
+}
+
+
+function guardianMystery(){
+
+  refusalCount++;
+
+  message(`
+    You agree not to investigate.
+    <br><br>
+
+    Five minutes later...
+    <br><br>
+
+    You walk back towards your hotel room.
+    <br><br>
+
+    Someone bumps into you.
+    <br><br>
+
+    A folded piece of paper
+    appears inside your pocket.
+    <br><br>
+
+    It says:
+    <br><br>
+
+    <b>
+    YOU DIDN'T TAKE THE DIAMOND.
+    <br><br>
+    BUT SOMEONE WANTS PEOPLE
+    TO THINK YOU DID.
+    </b>
+    😳
+  `);
+
+
+  choices([
+    [
+      "😰 Show my guardian",
+      showGuardianNote
+    ],
+
+    [
+      "🤫 Keep it secret",
+      secretInvestigation
+    ]
+  ]);
+
+}
+
+
+function showGuardianNote(){
+
+  message(`
+    Your guardian reads the note.
+    <br><br>
+
+    Their face changes.
+    <br><br>
+
+    "Okay..."
+    <br><br>
+
+    "We're going to find out
+    what is happening.
+    But you stay where I can see you."
+    <br><br>
+
+    Finally! 😏
+  `);
+
+
+  choices([
+    [
+      "🔎 Enter the ballroom",
+      startBallroom
+    ]
+  ]);
+
+}
+
+
+function secretInvestigation(){
+
+  message(`
+    You wait until your guardian
+    starts talking to hotel security.
+    <br><br>
+
+    Then...
+    <br><br>
+
+    ${playerCharacter}
+    <b>${playerName}</b>
+    quietly slips into the ballroom.
+    🤫
+  `);
+
+
+  choices([
+    [
+      "🎮 Enter ballroom",
+      startBallroom
+    ]
+  ]);
+
+}
+
+
+/* -------------------------
+ADULT REFUSAL
+------------------------- */
+
+function adultRefuses(){
+
+  message(`
+    You decide this mystery
+    is none of your business.
+    <br><br>
+
+    Sensible.
+    <br><br>
+
+    Probably.
+    😏
+    <br><br>
+
+    Then hotel security approaches.
+    <br><br>
+
+    "A witness saw someone matching
+    your description beside
+    Lady Celestine's table."
+    <br><br>
+
+    You are now a suspect.
+  `);
+
+
+  choices([
+    [
+      "😳 Okay, investigate",
+      startBallroom
+    ]
+  ]);
+
+}
+
+
+/* -------------------------
+BALLROOM
+------------------------- */
+
+const ballroom=
+document.getElementById("ballroom");
+
+const controls=
+document.getElementById("controls");
+
+const talkButton=
+document.getElementById("talkButton");
+
+
+const width=7;
+const height=6;
+
+
+let playerX=3;
+let playerY=5;
+
+
+/*
+NPC LOCATIONS
+*/
+
+const people=[
+
+  {
+    name:"Lady Celestine",
+    icon:"👒",
+    x:5,
+    y:1,
+    talk:talkCelestine
+  },
+
+  {
+    name:"Pianist",
+    icon:"🎹",
+    x:1,
+    y:1,
+    talk:talkPianist
+  },
+
+  {
+    name:"Head Waiter",
+    icon:"🍷",
+    x:5,
+    y:4,
+    talk:talkWaiter
+  }
+
+];
+
+
+/*
+Furniture
+*/
+
+const furniture=[
+
+  {
+    icon:"🪑",
+    x:4,
+    y:1
+  },
+
+  {
+    icon:"🪑",
+    x:4,
+    y:2
+  },
+
+  {
+    icon:"🍽️",
+    x:5,
+    y:2
+  },
+
+  {
+    icon:"🌿",
+    x:1,
+    y:4
+  }
+
+];
+
+
+function startBallroom(){
+
+  document.getElementById("choices")
+  .innerHTML="";
+
+
+  message(`
+    <b>THE BALLROOM</b>
+    <br><br>
+
+    Use the arrows to walk around.
+    <br><br>
+
+    Walk next to someone and
+    the 💬 Talk button will appear.
+  `);
+
+
+  ballroom.style.display="grid";
+
   controls.style.display="block";
 
-  drawMap();
+  drawBallroom();
+
 }
 
-function drawMap(){
 
-  map.innerHTML="";
+/* -------------------------
+DRAW ROOM
+------------------------- */
 
-  rooms.forEach((row,ry)=>{
+function drawBallroom(){
 
-    row.forEach((room,rx)=>{
+  ballroom.innerHTML="";
 
-      const square=document.createElement("div");
 
-      square.className=
-      "room"+(rx===x&&ry===y?" player":"");
+  for(let y=0;y<height;y++){
 
-      square.textContent=
-      rx===x&&ry===y
-      ?"🕵️ "+room
-      :room;
+    for(let x=0;x<width;x++){
 
-      map.appendChild(square);
-    });
-  });
+      const tile=
+      document.createElement("div");
 
-  locationText.textContent="You are in: "+rooms[y][x];
+      tile.className="tile";
+
+
+      /*
+      PLAYER
+      */
+
+      if(
+        x===playerX &&
+        y===playerY
+      ){
+
+        tile.textContent=
+        playerCharacter;
+
+      }else{
+
+        /*
+        PEOPLE
+        */
+
+        const person=
+        people.find(p=>
+          p.x===x &&
+          p.y===y
+        );
+
+
+        /*
+        FURNITURE
+        */
+
+        const object=
+        furniture.find(f=>
+          f.x===x &&
+          f.y===y
+        );
+
+
+        if(person){
+
+          tile.textContent=
+          person.icon;
+
+          tile.title=
+          person.name;
+
+        }else if(object){
+
+          tile.textContent=
+          object.icon;
+
+        }
+
+      }
+
+
+      ballroom.appendChild(tile);
+
+    }
+
+  }
+
+
+  checkForPerson();
+
 }
+
+
+/* -------------------------
+MOVEMENT
+------------------------- */
 
 function move(dx,dy){
 
-  const newX=x+dx;
-  const newY=y+dy;
+  const newX=
+  playerX+dx;
 
-  if(newX<0||newX>3||newY<0||newY>3){
+  const newY=
+  playerY+dy;
+
+
+  if(
+    newX<0 ||
+    newX>=width ||
+    newY<0 ||
+    newY>=height
+  ){
+
     return;
+
   }
 
-  x=newX;
-  y=newY;
 
-  drawMap();
+  /*
+  Don't walk THROUGH people.
+  */
+
+  const blocked=
+  people.some(p=>
+    p.x===newX &&
+    p.y===newY
+  );
+
+
+  if(blocked){
+
+    message(
+      "Someone is standing there. Walk beside them to talk."
+    );
+
+    return;
+
+  }
+
+
+  playerX=newX;
+  playerY=newY;
+
+
+  drawBallroom();
+
 }
 
-document.querySelectorAll("[data-move]").forEach(button=>{
 
-  button.onclick=()=>{
+/* -------------------------
+ARROW BUTTONS
+------------------------- */
 
-    const values=button.dataset.move.split(",").map(Number);
+document
+.querySelectorAll("[data-move]")
+.forEach(button=>{
 
-    move(values[0],values[1]);
-  };
+  button.addEventListener(
+    "click",
+    ()=>{
+
+      const moveAmount=
+      button.dataset.move
+      .split(",")
+      .map(Number);
+
+      move(
+        moveAmount[0],
+        moveAmount[1]
+      );
+
+    }
+  );
+
 });
 
-document.getElementById("investigateBtn").onclick=investigate;
 
-function investigate(){
+/* -------------------------
+WHO IS NEARBY?
+------------------------- */
 
-  const room=rooms[y][x];
+let nearbyPerson=null;
 
-  if(clues[room]){
 
-    show("<b>"+room+"</b><br><br>"+clues[room]);
+function checkForPerson(){
 
-    if(!evidence.includes(room)){
+  nearbyPerson=null;
 
-      evidence.push(room);
 
-      evidenceText.textContent=evidence.join(", ");
+  people.forEach(person=>{
+
+    const distance=
+
+    Math.abs(
+      playerX-person.x
+    )
+
+    +
+
+    Math.abs(
+      playerY-person.y
+    );
+
+
+    if(distance===1){
+
+      nearbyPerson=
+      person;
+
     }
 
-    if(evidence.length===6 && !suspectStageStarted){
+  });
 
-      suspectStageStarted=true;
 
-      setTimeout(showSuspects,700);
-    }
+  if(nearbyPerson){
+
+    talkButton.style.display=
+    "inline-block";
+
+    talkButton.textContent=
+    "💬 Talk to "+
+    nearbyPerson.name;
 
   }else{
 
-    show(`
-      You search the ${room}.<br><br>
-      Nothing important appears... yet.
-    `);
+    talkButton.style.display=
+    "none";
+
   }
+
 }
 
-function showSuspects(){
 
-  map.style.display="none";
-  controls.style.display="none";
+/* -------------------------
+TALK BUTTON
+------------------------- */
 
-  show(`
-    <b>You have collected all 6 clues.</b><br><br>
+talkButton.addEventListener(
+"click",
+()=>{
 
-    Lady Celestine gathers everyone in the ballroom.<br><br>
+  if(nearbyPerson){
 
-    Four people could have taken the diamond.<br><br>
+    nearbyPerson.talk();
 
-    Who do you want to question?
-  `);
-
-  buttons([
-    ["🎹 The Pianist",()=>question("pianist")],
-    ["🍷 The Head Waiter",()=>question("waiter")],
-    ["🎭 The Actress",()=>question("actress")],
-    ["🎩 Lady Celestine's Nephew",()=>question("nephew")]
-  ]);
-}
-
-function question(person){
-
-  const answers={
-
-    pianist:
-    "The pianist says: 'I was playing the piano from 9:00 until 9:30.'",
-
-    waiter:
-    "The waiter says: 'I went into the kitchen at 9:15, but I was carrying wine, not a blue bag.'",
-
-    actress:
-    "The actress says: 'I was in the garden until 9:20. My shoes were muddy.'",
-
-    nephew:
-    "The nephew says: 'I was in the library the whole time.'"
-  };
-
-  show(`
-    ${answers[person]}<br><br>
-
-    Question someone else, or make an accusation.
-  `);
-
-  buttons([
-    ["🎹 Pianist",()=>question("pianist")],
-    ["🍷 Waiter",()=>question("waiter")],
-    ["🎭 Actress",()=>question("actress")],
-    ["🎩 Nephew",()=>question("nephew")],
-    ["🧠 Make an accusation",accusation]
-  ]);
-}
-
-function accusation(){
-
-  show(`
-    <b>Who stole the Blue Diamond?</b><br><br>
-    Choose carefully.
-  `);
-
-  buttons([
-    ["🎹 Pianist",()=>ending("wrong")],
-    ["🍷 Waiter",()=>ending("wrong")],
-    ["🎭 Actress",()=>ending("wrong")],
-    ["🎩 Nephew",()=>ending("correct")]
-  ]);
-}
-
-function ending(result){
-
-  choices.innerHTML="";
-
-  if(result==="correct"){
-
-    show(`
-      🎉 <b>CASE SOLVED!</b><br><br>
-
-      The nephew lied about being in the library.<br><br>
-
-      He used the camera blackout to take the diamond
-      and hid it in the blue velvet bag.<br><br>
-
-      Lady Celestine gives you the £1,000 reward. 💷💎
-    `);
-
-  }else{
-
-    show(`
-      ❌ That person does not fit all the clues.<br><br>
-
-      Try again.
-    `);
-
-    buttons([
-      ["🔎 Question the suspects again",showSuspects]
-    ]);
   }
-}
 
-document.addEventListener("keydown",event=>{
-
-  if(event.key==="ArrowUp")move(0,-1);
-  if(event.key==="ArrowDown")move(0,1);
-  if(event.key==="ArrowLeft")move(-1,0);
-  if(event.key==="ArrowRight")move(1,0);
 });
+
+
+/* -------------------------
+CONVERSATIONS
+------------------------- */
+
+function talkCelestine(){
+
+  message(`
+    👒 <b>Lady Celestine</b>
+    <br><br>
+
+    "Oh! Are YOU searching
+    for my diamond?"
+    <br><br>
+
+    She clutches her silver handbag.
+    <br><br>
+
+    Something about the clasp
+    looks strange...
+  `);
+
+
+  conversationChoices([
+
+    [
+      "💎 When did you last see it?",
+      ()=>{
+        message(`
+          👒 "At exactly 9:10.
+          I checked it just before
+          the pianist began his
+          second song."
+        `);
+      }
+    ],
+
+    [
+      "👀 Who was near you?",
+      ()=>{
+        message(`
+          👒 "My nephew Sebastian,
+          the actress Clara Vale,
+          and several waiters."
+        `);
+      }
+    ],
+
+    [
+      "👜 Examine the clutch",
+      ()=>{
+        message(`
+          You look carefully.
+          <br><br>
+
+          The diamond wasn't
+          simply unclipped.
+          <br><br>
+
+          The tiny metal chain
+          has been CUT.
+          ✂️
+          <br><br>
+
+          <b>That could be important.</b>
+        `);
+      }
+    ]
+
+  ]);
+
+}
+
+
+function talkPianist(){
+
+  message(`
+    🎹 <b>Marco Bellini</b>
+    <br><br>
+
+    "I saw nothing.
+    I was playing all evening."
+    <br><br>
+
+    He keeps playing,
+    but he seems nervous.
+  `);
+
+
+  conversationChoices([
+
+    [
+      "🎵 What were you playing?",
+      ()=>{
+        message(`
+          🎹 "Moonlight Sonata.
+          Then a waltz."
+          <br><br>
+
+          Interesting...
+          Lady Celestine mentioned
+          his second song.
+        `);
+      }
+    ],
+
+    [
+      "👀 Did you leave the piano?",
+      ()=>{
+        message(`
+          🎹 "No.
+          Not once."
+          <br><br>
+
+          He answers VERY quickly.
+          🤨
+        `);
+      }
+    ]
+
+  ]);
+
+}
+
+
+function talkWaiter(){
+
+  message(`
+    🍷 <b>Mr Harris</b>
+    <br><br>
+
+    "Terrible business.
+    Absolutely terrible."
+    <br><br>
+
+    He keeps looking
+    towards the ballroom doors.
+  `);
+
+
+  conversationChoices([
+
+    [
+      "🍷 Where were you?",
+      ()=>{
+        message(`
+          🍷 "Serving drinks.
+          Then I went to
+          the kitchen at 9:15."
+        `);
+      }
+    ],
+
+    [
+      "🗝️ Did you lose anything?",
+      ()=>{
+        message(`
+          Mr Harris freezes.
+          <br><br>
+
+          🍷 "Lose anything?
+          No... why?"
+          <br><br>
+
+          🤨 Suspicious.
+        `);
+      }
+    ]
+
+  ]);
+
+}
+
+
+/* -------------------------
+DIALOGUE BUTTONS
+------------------------- */
+
+function conversationChoices(options){
+
+  const box=
+  document.getElementById("choices");
+
+  box.innerHTML="";
+
+
+  options.forEach(option=>{
+
+    const button=
+    document.createElement("button");
+
+    button.textContent=
+    option[0];
+
+    button.addEventListener(
+      "click",
+      option[1]
+    );
+
+    box.appendChild(button);
+
+  });
+
+
+  const close=
+  document.createElement("button");
+
+  close.textContent=
+  "⬅️ Stop talking";
+
+  close.addEventListener(
+    "click",
+    ()=>{
+
+      box.innerHTML="";
+
+      message(
+        "You continue exploring the ballroom."
+      );
+
+    }
+  );
+
+
+  box.appendChild(close);
+
+}
+
+
+/* -------------------------
+HELPER FUNCTIONS
+------------------------- */
+
+function message(text){
+
+  document.getElementById("message")
+  .innerHTML=text;
+
+}
+
+
+function choices(options){
+
+  const box=
+  document.getElementById("choices");
+
+  box.innerHTML="";
+
+
+  options.forEach(option=>{
+
+    const button=
+    document.createElement("button");
+
+    button.textContent=
+    option[0];
+
+    button.addEventListener(
+      "click",
+      option[1]
+    );
+
+    box.appendChild(button);
+
+  });
+
+}
+
 </script>
 
 </body>
+
 </html>
