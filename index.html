@@ -1,0 +1,3845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Blue Diamond Mystery</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ background:#111827;
+ color:white;
+ font-family:Arial,sans-serif;
+ text-align:center;
+}
+
+button,input,select{
+ font:inherit;
+ border:none;
+ border-radius:10px;
+ padding:9px 11px;
+ margin:4px;
+}
+
+button{
+ background:#e6c45e;
+ cursor:pointer;
+}
+
+button:hover{filter:brightness(1.08)}
+
+.hidden{display:none!important}
+
+.panel{
+ max-width:760px;
+ margin:12px auto;
+ padding:18px;
+ background:#1f2b43;
+ border-radius:16px;
+}
+
+h1{margin-bottom:8px}
+
+.creatorRow{
+ display:flex;
+ justify-content:center;
+ gap:7px;
+ flex-wrap:wrap;
+ margin:10px 0;
+}
+
+.choice{
+ background:#34445f;
+ color:white;
+ border:2px solid transparent;
+}
+
+.choice.selected{
+ border-color:#ffd96b;
+ background:#536783;
+}
+
+.previewBox{
+ width:130px;
+ height:150px;
+ margin:12px auto;
+ background:#d7c6a6;
+ border:5px solid #b89452;
+ border-radius:14px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ position:relative;
+}
+
+#topbar{
+ display:none;
+ max-width:790px;
+ margin:8px auto;
+ padding:9px;
+ background:#1f2b43;
+ border-radius:12px;
+ justify-content:space-around;
+ gap:8px;
+ flex-wrap:wrap;
+}
+
+#eventBar{
+ max-width:790px;
+ margin:8px auto;
+ padding:8px;
+ background:#493b61;
+ border-radius:12px;
+ display:none;
+}
+
+#roomName{
+ font-size:23px;
+ font-weight:bold;
+ margin:10px;
+}
+
+#room{
+ display:none;
+ grid-template-columns:repeat(9,1fr);
+ gap:3px;
+ max-width:790px;
+ margin:auto;
+ padding:7px;
+ background:#725338;
+ border:5px solid #c6a45d;
+ border-radius:14px;
+}
+
+.tile{
+ height:58px;
+ background:#d8c5a4;
+ border-radius:5px;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ position:relative;
+ overflow:hidden;
+ font-size:26px;
+}
+
+.lobbyFloor{background:#dbc7a7}
+.ballFloor{background:#d4bd8e}
+.bedFloor{background:#cdbb9b}
+.suiteFloor{background:#dfcba8}
+.staffFloor{background:#b6b3a9}
+.gardenFloor{background:#8fb67d}
+.bathFloor{background:#c4d8dc}
+
+.door{
+ background:#795237;
+ border:2px solid #5c3b27;
+}
+
+#controls{
+ display:none;
+ margin:9px;
+}
+
+#message{
+ max-width:790px;
+ min-height:105px;
+ margin:10px auto;
+ padding:15px;
+ background:#1f2b43;
+ border-radius:14px;
+ line-height:1.5;
+}
+
+#choices{
+ max-width:790px;
+ margin:auto;
+}
+
+#choices button{
+ display:block;
+ width:94%;
+ margin:6px auto;
+}
+
+.talk{background:#7fc98d}
+.inspect{background:#76b9e7}
+.special{background:#eea56e}
+.listen{background:#d49ce5}
+
+.overlay{
+ display:none;
+ max-width:840px;
+ margin:12px auto;
+ padding:16px;
+ background:#f1e4bd;
+ color:#222;
+ border-radius:15px;
+ text-align:left;
+}
+
+.cards{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(185px,1fr));
+ gap:8px;
+}
+
+.card{
+ background:white;
+ padding:11px;
+ border-radius:10px;
+}
+
+.current{outline:3px solid #397ad1}
+
+.small{
+ font-size:12px;
+ opacity:.75;
+}
+
+.tabs{text-align:center}
+
+.tabs button{
+ background:#594630;
+ color:white;
+}
+
+/* HUMAN */
+
+.person{
+ width:44px;
+ height:53px;
+ position:relative;
+ transform-origin:bottom center;
+}
+
+.person.child{
+ transform:scale(.83);
+}
+
+.head{
+ position:absolute;
+ width:19px;
+ height:19px;
+ left:12px;
+ top:3px;
+ background:var(--skin);
+ border-radius:45%;
+ z-index:2;
+}
+
+.hair{
+ position:absolute;
+ width:21px;
+ height:10px;
+ left:11px;
+ top:1px;
+ background:var(--hair);
+ border-radius:12px 12px 4px 4px;
+ z-index:3;
+}
+
+.hair.long:after{
+ content:"";
+ position:absolute;
+ width:5px;
+ height:16px;
+ background:var(--hair);
+ top:5px;
+ right:0;
+ border-radius:4px;
+}
+
+.hair.ponytail:after{
+ content:"";
+ position:absolute;
+ width:8px;
+ height:14px;
+ background:var(--hair);
+ right:-5px;
+ top:4px;
+ border-radius:50%;
+}
+
+.hair.curly{
+ border-radius:50%;
+ box-shadow:
+ -4px 2px 0 var(--hair),
+ 4px 2px 0 var(--hair);
+}
+
+.eye{
+ position:absolute;
+ width:2px;
+ height:2px;
+ background:#222;
+ top:10px;
+ border-radius:50%;
+ z-index:4;
+}
+
+.eye.a{left:17px}
+.eye.b{left:24px}
+
+.mouth{
+ position:absolute;
+ width:6px;
+ height:2px;
+ border-bottom:1px solid #7d4438;
+ left:19px;
+ top:16px;
+ z-index:4;
+}
+
+.body{
+ position:absolute;
+ width:24px;
+ height:21px;
+ left:10px;
+ top:23px;
+ background:var(--shirt);
+ border-radius:7px 7px 3px 3px;
+}
+
+.jacket:after{
+ content:"";
+ position:absolute;
+ left:11px;
+ top:23px;
+ width:22px;
+ height:20px;
+ border-left:3px solid rgba(0,0,0,.18);
+ border-right:3px solid rgba(0,0,0,.18);
+ border-radius:5px;
+}
+
+.arm{
+ position:absolute;
+ width:5px;
+ height:17px;
+ top:25px;
+ background:var(--skin);
+ border-radius:4px;
+}
+
+.arm.a{left:6px;transform:rotate(6deg)}
+.arm.b{right:6px;transform:rotate(-6deg)}
+
+.leg{
+ position:absolute;
+ width:7px;
+ height:11px;
+ top:42px;
+ background:var(--pants);
+}
+
+.leg.a{left:11px}
+.leg.b{right:11px}
+
+.tag{
+ position:absolute;
+ bottom:-3px;
+ left:50%;
+ transform:translateX(-50%);
+ font-size:8px;
+ color:#222;
+ white-space:nowrap;
+ max-width:63px;
+ overflow:hidden;
+ text-overflow:ellipsis;
+}
+
+.playerPerson{
+ filter:drop-shadow(0 0 6px #126cff);
+}
+
+#scene{
+ display:none;
+ position:fixed;
+ inset:0;
+ background:rgba(8,12,22,.95);
+ z-index:50;
+ align-items:center;
+ justify-content:center;
+ padding:20px;
+}
+
+.sceneCard{
+ max-width:650px;
+ background:#1f2b43;
+ padding:25px;
+ border-radius:18px;
+ line-height:1.55;
+}
+
+.scenePeople{
+ font-size:40px;
+ margin:12px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="scene">
+ <div class="sceneCard">
+  <div id="sceneContent"></div>
+ </div>
+</div>
+
+<div id="app">
+
+<h1>💎 The Blue Diamond Mystery</h1>
+
+<div id="creator" class="panel">
+
+<h2>🎭 Create Your Character</h2>
+
+<input id="nameInput" placeholder="Your name">
+
+<h3>Are you a child or adult?</h3>
+
+<div class="creatorRow">
+ <button class="choice" id="ageChild" onclick="chooseAge('child')">🧒 Child</button>
+ <button class="choice" id="ageAdult" onclick="chooseAge('adult')">🧑 Adult</button>
+</div>
+
+<h3>Skin tone</h3>
+
+<div class="creatorRow">
+ <button onclick="chooseSkin('#f0c7a5')">🏻</button>
+ <button onclick="chooseSkin('#d9a27d')">🏼</button>
+ <button onclick="chooseSkin('#bd7f59')">🏽</button>
+ <button onclick="chooseSkin('#925d43')">🏾</button>
+ <button onclick="chooseSkin('#684330')">🏿</button>
+</div>
+
+<h3>Hair</h3>
+
+<div class="creatorRow">
+ <button onclick="chooseHair('short')">Short</button>
+ <button onclick="chooseHair('long')">Long</button>
+ <button onclick="chooseHair('curly')">Curly</button>
+ <button onclick="chooseHair('ponytail')">Ponytail</button>
+</div>
+
+<h3>Hair colour</h3>
+
+<div class="creatorRow">
+ <button onclick="chooseHairColour('#2b1c15')">Dark</button>
+ <button onclick="chooseHairColour('#6d482b')">Brown</button>
+ <button onclick="chooseHairColour('#c89d52')">Blonde</button>
+ <button onclick="chooseHairColour('#a54d36')">Auburn</button>
+ <button onclick="chooseHairColour('#111')">Black</button>
+</div>
+
+<h3>Outfit</h3>
+
+<div class="creatorRow">
+ <button onclick="chooseOutfit('hoodie','#4779b8','#34425b')">Blue Hoodie</button>
+ <button onclick="chooseOutfit('jumper','#a65072','#3c4052')">Pink Jumper</button>
+ <button onclick="chooseOutfit('smart','#436d57','#2f3842')">Smart Green</button>
+ <button onclick="chooseOutfit('jacket','#b06d3f','#303845')">Orange Jacket</button>
+ <button onclick="chooseOutfit('dark','#5e527d','#272c38')">Purple</button>
+</div>
+
+<h3>Why are you staying at Blackwood Grand?</h3>
+
+<select id="reason">
+ <option value="holiday">Family holiday</option>
+ <option value="birthday">Birthday trip</option>
+ <option value="family">Visiting family</option>
+ <option value="show">Seeing a show</option>
+ <option value="weekend">Special weekend away</option>
+</select>
+
+<h3>Your character</h3>
+
+<div class="previewBox">
+ <div id="preview"></div>
+</div>
+
+<button class="special" onclick="startGame()">🧳 Arrive at Blackwood Grand</button>
+
+</div>
+
+
+<div id="topbar">
+ <span id="dayText"></span>
+ <span id="timeText"></span>
+ <span id="floorText"></span>
+ <span id="goalText"></span>
+</div>
+
+<div id="eventBar"></div>
+
+<div id="roomName"></div>
+<div id="room"></div>
+
+<div id="controls">
+
+<button onclick="movePlayer(0,-1)">⬆️</button><br>
+
+<button onclick="movePlayer(-1,0)">⬅️</button>
+
+<button id="talkBtn" class="talk hidden" onclick="talk()">💬 Talk</button>
+
+<button id="inspectBtn" class="inspect hidden" onclick="inspectObject()">🔎 Inspect</button>
+
+<button onclick="movePlayer(1,0)">➡️</button><br>
+
+<button onclick="movePlayer(0,1)">⬇️</button>
+
+<br>
+
+<button onclick="openMap()">🗺️ Map</button>
+<button onclick="openNotebook()">📓 Notebook</button>
+
+<button id="eventBtn" class="special hidden" onclick="doEvent()">⭐ Event</button>
+
+<button id="bedBtn" class="special hidden" onclick="goToBed()">🌙 Go to bed</button>
+
+</div>
+
+<div id="choices"></div>
+
+<div id="message"></div>
+
+
+<div id="map" class="overlay">
+
+<h2>🗺️ Blackwood Grand</h2>
+
+<div class="tabs">
+ <button onclick="drawMap('ground')">Ground</button>
+ <button onclick="drawMap('first')">First</button>
+ <button onclick="drawMap('second')">Second</button>
+ <button onclick="drawMap('garden')">Garden</button>
+</div>
+
+<div id="mapCards" class="cards"></div>
+
+<div style="text-align:center">
+ <button onclick="closeMap()">Back</button>
+</div>
+
+</div>
+
+
+<div id="notebook" class="overlay">
+
+<h2>📓 Notebook</h2>
+
+<div class="tabs">
+ <button onclick="showNotes('people')">People</button>
+ <button onclick="showNotes('evidence')">Evidence</button>
+ <button onclick="showNotes('leads')">Leads</button>
+ <button onclick="showNotes('accuse')">Accuse</button>
+</div>
+
+<div id="noteCards"></div>
+
+<div style="text-align:center">
+ <button onclick="closeNotebook()">Back</button>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* =========================
+   CHARACTER
+========================= */
+
+const player={
+ name:"",
+ age:"",
+ reason:"holiday",
+
+ skin:"#d9a27d",
+ hair:"#3a281e",
+ hairStyle:"short",
+ shirt:"#4779b8",
+ pants:"#34425b",
+ outfit:"hoodie",
+
+ room:"Lobby",
+ x:4,
+ y:5
+};
+
+function chooseAge(age){
+ player.age=age;
+
+ document.getElementById("ageChild").classList.toggle("selected",age==="child");
+ document.getElementById("ageAdult").classList.toggle("selected",age==="adult");
+
+ drawPreview();
+}
+
+function chooseSkin(colour){
+ player.skin=colour;
+ drawPreview();
+}
+
+function chooseHair(style){
+ player.hairStyle=style;
+ drawPreview();
+}
+
+function chooseHairColour(colour){
+ player.hair=colour;
+ drawPreview();
+}
+
+function chooseOutfit(outfit,shirt,pants){
+ player.outfit=outfit;
+ player.shirt=shirt;
+ player.pants=pants;
+ drawPreview();
+}
+
+function humanHTML(name,p,isPlayer=false){
+
+ return `
+ <div class="person ${p.child?"child":""} ${isPlayer?"playerPerson":""}"
+ style="
+ --skin:${p.skin};
+ --hair:${p.hair};
+ --shirt:${p.shirt};
+ --pants:${p.pants};
+ ">
+   <div class="head"></div>
+   <div class="hair ${p.hairStyle||"short"}"></div>
+   <div class="eye a"></div>
+   <div class="eye b"></div>
+   <div class="mouth"></div>
+   <div class="body ${p.outfit==="jacket"?"jacket":""}"></div>
+   <div class="arm a"></div>
+   <div class="arm b"></div>
+   <div class="leg a"></div>
+   <div class="leg b"></div>
+   <div class="tag">${name}</div>
+ </div>
+ `;
+}
+
+function drawPreview(){
+
+ document.getElementById("preview").innerHTML=
+ humanHTML(
+  player.name||"You",
+  {
+   skin:player.skin,
+   hair:player.hair,
+   hairStyle:player.hairStyle,
+   shirt:player.shirt,
+   pants:player.pants,
+   outfit:player.outfit,
+   child:player.age==="child"
+  },
+  true
+ );
+}
+
+drawPreview();
+
+
+/* =========================
+   GAME STATE
+========================= */
+
+const W=9;
+const H=7;
+
+let day=1;
+let timeBlock=0;
+
+let theft=false;
+let grimbleHere=false;
+let gameOver=false;
+let paused=true;
+
+let nearbyPerson=null;
+let nearbyObject=null;
+
+let mayaFriend=false;
+let mayaFollowing=false;
+
+let parentWarnings=0;
+
+let evidence=[];
+let notes=[];
+let searched=[];
+let lastSeen={};
+
+let openingStage=0;
+
+const day1Blocks=[
+ "4:00 PM",
+ "4:30 PM",
+ "5:00 PM",
+ "5:30 PM",
+ "6:00 PM",
+ "6:30 PM",
+ "7:00 PM",
+ "7:30 PM",
+ "8:00 PM"
+];
+
+const normalBlocks=[
+ "8:00 AM",
+ "9:00 AM",
+ "10:00 AM",
+ "11:00 AM",
+ "12:00 PM",
+ "1:00 PM",
+ "2:00 PM",
+ "3:00 PM",
+ "4:00 PM",
+ "5:00 PM",
+ "6:00 PM",
+ "7:00 PM",
+ "8:00 PM"
+];
+
+
+/* =========================
+   HOTEL
+========================= */
+
+function bedroom(floor,to,sx,sy,objects){
+
+ return {
+  floor,
+  type:"bedroom",
+
+  doors:[
+   {x:8,y:3,to,sx,sy}
+  ],
+
+  objects:[
+   {
+    x:1,y:1,
+    icon:"🛏️",
+    name:"Bed",
+    pre:"A comfortable bed with soft pillows and a thick duvet."
+   },
+
+   {
+    x:3,y:1,
+    icon:"💡",
+    name:"Bedside table",
+    pre:"A lamp, a glass of water and a little hotel notepad."
+   },
+
+   {
+    x:6,y:1,
+    icon:"🪟",
+    name:"Window",
+    pre:"Heavy curtains frame the hotel grounds."
+   },
+
+   {
+    x:1,y:5,
+    icon:"🧳",
+    name:"Suitcase",
+    pre:"A suitcase sits on a luggage rack."
+   },
+
+   {
+    x:4,y:5,
+    icon:"🪑",
+    name:"Desk",
+    pre:"A wooden writing desk with several drawers."
+   },
+
+   {
+    x:6,y:5,
+    icon:"🚿",
+    name:"Bathroom",
+    pre:"A small private bathroom."
+   },
+
+   ...objects
+  ]
+ };
+}
+
+
+const rooms={
+
+"Lobby":{
+ floor:"ground",
+ type:"lobby",
+
+ doors:[
+  {x:4,y:0,to:"Ballroom",sx:4,sy:5},
+  {x:0,y:3,to:"Lounge",sx:7,sy:3},
+  {x:8,y:3,to:"Dining Room",sx:1,sy:3},
+  {x:4,y:6,to:"Grand Staircase",sx:4,sy:1}
+ ],
+
+ objects:[
+  {
+   x:1,y:1,
+   icon:"🛎️",
+   name:"Reception",
+   pre:"The reception desk is busy with ringing phones, room keys and arriving guests.",
+   post:"The master-key cabinet behind Reception isn't quite shut.",
+   clue:"Reception master-key cabinet was left open"
+  },
+
+  {
+   x:7,y:1,
+   icon:"🧳",
+   name:"Luggage trolley",
+   pre:"Suitcases are piled dangerously high. A porter keeps rescuing the top one."
+  },
+
+  {
+   x:2,y:5,
+   icon:"🪴",
+   name:"Hotel palm",
+   pre:"An enormous palm tree almost reaches the chandelier."
+  },
+
+  {
+   x:6,y:5,
+   icon:"🛋️",
+   name:"Velvet sofa",
+   pre:"Guests sit here drinking tea and watching everyone arrive."
+  }
+ ]
+},
+
+
+"Ballroom":{
+ floor:"ground",
+ type:"ballroom",
+
+ doors:[
+  {x:4,y:6,to:"Lobby",sx:4,sy:1}
+ ],
+
+ objects:[
+  {
+   x:1,y:2,
+   icon:"🎹",
+   name:"Grand piano",
+   pre:"Marco Bellini is preparing music for tonight's gala."
+  },
+
+  {
+   x:4,y:2,
+   icon:"💎",
+   name:"Diamond table",
+   pre:"The display table is ready for Lady Celestine's presentation.",
+   post:"The Blue Diamond is gone. The tiny silver chain has been cut cleanly.",
+   clue:"The diamond chain was cut cleanly"
+  },
+
+  {
+   x:7,y:2,
+   icon:"🌺",
+   name:"Flower display",
+   pre:"Hundreds of white flowers surround the stage."
+  }
+ ]
+},
+
+
+"Lounge":{
+ floor:"ground",
+ type:"normal",
+
+ doors:[
+  {x:8,y:3,to:"Lobby",sx:1,sy:3},
+  {x:4,y:6,to:"Garden",sx:4,sy:1}
+ ],
+
+ objects:[
+  {
+   x:2,y:1,
+   icon:"🔥",
+   name:"Fireplace",
+   pre:"A warm fire crackles beneath an old painting.",
+   post:"A broken brass hotel key tag is partly hidden underneath.",
+   clue:"Broken hotel key tag found near lounge fireplace"
+  },
+
+  {
+   x:5,y:2,
+   icon:"🛋️",
+   name:"Green sofa",
+   pre:"A huge green velvet sofa faces the fire."
+  },
+
+  {
+   x:2,y:5,
+   icon:"📚",
+   name:"Bookshelf",
+   pre:"Mysteries, travel books and some extremely boring hotel histories."
+  }
+ ]
+},
+
+
+"Dining Room":{
+ floor:"ground",
+ type:"normal",
+
+ doors:[
+  {x:0,y:3,to:"Lobby",sx:7,sy:3},
+  {x:8,y:3,to:"Kitchen",sx:1,sy:3}
+ ],
+
+ objects:[
+  {
+   x:3,y:2,
+   icon:"🍽️",
+   name:"Dinner table",
+   pre:"Waiters are setting out glasses and silver cutlery."
+  },
+
+  {
+   x:6,y:1,
+   icon:"🧾",
+   name:"Drinks receipt",
+   post:"A receipt was signed by Mr Harris shortly after the theft.",
+   clue:"Mr Harris signed a drinks receipt shortly after the theft"
+  }
+ ]
+},
+
+
+"Kitchen":{
+ floor:"ground",
+ type:"staff",
+
+ doors:[
+  {x:0,y:3,to:"Dining Room",sx:7,sy:3},
+  {x:8,y:3,to:"Staff Hall",sx:1,sy:3}
+ ],
+
+ objects:[
+  {
+   x:2,y:1,
+   icon:"🥖",
+   name:"Bread shelf",
+   pre:"Fresh rolls are cooling."
+  },
+
+  {
+   x:6,y:2,
+   icon:"🛍️",
+   name:"Blue velvet pouch",
+   post:"An empty blue velvet pouch is hidden behind folded kitchen cloths.",
+   clue:"Empty blue velvet pouch hidden in kitchen"
+  }
+ ]
+},
+
+
+"Staff Hall":{
+ floor:"ground",
+ type:"staff",
+
+ doors:[
+  {x:0,y:3,to:"Kitchen",sx:7,sy:3},
+  {x:8,y:2,to:"Hotel Office",sx:1,sy:3},
+  {x:8,y:5,to:"Garden",sx:1,sy:5},
+  {x:4,y:0,to:"Staff Staircase",sx:4,sy:5}
+ ],
+
+ objects:[
+  {
+   x:2,y:2,
+   icon:"🧥",
+   name:"Uniform hooks",
+   pre:"Dark-teal hotel uniforms hang along the wall."
+  },
+
+  {
+   x:5,y:3,
+   icon:"🔐",
+   name:"Electronic key log",
+   post:"The log shows Mrs Bell's master key opened Room 13 after the theft.",
+   clue:"Mrs Bell master key opened Room 13 after the theft"
+  }
+ ]
+},
+
+
+"Hotel Office":{
+ floor:"ground",
+ type:"staff",
+
+ doors:[
+  {x:0,y:3,to:"Staff Hall",sx:7,sy:2}
+ ],
+
+ objects:[
+  {
+   x:2,y:1,
+   icon:"🗄️",
+   name:"Filing cabinet",
+   post:"Mostly staff rotas and invoices."
+  },
+
+  {
+   x:5,y:1,
+   icon:"🗑️",
+   name:"Shred bin",
+   post:"A torn note mentions HARRIS and the STAFF STAIRS.",
+   clue:"Shredded note links Harris to staff stairs"
+  },
+
+  {
+   x:4,y:5,
+   icon:"🖥️",
+   name:"Security computer",
+   post:"The staff-stair camera stopped recording during the theft.",
+   clue:"Staff-stair camera was disabled during theft"
+  }
+ ]
+},
+
+
+"Grand Staircase":{
+ floor:"ground",
+ type:"normal",
+
+ doors:[
+  {x:4,y:0,to:"First Floor Landing",sx:4,sy:5},
+  {x:4,y:6,to:"Lobby",sx:4,sy:5}
+ ],
+
+ objects:[
+  {
+   x:4,y:3,
+   icon:"🪜",
+   name:"Grand staircase",
+   pre:"The staircase curves upward beneath an enormous chandelier."
+  }
+ ]
+},
+
+
+"First Floor Landing":{
+ floor:"first",
+ type:"normal",
+
+ doors:[
+  {x:4,y:6,to:"Grand Staircase",sx:4,sy:1},
+  {x:4,y:0,to:"Second Floor Landing",sx:4,sy:5},
+
+  {x:0,y:1,to:"Your Room",sx:7,sy:3},
+  {x:0,y:3,to:"Maya's Room",sx:7,sy:3},
+  {x:0,y:5,to:"Mrs Bell's Room",sx:7,sy:3},
+
+  {x:8,y:1,to:"Clara's Room",sx:1,sy:3},
+  {x:8,y:3,to:"Sebastian's Room",sx:1,sy:3},
+  {x:8,y:5,to:"Marco's Room",sx:1,sy:3}
+ ],
+
+ objects:[
+  {
+   x:4,y:3,
+   icon:"🛋️",
+   name:"Landing seat",
+   pre:"A little sofa sits beneath a landscape painting."
+  }
+ ]
+},
+
+
+"Your Room":bedroom(
+ "first",
+ "First Floor Landing",
+ 1,1,
+ [
+  {
+   x:7,y:1,
+   icon:"🧸",
+   name:"Your things",
+   pre:"Your belongings make the room feel more like home."
+  }
+ ]
+),
+
+
+"Maya's Room":bedroom(
+ "first",
+ "First Floor Landing",
+ 1,3,
+ [
+  {
+   x:7,y:1,
+   icon:"🧸",
+   name:"Toy shelf",
+   pre:"Books, toys, pencils, shells, stickers and an impressive amount of glitter."
+  },
+
+  {
+   x:2,y:3,
+   icon:"🗺️",
+   name:"Maya's hotel map",
+   pre:"Maya has drawn SECRET next to several corridors.",
+   post:"The map shows the staff staircase and the garden entrance.",
+   clue:"Maya map shows staff staircase and garden entrance"
+  }
+ ]
+),
+
+
+"Mrs Bell's Room":bedroom(
+ "first",
+ "First Floor Landing",
+ 1,5,
+ [
+  {
+   x:7,y:1,
+   icon:"🧥",
+   name:"Wardrobe",
+   pre:"Mrs Bell's hotel uniforms hang perfectly straight.",
+   post:"A dark-teal uniform jacket has a fresh tear in one sleeve.",
+   clue:"Mrs Bell dark-teal jacket has freshly torn sleeve"
+  },
+
+  {
+   x:2,y:3,
+   icon:"🔑",
+   name:"Bedside drawer",
+   post:"An envelope labelled SPARE MASTER KEY is empty.",
+   clue:"Mrs Bell spare master-key envelope is empty"
+  }
+ ]
+),
+
+
+"Clara's Room":bedroom(
+ "first",
+ "First Floor Landing",
+ 7,1,
+ [
+  {
+   x:7,y:1,
+   icon:"👗",
+   name:"Costume rail",
+   pre:"Colourful stage costumes fill one side of the room."
+  }
+ ]
+),
+
+
+"Sebastian's Room":bedroom(
+ "first",
+ "First Floor Landing",
+ 7,3,
+ [
+  {
+   x:7,y:1,
+   icon:"✉️",
+   name:"Letters",
+   post:"Several letters show Sebastian owes a great deal of money.",
+   clue:"Sebastian has serious debts"
+  },
+
+  {
+   x:2,y:3,
+   icon:"♟️",
+   name:"Chess set",
+   pre:"A half-finished chess game sits by the window."
+  }
+ ]
+),
+
+
+"Marco's Room":bedroom(
+ "first",
+ "First Floor Landing",
+ 7,5,
+ [
+  {
+   x:7,y:1,
+   icon:"🎼",
+   name:"Music case",
+   pre:"Scores, pencils and tuning equipment."
+  },
+
+  {
+   x:2,y:3,
+   icon:"📱",
+   name:"Phone",
+   post:"Marco's call history supports his story.",
+   clue:"Marco phone supports his alibi"
+  }
+ ]
+),
+
+
+"Second Floor Landing":{
+ floor:"second",
+ type:"normal",
+
+ doors:[
+  {x:4,y:6,to:"First Floor Landing",sx:4,sy:1},
+  {x:4,y:0,to:"Room 13",sx:1,sy:3},
+
+  {x:0,y:1,to:"Lady Celestine's Suite",sx:7,sy:3},
+  {x:0,y:4,to:"Felix's Room",sx:7,sy:3},
+
+  {x:8,y:1,to:"Amelia's Room",sx:1,sy:3},
+  {x:8,y:4,to:"Mr Harris's Room",sx:1,sy:3}
+ ],
+
+ objects:[
+  {
+   x:4,y:3,
+   icon:"🖼️",
+   name:"Founder portrait",
+   pre:"The founder of Blackwood Grand looks deeply disappointed in everyone."
+  }
+ ]
+},
+
+
+"Lady Celestine's Suite":{
+ floor:"second",
+ type:"suite",
+
+ doors:[
+  {x:8,y:3,to:"Second Floor Landing",sx:1,sy:1},
+  {x:4,y:6,to:"Celestine Bathroom",sx:4,sy:1}
+ ],
+
+ objects:[
+  {
+   x:1,y:1,
+   icon:"🛏️",
+   name:"Four-poster bed",
+   pre:"A huge four-poster bed covered in cream cushions."
+  },
+
+  {
+   x:3,y:1,
+   icon:"🔥",
+   name:"Marble fireplace",
+   pre:"Two armchairs face a beautiful marble fireplace."
+  },
+
+  {
+   x:6,y:1,
+   icon:"💍",
+   name:"Jewellery cabinet",
+   post:"Other valuable jewellery remains untouched.",
+   clue:"Thief ignored Lady Celestine other jewellery"
+  },
+
+  {
+   x:1,y:5,
+   icon:"🧳",
+   name:"Travel trunks",
+   pre:"Leather trunks with polished brass corners."
+  },
+
+  {
+   x:6,y:5,
+   icon:"🪞",
+   name:"Dressing table",
+   post:"A note confirms Amelia checked the diamond clasp before the gala.",
+   clue:"Amelia checked diamond clasp before gala"
+  }
+ ]
+},
+
+
+"Celestine Bathroom":{
+ floor:"second",
+ type:"bath",
+
+ doors:[
+  {x:4,y:0,to:"Lady Celestine's Suite",sx:4,sy:5}
+ ],
+
+ objects:[
+  {
+   x:2,y:2,
+   icon:"🛁",
+   name:"Claw-foot bath",
+   pre:"This bath is practically the size of your bedroom."
+  },
+
+  {
+   x:6,y:2,
+   icon:"🧴",
+   name:"Bathroom cabinet",
+   pre:"Perfume, soaps and expensive creams."
+  }
+ ]
+},
+
+
+"Felix's Room":bedroom(
+ "second",
+ "Second Floor Landing",
+ 1,4,
+ [
+  {
+   x:7,y:1,
+   icon:"📷",
+   name:"Camera bag",
+   post:"A photograph shows a dark-teal sleeve near the staff route.",
+   clue:"Felix photograph shows dark-teal sleeve near staff route"
+  },
+
+  {
+   x:2,y:3,
+   icon:"💻",
+   name:"Laptop",
+   pre:"Hundreds of photographs fill the screen."
+  }
+ ]
+),
+
+
+"Amelia's Room":bedroom(
+ "second",
+ "Second Floor Landing",
+ 7,1,
+ [
+  {
+   x:7,y:1,
+   icon:"🛠️",
+   name:"Jewellery tools",
+   post:"Amelia owns cutters capable of cutting a fine silver chain.",
+   clue:"Amelia owns cutters capable of cutting diamond chain"
+  },
+
+  {
+   x:2,y:3,
+   icon:"📖",
+   name:"Jewellery book",
+   pre:"Detailed diagrams of antique jewellery."
+  }
+ ]
+),
+
+
+"Mr Harris's Room":bedroom(
+ "second",
+ "Second Floor Landing",
+ 7,4,
+ [
+  {
+   x:7,y:1,
+   icon:"👞",
+   name:"Shoes",
+   post:"Grey dust is packed into the soles.",
+   clue:"Harris shoes contain dust from staff staircase"
+  },
+
+  {
+   x:2,y:3,
+   icon:"🧺",
+   name:"Laundry bag",
+   post:"A blue velvet fibre is caught in the fabric.",
+   clue:"Blue velvet fibre found in Harris room"
+  }
+ ]
+),
+
+
+"Room 13":{
+ floor:"second",
+ type:"bedroom",
+
+ doors:[
+  {x:0,y:3,to:"Second Floor Landing",sx:4,sy:1}
+ ],
+
+ objects:[
+  {
+   x:3,y:2,
+   icon:"📦",
+   name:"Storage box",
+   post:"Inside are a torn white glove and a blue velvet fibre.",
+   clue:"Room 13 contains torn glove and blue velvet fibre"
+  },
+
+  {
+   x:6,y:2,
+   icon:"🪑",
+   name:"Covered furniture",
+   pre:"Old hotel furniture sits beneath dusty sheets."
+  }
+ ]
+},
+
+
+"Staff Staircase":{
+ floor:"second",
+ type:"staff",
+
+ doors:[
+  {x:4,y:6,to:"Staff Hall",sx:4,sy:1},
+  {x:4,y:0,to:"Second Floor Landing",sx:4,sy:5}
+ ],
+
+ objects:[
+  {
+   x:2,y:3,
+   icon:"👣",
+   name:"Dusty steps",
+   post:"Fresh footprints disturb the grey dust.",
+   clue:"Fresh footprints used staff staircase"
+  }
+ ]
+},
+
+
+"Garden":{
+ floor:"garden",
+ type:"garden",
+
+ doors:[
+  {x:4,y:0,to:"Lounge",sx:4,sy:5},
+  {x:0,y:5,to:"Staff Hall",sx:7,sy:5}
+ ],
+
+ objects:[
+  {
+   x:4,y:3,
+   icon:"⛲",
+   name:"Fountain",
+   pre:"Water sparkles in the centre of the garden.",
+   post:"A damp footprint points toward the staff entrance.",
+   clue:"Damp footprint leads toward staff entrance"
+  },
+
+  {
+   x:1,y:1,
+   icon:"🌳",
+   name:"Hedge",
+   post:"A blue velvet thread is caught on a branch.",
+   clue:"Blue velvet thread caught in garden hedge"
+  },
+
+  {
+   x:7,y:1,
+   icon:"🌹",
+   name:"Rose garden",
+   pre:"The roses smell wonderful."
+  },
+
+  {
+   x:7,y:5,
+   icon:"🪑",
+   name:"Bench",
+   pre:"A peaceful bench underneath a tree."
+  }
+ ]
+}
+
+};
+
+
+/* =========================
+   PEOPLE
+========================= */
+
+const people={
+
+"Maya Bell":{
+ child:true,
+ skin:"#bd7f59",
+ hair:"#35231b",
+ hairStyle:"ponytail",
+ shirt:"#e59656",
+ pants:"#526780",
+ room:"Lobby",
+ x:3,y:3
+},
+
+"Mrs Bell":{
+ skin:"#bd7f59",
+ hair:"#35231b",
+ hairStyle:"short",
+ shirt:"#356b70",
+ pants:"#303940",
+ room:"Lobby",
+ x:1,y:2
+},
+
+"Lady Celestine":{
+ skin:"#f0c7a5",
+ hair:"#d2c6b5",
+ hairStyle:"long",
+ shirt:"#89588f",
+ pants:"#59445d",
+ room:"Lobby",
+ x:6,y:2
+},
+
+"Sebastian":{
+ skin:"#d9a27d",
+ hair:"#5a3d2c",
+ hairStyle:"short",
+ shirt:"#65517d",
+ pants:"#303744",
+ room:"Lounge",
+ x:4,y:3
+},
+
+"Clara Vale":{
+ skin:"#d9a27d",
+ hair:"#793239",
+ hairStyle:"long",
+ shirt:"#a94c69",
+ pants:"#493946",
+ room:"Lobby",
+ x:7,y:4
+},
+
+"Marco Bellini":{
+ skin:"#bd7f59",
+ hair:"#241a16",
+ hairStyle:"curly",
+ shirt:"#3e6c89",
+ pants:"#29333e",
+ room:"Ballroom",
+ x:2,y:3
+},
+
+"Mr Harris":{
+ skin:"#925d43",
+ hair:"#29201c",
+ hairStyle:"short",
+ shirt:"#735f41",
+ pants:"#313638",
+ room:"Dining Room",
+ x:4,y:3
+},
+
+"Felix Crane":{
+ skin:"#d9a27d",
+ hair:"#92734b",
+ hairStyle:"short",
+ shirt:"#49776e",
+ pants:"#343d46",
+ room:"Lobby",
+ x:5,y:4
+},
+
+"Amelia Frost":{
+ skin:"#f0c7a5",
+ hair:"#c9a65d",
+ hairStyle:"long",
+ shirt:"#6878aa",
+ pants:"#353b4b",
+ room:"Lobby",
+ x:6,y:4
+},
+
+"Detective Grimble":{
+ skin:"#d9a27d",
+ hair:"#555",
+ hairStyle:"short",
+ shirt:"#6b533e",
+ pants:"#302c29",
+ room:"Lobby",
+ x:4,y:3,
+ hidden:true
+},
+
+"Porter Sam":{
+ skin:"#684330",
+ hair:"#181818",
+ hairStyle:"short",
+ shirt:"#8b3030",
+ pants:"#252a30",
+ room:"Lobby",
+ x:7,y:2,
+ background:true
+},
+
+"Mrs Puddle":{
+ skin:"#f0c7a5",
+ hair:"#aaa",
+ hairStyle:"curly",
+ shirt:"#80668e",
+ pants:"#4b4652",
+ room:"Lobby",
+ x:2,y:4,
+ background:true
+},
+
+"Tommy":{
+ child:true,
+ skin:"#d9a27d",
+ hair:"#7b552e",
+ hairStyle:"short",
+ shirt:"#58a05d",
+ pants:"#42556c",
+ room:"Lobby",
+ x:1,y:5,
+ background:true
+}
+
+};
+
+
+/* =========================
+   START
+========================= */
+
+function startGame(){
+
+ const name=document.getElementById("nameInput").value.trim();
+
+ if(!name){
+  alert("Give your character a name!");
+  return;
+ }
+
+ if(!player.age){
+  alert("Choose child or adult!");
+  return;
+ }
+
+ player.name=name;
+ player.reason=document.getElementById("reason").value;
+
+ document.getElementById("creator").classList.add("hidden");
+ document.getElementById("topbar").style.display="flex";
+ document.getElementById("eventBar").style.display="block";
+ document.getElementById("room").style.display="grid";
+ document.getElementById("controls").style.display="block";
+
+ paused=false;
+
+ openingArrival();
+}
+
+
+function reasonText(){
+
+ const reasons={
+  holiday:"a family holiday",
+  birthday:"a birthday trip",
+  family:"visiting family",
+  show:"seeing a show",
+  weekend:"a special weekend away"
+ };
+
+ return reasons[player.reason];
+}
+
+
+/* =========================
+   ARRIVAL SCENE
+========================= */
+
+function openingArrival(){
+
+ showScene(`
+ <h2>🏨 BLACKWOOD GRAND HOTEL</h2>
+
+ <div class="scenePeople">🚕 🏨 🧳</div>
+
+ <p>
+ The taxi pulls beneath a huge glass canopy.
+ </p>
+
+ <p>
+ Porters weave between suitcases.
+ A revolving door spins.
+ Somewhere inside, a piano is playing.
+ </p>
+
+ <p>
+ You're here for <b>${reasonText()}</b>.
+ </p>
+
+ <button onclick="arrivalPart2()">Enter the hotel</button>
+ `);
+}
+
+
+function arrivalPart2(){
+
+ showScene(`
+ <h2>✨ The Lobby</h2>
+
+ <p>
+ The moment you enter, Blackwood Grand feels alive.
+ </p>
+
+ <p>
+ A porter nearly loses a mountain of suitcases.
+ Someone rings the reception bell.
+ Two guests argue about afternoon tea.
+ </p>
+
+ <p>
+ Then a girl races across the marble floor.
+ </p>
+
+ <p>
+ <b>Mrs Bell:</b> “MAYA! No running through Reception!”
+ </p>
+
+ <p>
+ <b>Maya:</b> “I wasn't running!”
+ </p>
+
+ <p>
+ <b>Mrs Bell:</b> “You absolutely were.”
+ </p>
+
+ <p>
+ <b>Maya:</b> “...fast walking?”
+ </p>
+
+ <button onclick="arrivalPart3()">Continue 😂</button>
+ `);
+}
+
+
+function arrivalPart3(){
+
+ showScene(`
+ <h2>💎 Someone important arrives...</h2>
+
+ <p>
+ The revolving door opens again.
+ </p>
+
+ <p>
+ Lady Celestine Ashbourne enters with Amelia Frost.
+ </p>
+
+ <p>
+ A brilliant blue stone sparkles from a silver clutch
+ in Lady Celestine's hand.
+ </p>
+
+ <p>
+ Conversations around the Lobby suddenly become quieter.
+ </p>
+
+ <p>
+ Felix Crane raises his camera.
+ </p>
+
+ <p>
+ <b>Felix:</b> “Lady Celestine! One photograph?”
+ </p>
+
+ <p>
+ <b>Lady Celestine:</b> “One.”
+ </p>
+
+ <p>
+ FLASH! 📸
+ </p>
+
+ <button onclick="finishArrival()">Start exploring</button>
+ `);
+}
+
+
+function finishArrival(){
+
+ closeScene();
+
+ message(`
+ <b>Welcome to Blackwood Grand, ${player.name}.</b>
+
+ <br><br>
+
+ People are already talking, moving and getting ready for tonight's gala.
+
+ <br><br>
+
+ Walk up beside somebody and press <b>Talk</b>.
+
+ <br><br>
+
+ ⭐ <b>Current goal:</b> Explore the hotel and meet people.
+ `);
+
+ addNote("Lady Celestine arrived carrying the Blue Diamond on a silver clutch.");
+
+ draw();
+}
+
+
+/* =========================
+   DRAWING
+========================= */
+
+function draw(){
+
+ if(gameOver)return;
+
+ const room=rooms[player.room];
+ const board=document.getElementById("room");
+
+ board.innerHTML="";
+
+ document.getElementById("roomName").textContent=player.room;
+ document.getElementById("dayText").textContent="Day "+day;
+ document.getElementById("timeText").textContent=currentTime();
+ document.getElementById("floorText").textContent=floorName(room.floor);
+
+ document.getElementById("goalText").textContent=
+ theft
+ ? "💎 Solve the mystery"
+ : "⭐ Gala tonight";
+
+ for(let y=0;y<H;y++){
+
+  for(let x=0;x<W;x++){
+
+   const tile=document.createElement("div");
+   tile.className="tile";
+
+   if(room.type==="lobby")tile.classList.add("lobbyFloor");
+   else if(room.type==="ballroom")tile.classList.add("ballFloor");
+   else if(room.type==="bedroom")tile.classList.add("bedFloor");
+   else if(room.type==="suite")tile.classList.add("suiteFloor");
+   else if(room.type==="staff")tile.classList.add("staffFloor");
+   else if(room.type==="garden")tile.classList.add("gardenFloor");
+   else if(room.type==="bath")tile.classList.add("bathFloor");
+
+   const object=room.objects.find(o=>o.x===x&&o.y===y);
+   const door=room.doors.find(d=>d.x===x&&d.y===y);
+
+   const npc=Object.entries(people).find(([name,p])=>
+    !p.hidden &&
+    p.room===player.room &&
+    p.x===x &&
+    p.y===y
+   );
+
+   if(player.x===x&&player.y===y){
+
+    tile.innerHTML=humanHTML(
+     player.name,
+     {
+      skin:player.skin,
+      hair:player.hair,
+      hairStyle:player.hairStyle,
+      shirt:player.shirt,
+      pants:player.pants,
+      outfit:player.outfit,
+      child:player.age==="child"
+     },
+     true
+    );
+
+   }else if(npc){
+
+    tile.innerHTML=humanHTML(npc[0],npc[1]);
+
+   }else if(object){
+
+    tile.textContent=object.icon;
+
+   }else if(door){
+
+    tile.textContent=
+    door.to.includes("Stair") ||
+    door.to.includes("Landing")
+    ? "🪜"
+    : "🚪";
+
+    tile.classList.add("door");
+   }
+
+   board.appendChild(tile);
+  }
+ }
+
+ checkNearby();
+ updateEventBar();
+}
+
+
+/* =========================
+   MOVEMENT
+========================= */
+
+function blocked(room,x,y){
+
+ if(room.objects.some(o=>o.x===x&&o.y===y)){
+  return true;
+ }
+
+ if(Object.values(people).some(p=>
+  !p.hidden &&
+  p.room===player.room &&
+  p.x===x &&
+  p.y===y
+ )){
+  return true;
+ }
+
+ return false;
+}
+
+
+function movePlayer(dx,dy){
+
+ if(paused||gameOver)return;
+
+ clearChoices();
+
+ const nx=player.x+dx;
+ const ny=player.y+dy;
+
+ if(nx<0||nx>=W||ny<0||ny>=H)return;
+
+ const room=rooms[player.room];
+
+ const door=room.doors.find(d=>d.x===nx&&d.y===ny);
+
+ if(door){
+
+  const destination=rooms[door.to];
+
+  if(player.age==="child" && destination.type==="staff"){
+
+   parentWarnings++;
+
+   if(parentWarnings===1){
+
+    message(`
+    😬 You hear your parent behind you.
+
+    <br><br>
+
+    “${player.name}! That's staff only.”
+
+    <br><br>
+
+    You get away with a warning.
+    `);
+
+   }else if(parentWarnings===2){
+
+    message(`
+    😠 “${player.name}! We talked about this!”
+
+    <br><br>
+
+    Your parent is definitely keeping a closer eye on you now.
+    `);
+
+   }else{
+
+    message(`
+    😱 BUSTED.
+
+    <br><br>
+
+    Your parent catches you sneaking into another staff area.
+
+    <br><br>
+
+    You're marched back to your room.
+    `);
+
+    sendHome();
+    advanceBlock();
+    draw();
+    return;
+   }
+  }
+
+  player.room=door.to;
+  player.x=door.sx;
+  player.y=door.sy;
+
+  if(mayaFollowing){
+   bringMaya();
+  }
+
+  draw();
+  return;
+ }
+
+ if(blocked(room,nx,ny))return;
+
+ player.x=nx;
+ player.y=ny;
+
+ draw();
+}
+
+
+/* =========================
+   TIME / EVENTS
+========================= */
+
+function currentTime(){
+
+ const blocks=day===1?day1Blocks:normalBlocks;
+
+ return blocks[Math.min(timeBlock,blocks.length-1)];
+}
+
+
+function advanceBlock(){
+
+ timeBlock++;
+
+ const blocks=day===1?day1Blocks:normalBlocks;
+
+ if(timeBlock>=blocks.length){
+  timeBlock=blocks.length-1;
+ }
+
+ runScheduledEvent();
+}
+
+
+function runScheduledEvent(){
+
+ if(day===1){
+
+  if(timeBlock===1){
+
+   backgroundMessage(`
+   🫖 Afternoon tea begins in the Lounge.
+
+   Guests start drifting that way.
+   `);
+
+   people["Lady Celestine"].room="Lounge";
+   people["Lady Celestine"].x=5;
+   people["Lady Celestine"].y=4;
+
+   people["Clara Vale"].room="Lounge";
+   people["Clara Vale"].x=3;
+   people["Clara Vale"].y=4;
+  }
+
+  if(timeBlock===2){
+
+   backgroundMessage(`
+   🎹 Marco begins rehearsing in the Ballroom.
+
+   Music can be heard through the Lobby.
+   `);
+  }
+
+  if(timeBlock===3){
+
+   backgroundMessage(`
+   🍽️ A waiter announces that dinner will begin soon.
+
+   Mr Harris hurries through carrying a tray.
+   `);
+
+   people["Mr Harris"].room="Lobby";
+   people["Mr Harris"].x=6;
+   people["Mr Harris"].y=3;
+  }
+
+  if(timeBlock===4){
+
+   backgroundMessage(`
+   👗 Guests begin changing for dinner.
+
+   Maya appears beside you.
+
+   “Everyone suddenly gets very fancy at six o'clock.”
+   `);
+  }
+
+  if(timeBlock===5){
+
+   backgroundMessage(`
+   🍽️ Dinner is underway.
+
+   You hear glasses clinking in the Dining Room.
+   `);
+  }
+
+  if(timeBlock===6){
+
+   backgroundMessage(`
+   🔔 DING-DONG!
+
+   “The Blue Diamond Gala begins in thirty minutes.”
+
+   Guests start heading toward the Ballroom.
+   `);
+  }
+
+  if(timeBlock>=7 && !theft){
+
+   document.getElementById("eventBtn").classList.remove("hidden");
+   document.getElementById("eventBtn").textContent="💎 Attend Diamond Presentation";
+  }
+ }
+}
+
+
+function updateEventBar(){
+
+ const bar=document.getElementById("eventBar");
+
+ if(day===1&&!theft){
+
+  if(timeBlock<2){
+   bar.innerHTML="☕ Afternoon: explore, chat, and look around.";
+  }else if(timeBlock<5){
+   bar.innerHTML="🏨 The hotel is getting ready for dinner and the gala.";
+  }else{
+   bar.innerHTML="💎 Tonight: Lady Celestine will present the Blue Diamond.";
+  }
+
+ }else if(theft){
+
+  bar.innerHTML=
+  `🔎 Investigation Day ${day} — Grimble will make his final accusation on Day 3.`;
+ }
+}
+
+
+/* =========================
+   EVENT BUTTON
+========================= */
+
+function doEvent(){
+
+ if(day===1&&!theft&&timeBlock>=7){
+
+  if(player.room!=="Ballroom"){
+
+   message(`
+   💎 The presentation is happening in the <b>Ballroom</b>.
+
+   <br><br>
+
+   Head there first!
+   `);
+
+   return;
+  }
+
+  diamondPresentation();
+ }
+}
+
+
+function diamondPresentation(){
+
+ paused=true;
+
+ showScene(`
+ <h2>💎 THE BLUE DIAMOND</h2>
+
+ <p>
+ The Ballroom is packed.
+ </p>
+
+ <p>
+ Marco stops playing.
+ Felix raises his camera.
+ Maya squeezes between two adults to get a better view.
+ </p>
+
+ <p>
+ Lady Celestine lifts her silver clutch.
+ </p>
+
+ <p>
+ The Blue Ashbourne Diamond catches the chandelier light.
+ </p>
+
+ <p>
+ <b>Lady Celestine:</b>
+ “This diamond has belonged to my family for more than a century.”
+ </p>
+
+ <button onclick="presentation2()">Continue</button>
+ `);
+}
+
+
+function presentation2(){
+
+ showScene(`
+ <h2>💡 CLICK.</h2>
+
+ <p>
+ The lights go out.
+ </p>
+
+ <p>
+ Someone bumps into a chair.
+ </p>
+
+ <p>
+ A glass smashes.
+ </p>
+
+ <p>
+ You hear quick footsteps.
+ </p>
+
+ <p>
+ Then—
+ </p>
+
+ <p>
+ <b>Lady Celestine:</b> “MY DIAMOND!”
+ </p>
+
+ <button onclick="startMystery()">LIGHTS ON</button>
+ `);
+}
+
+
+function startMystery(){
+
+ theft=true;
+ timeBlock=8;
+
+ closeScene();
+
+ document.getElementById("eventBtn").classList.add("hidden");
+
+ addNote("The Ballroom lights went out during the diamond presentation.");
+ addNote("Quick footsteps were heard during the blackout.");
+
+ message(`
+ 🚨 <b>THE BLUE DIAMOND HAS VANISHED.</b>
+
+ <br><br>
+
+ Lady Celestine offers <b>£1,000</b> to whoever finds it.
+
+ <br><br>
+
+ Everyone in the hotel is now a possible suspect.
+
+ <br><br>
+
+ You have three hotel days to solve the mystery.
+
+ <br><br>
+
+ 🔎 Start by talking to people and inspecting the Ballroom.
+ `);
+
+ setTimeout(()=>{
+  detectiveArrival();
+ },1500);
+
+ draw();
+}
+
+
+/* =========================
+   DETECTIVE
+========================= */
+
+function detectiveArrival(){
+
+ grimbleHere=true;
+
+ people["Detective Grimble"].hidden=false;
+ people["Detective Grimble"].room="Lobby";
+ people["Detective Grimble"].x=4;
+ people["Detective Grimble"].y=3;
+
+ backgroundMessage(`
+ 🚔 Detective Grimble has arrived.
+
+ His first theory took approximately eleven seconds.
+
+ He suspects Sebastian because Sebastian “looks financially worried.”
+
+ This may not go well. 😂
+ `);
+}
+
+
+/* =========================
+   TALKING
+========================= */
+
+function checkNearby(){
+
+ nearbyPerson=null;
+ nearbyObject=null;
+
+ Object.entries(people).forEach(([name,p])=>{
+
+  if(p.hidden||p.room!==player.room)return;
+
+  const d=Math.abs(player.x-p.x)+Math.abs(player.y-p.y);
+
+  if(d===1)nearbyPerson=name;
+ });
+
+ rooms[player.room].objects.forEach(o=>{
+
+  const d=Math.abs(player.x-o.x)+Math.abs(player.y-o.y);
+
+  if(d===1)nearbyObject=o;
+ });
+
+ const talk=document.getElementById("talkBtn");
+ const inspect=document.getElementById("inspectBtn");
+
+ talk.classList.toggle("hidden",!nearbyPerson);
+ inspect.classList.toggle("hidden",!nearbyObject);
+
+ if(nearbyPerson)talk.textContent="💬 "+nearbyPerson;
+ if(nearbyObject)inspect.textContent="🔎 "+nearbyObject.name;
+}
+
+
+function talk(){
+
+ if(!nearbyPerson)return;
+
+ paused=true;
+
+ const name=nearbyPerson;
+
+ lastSeen[name]=player.room;
+
+ if(name==="Maya Bell"){
+  mayaTalk();
+  return;
+ }
+
+ if(people[name].background){
+  backgroundPersonTalk(name);
+  return;
+ }
+
+ const options=[
+  ["👋 Say hello",()=>normalChat(name)]
+ ];
+
+ if(!theft){
+
+  options.push(
+   ["🏨 Why are you at the hotel?",()=>whyHere(name)],
+   ["💎 Ask about Lady Celestine",()=>askCelestine(name)]
+  );
+
+ }else{
+
+  options.push(
+   ["💎 Ask about the theft",()=>theftChat(name)],
+   ["🕗 Where were you?",()=>alibi(name)]
+  );
+
+  if(evidence.length>=2){
+   options.push(["🔎 Ask about evidence",()=>evidenceChat(name)]);
+  }
+ }
+
+ if(name==="Detective Grimble"){
+  options.push(["🕵️ What's your theory?",grimbleTheory]);
+ }
+
+ showChoices(options);
+}
+
+
+/* =========================
+   MAYA
+========================= */
+
+function mayaTalk(){
+
+ const options=[];
+
+ options.push([
+  "👋 Hi!",
+  ()=>{
+
+   if(!mayaFriend){
+
+    message(`
+    Maya grins.
+
+    <br><br>
+
+    “Hi! I'm Maya. I live here.”
+
+    <br><br>
+
+    You: “In the hotel?”
+
+    <br><br>
+
+    “Yep. Mum works here.”
+
+    <br><br>
+
+    She leans closer.
+
+    <br><br>
+
+    “I know basically EVERYTHING about this place.”
+
+    <br><br>
+
+    She thinks.
+
+    <br><br>
+
+    “Except what's inside the locked freezer in the kitchen.”
+
+    <br><br>
+
+    “I'm working on that.”
+    `);
+
+   }else{
+
+    message(`
+    Maya: “Hello, detective partner.”
+
+    <br><br>
+
+    “Anything suspicious?”
+
+    <br><br>
+
+    She looks around dramatically.
+
+    <br><br>
+
+    “Besides Detective Grimble.”
+    `);
+   }
+
+   finishTalk();
+  }
+ ]);
+
+
+ options.push([
+  "🏨 What's it like living here?",
+  ()=>{
+
+   message(`
+   Maya:
+
+   <br><br>
+
+   “Mostly brilliant.”
+
+   <br><br>
+
+   “Breakfast downstairs every morning.
+   Giant garden.
+   Secret corridors.”
+
+   <br><br>
+
+   “The bad part is Mum knows every member of staff,
+   so I can't get away with ANYTHING.”
+
+   <br><br>
+
+   “Also Room 13 is creepy.”
+
+   <br><br>
+
+   You: “Why?”
+
+   <br><br>
+
+   Maya: “Because it's called Room 13.”
+
+   <br><br>
+
+   Fair point.
+   `);
+
+   finishTalk();
+  }
+ ]);
+
+
+ if(player.age==="child"&&!mayaFriend){
+
+  options.push([
+   "🤝 Want to be friends?",
+   ()=>{
+
+    mayaFriend=true;
+
+    addNote("You became friends with Maya.");
+
+    message(`
+    Maya:
+
+    <br><br>
+
+    “YES.”
+
+    <br><br>
+
+    “Come on. I'll show you the hotel properly.”
+
+    <br><br>
+
+    She points toward the stairs.
+
+    <br><br>
+
+    “But if your parent asks, we're doing something educational.”
+
+    😂
+    `);
+
+    finishTalk();
+   }
+  ]);
+ }
+
+
+ if(mayaFriend){
+
+  options.push([
+   mayaFollowing?"👋 I'll explore alone":"👣 Explore with me",
+
+   ()=>{
+
+    mayaFollowing=!mayaFollowing;
+
+    if(mayaFollowing){
+
+     bringMaya();
+
+     message(`
+     Maya:
+
+     <br><br>
+
+     “Excellent.”
+
+     <br><br>
+
+     “Detective team activated.”
+     `);
+
+    }else{
+
+     message(`
+     Maya:
+
+     <br><br>
+
+     “Okay. I'll investigate separately.”
+
+     <br><br>
+
+     “Which means probably getting a snack.”
+     `);
+    }
+
+    finishTalk();
+   }
+  ]);
+
+
+  options.push([
+   "🤫 Tell me a hotel secret",
+   ()=>{
+
+    message(`
+    Maya whispers:
+
+    <br><br>
+
+    “There's a staff staircase.”
+
+    <br><br>
+
+    “It connects the Staff Hall to upstairs.”
+
+    <br><br>
+
+    “And there's another staff entrance from the garden.”
+
+    <br><br>
+
+    “Mum has keys to nearly every door.”
+
+    <br><br>
+
+    “You didn't hear any of that from me.”
+    `);
+
+    addNote("Maya says the staff staircase connects to upstairs and the garden.");
+
+    finishTalk();
+   }
+  ]);
+ }
+
+
+ if(!theft){
+
+  options.push([
+   "💎 What do you know about the diamond?",
+   ()=>{
+
+    message(`
+    Maya:
+
+    <br><br>
+
+    “Everyone's obsessed with it.”
+
+    <br><br>
+
+    “Lady Celestine brought it yesterday.”
+
+    <br><br>
+
+    “Amelia checked the clasp this morning.”
+
+    <br><br>
+
+    “Felix has taken approximately nine billion photographs.”
+
+    <br><br>
+
+    She looks toward Sebastian.
+
+    <br><br>
+
+    “And he keeps staring at it.”
+
+    <br><br>
+
+    Interesting.
+    `);
+
+    addNote("Before the theft, Maya noticed Sebastian staring at the diamond.");
+
+    finishTalk();
+  }
+ ]);
+ }
+
+
+ if(theft){
+
+  options.push([
+   "👀 Did you see anything?",
+   ()=>{
+
+    message(`
+    Maya:
+
+    <br><br>
+
+    “Just before the blackout,
+    I saw Mr Harris near the staff corridor.”
+
+    <br><br>
+
+    “He was supposed to be serving drinks.”
+
+    <br><br>
+
+    “And he looked nervous.”
+
+    <br><br>
+
+    “Although he does always look like somebody
+    has just asked him a difficult maths question.”
+    `);
+
+    addNote("Maya saw Harris near the staff corridor shortly before the theft.");
+
+    finishTalk();
+   }
+  ]);
+
+
+  options.push([
+   "👩 Where was your mum?",
+   ()=>{
+
+    if(day===1){
+
+     message(`
+     Maya:
+
+     <br><br>
+
+     “Mum said she was at Reception.”
+
+     <br><br>
+
+     “She works constantly.”
+     `);
+
+    }else{
+
+     message(`
+     Maya becomes quieter.
+
+     <br><br>
+
+     “There's something I didn't tell you.”
+
+     <br><br>
+
+     “Mum gave me a little blue pouch after the blackout.”
+
+     <br><br>
+
+     “She said it was a birthday present
+     and told me to take it upstairs.”
+
+     <br><br>
+
+     “I didn't know what was inside.”
+     `);
+
+     addEvidence("Maya says Mrs Bell gave her a blue pouch after the blackout");
+    }
+
+    finishTalk();
+   }
+  ]);
+
+
+  if(day===3){
+
+   options.push([
+    "❤️ What's worrying you?",
+    ()=>{
+
+     message(`
+     Maya looks at the floor.
+
+     <br><br>
+
+     “Mum changed her uniform after the diamond disappeared.”
+
+     <br><br>
+
+     “Her teal jacket had a ripped sleeve.”
+
+     <br><br>
+
+     “She said she'd caught it on a cupboard.”
+
+     <br><br>
+
+     Maya looks at you.
+
+     <br><br>
+
+     “I really hope there's another explanation.”
+     `);
+
+     addEvidence("Maya remembers Mrs Bell wearing a torn teal jacket after theft");
+
+     finishTalk();
+    }
+   ]);
+  }
+ }
+
+ showChoices(options);
+}
+
+
+/* =========================
+   BACKGROUND GUESTS
+========================= */
+
+function backgroundPersonTalk(name){
+
+ const lines={
+
+ "Porter Sam":`
+ Porter Sam catches a suitcase just before it falls.
+
+ <br><br>
+
+ “That is the third time today.”
+
+ <br><br>
+
+ He looks at the suitcase.
+
+ <br><br>
+
+ “You and I are enemies now.”
+ `,
+
+ "Mrs Puddle":`
+ Mrs Puddle whispers:
+
+ <br><br>
+
+ “I came here for peace and quiet.”
+
+ <br><br>
+
+ A suitcase crashes somewhere behind her.
+
+ <br><br>
+
+ She closes her eyes.
+
+ <br><br>
+
+ “That is going extremely well.”
+ `,
+
+ "Tommy":`
+ Tommy:
+
+ <br><br>
+
+ “Have you seen a small stuffed dinosaur?”
+
+ <br><br>
+
+ “Green. Missing one eye.”
+
+ <br><br>
+
+ “His name is Professor Chomp.”
+
+ <br><br>
+
+ This may be the hotel's second most important investigation.
+ `
+ };
+
+ message(lines[name]);
+
+ finishTalk();
+}
+
+
+/* =========================
+   SUSPECT CHATS
+========================= */
+
+function normalChat(name){
+
+ const lines={
+
+ "Mrs Bell":
+ `Mrs Bell smiles professionally. “Welcome to Blackwood Grand. Please tell Reception if you need anything.”`,
+
+ "Lady Celestine":
+ `Lady Celestine glances at you. “I'm told tonight's gala has become rather an event.”`,
+
+ "Sebastian":
+ `Sebastian looks toward the window. “Hotels are useful places when you'd rather not be at home.”`,
+
+ "Clara Vale":
+ `Clara: “I'm performing in London tomorrow. Tonight I'm simply here to enjoy myself.”`,
+
+ "Marco Bellini":
+ `Marco: “The piano is beautiful. Slightly flat on one key, but don't tell the hotel.”`,
+
+ "Mr Harris":
+ `Harris straightens his jacket. “Excuse me. Busy evening.”`,
+
+ "Felix Crane":
+ `Felix: “This hotel is fantastic for photographs. Everybody is always doing something.”`,
+
+ "Amelia Frost":
+ `Amelia: “Lady Celestine asked me to check the diamond before tonight's presentation.”`,
+
+ "Detective Grimble":
+ `Grimble: “Please don't interrupt. I'm noticing things.”`
+ };
+
+ message(lines[name]||"They smile at you.");
+
+ finishTalk();
+}
+
+
+function whyHere(name){
+
+ const lines={
+
+ "Mrs Bell":"“I manage the hotel. And Maya and I live here.”",
+
+ "Lady Celestine":"“Tonight's gala was arranged around the Blue Diamond.”",
+
+ "Sebastian":"“A few days away from London.”",
+
+ "Clara Vale":"“I'm performing nearby tomorrow evening.”",
+
+ "Marco Bellini":"“I'm playing tonight's gala.”",
+
+ "Mr Harris":"“I work here.”",
+
+ "Felix Crane":"“I'm photographing the gala for a magazine.”",
+
+ "Amelia Frost":"“Lady Celestine asked me to inspect the diamond.”"
+ };
+
+ message(`
+ <b>${name}</b>
+
+ <br><br>
+
+ ${lines[name]||"“Just visiting.”"}
+ `);
+
+ finishTalk();
+}
+
+
+function askCelestine(name){
+
+ const lines={
+
+ "Mrs Bell":"“Lady Celestine has stayed here many times. Tonight is important for the hotel.”",
+
+ "Sebastian":"“Everyone seems more interested in her diamond than in her.”",
+
+ "Clara Vale":"“She's certainly good at making an entrance.”",
+
+ "Marco Bellini":"“I was told to stop playing the instant she raises the diamond.”",
+
+ "Mr Harris":"“I really must get back to work.”",
+
+ "Felix Crane":"“That diamond photographs beautifully.”",
+
+ "Amelia Frost":"“The stone is genuine. So is the security risk.”",
+
+ "Lady Celestine":"“You may simply ask me directly.”"
+ };
+
+ message(lines[name]||"They don't have much to say.");
+
+ finishTalk();
+}
+
+
+function theftChat(name){
+
+ const lines={
+
+ "Mrs Bell":"“Terrible. Absolutely terrible for the hotel. I was at Reception.”",
+
+ "Lady Celestine":"“The lights went out. Someone brushed past me. Then it was gone.”",
+
+ "Sebastian":"“Grimble thinks debt equals guilt. It does not.”",
+
+ "Clara Vale":"“I heard footsteps during the blackout.”",
+
+ "Marco Bellini":"“I couldn't see anything. I heard a glass break.”",
+
+ "Mr Harris":"“I was serving drinks.”",
+
+ "Felix Crane":"“One of my photographs might have caught something.”",
+
+ "Amelia Frost":"“The chain was intact before the presentation.”",
+
+ "Detective Grimble":"“I am following several extremely promising hunches.”"
+ };
+
+ message(lines[name]);
+
+ finishTalk();
+}
+
+
+function alibi(name){
+
+ const claims={
+
+ "Mrs Bell":"Reception.",
+ "Lady Celestine":"The Ballroom stage.",
+ "Sebastian":"Near the Lounge entrance.",
+ "Clara Vale":"Inside the Ballroom.",
+ "Marco Bellini":"At the piano.",
+ "Mr Harris":"Serving drinks.",
+ "Felix Crane":"Taking photographs.",
+ "Amelia Frost":"Beside Lady Celestine.",
+ "Detective Grimble":"Not yet at the hotel."
+ };
+
+ message(`
+ <b>${name}</b>
+
+ <br><br>
+
+ “${claims[name]}”
+ `);
+
+ addNote(`${name}'s claimed alibi: ${claims[name]}`);
+
+ finishTalk();
+}
+
+
+function evidenceChat(name){
+
+ if(name==="Mrs Bell"&&hasEvidence("master key")){
+
+  message(`
+  You mention the Room 13 key log.
+
+  <br><br>
+
+  Mrs Bell pauses.
+
+  <br><br>
+
+  “Someone must have borrowed my key.”
+
+  <br><br>
+
+  But she never mentioned a missing key before.
+
+  <br><br>
+
+  👀 Her story has changed.
+  `);
+
+  addNote("Mrs Bell changed her story after being shown the master-key evidence.");
+
+ }else if(name==="Mr Harris"&&hasEvidence("velvet")){
+
+  message(`
+  You mention the blue velvet.
+
+  <br><br>
+
+  Harris immediately says:
+
+  <br><br>
+
+  “Never seen it.”
+
+  <br><br>
+
+  You hadn't actually asked whether he had.
+
+  👀
+  `);
+
+  addNote("Harris reacted strangely to the blue velvet evidence.");
+
+ }else if(name==="Felix Crane"&&day>=2){
+
+  message(`
+  Felix:
+
+  <br><br>
+
+  “Actually... I found one useful photograph.”
+
+  <br><br>
+
+  “Someone wearing dark teal is near the staff route.”
+
+  <br><br>
+
+  “The photograph is in my room.”
+  `);
+
+  addNote("Felix says a photograph in his room shows dark-teal clothing.");
+
+ }else{
+
+  message(`${name} doesn't reveal anything new yet.`);
+ }
+
+ finishTalk();
+}
+
+
+/* =========================
+   GRIMBLE
+========================= */
+
+function grimbleTheory(){
+
+ if(day===1){
+
+  message(`
+  Grimble:
+
+  <br><br>
+
+  “Sebastian.”
+
+  <br><br>
+
+  You: “Why?”
+
+  <br><br>
+
+  “Debts.”
+
+  <br><br>
+
+  You: “Anything else?”
+
+  <br><br>
+
+  Grimble lowers his voice.
+
+  <br><br>
+
+  “Suspicious eyebrows.”
+
+  `);
+
+ }else if(day===2){
+
+  message(`
+  Grimble:
+
+  <br><br>
+
+  “Amelia owns jewellery cutters!”
+
+  <br><br>
+
+  Amelia, from across the room:
+
+  <br><br>
+
+  “I AM A JEWELLERY EXPERT!”
+
+  `);
+
+ }else{
+
+  message(`
+  Grimble:
+
+  <br><br>
+
+  “I am extremely close to solving this.”
+
+  <br><br>
+
+  You: “Who did it?”
+
+  <br><br>
+
+  “That is the remaining detail.”
+  `);
+ }
+
+ finishTalk();
+}
+
+
+/* =========================
+   INSPECT
+========================= */
+
+function inspectObject(){
+
+ if(!nearbyObject)return;
+
+ const o=nearbyObject;
+
+ const text=
+ theft
+ ? (o.post||o.pre||"Nothing useful.")
+ : (o.pre||"Nothing unusual.");
+
+ message(`
+ <b>${o.icon} ${o.name}</b>
+
+ <br><br>
+
+ ${text}
+ `);
+
+ if(theft&&o.clue){
+  addEvidence(o.clue);
+ }
+
+ const id=player.room+" — "+o.name;
+
+ if(!searched.includes(id)){
+  searched.push(id);
+ }
+
+ draw();
+}
+
+
+/* =========================
+   NPC LIFE
+========================= */
+
+function npcTick(){
+
+ if(paused||gameOver)return;
+
+ Object.entries(people).forEach(([name,p])=>{
+
+  if(p.hidden)return;
+  if(name==="Maya Bell"&&mayaFollowing)return;
+
+  if(p.room!==player.room)return;
+
+  lastSeen[name]=p.room;
+
+  if(Math.random()>.45)return;
+
+  const dirs=[
+   [1,0],[-1,0],[0,1],[0,-1]
+  ];
+
+  const d=dirs[Math.floor(Math.random()*dirs.length)];
+
+  const nx=p.x+d[0];
+  const ny=p.y+d[1];
+
+  if(nx<=0||nx>=W-1||ny<=0||ny>=H-1)return;
+
+  const room=rooms[p.room];
+
+  if(room.objects.some(o=>o.x===nx&&o.y===ny))return;
+
+  if(nx===player.x&&ny===player.y)return;
+
+  if(Object.values(people).some(other=>
+   other!==p &&
+   !other.hidden &&
+   other.room===p.room &&
+   other.x===nx &&
+   other.y===ny
+  ))return;
+
+  p.x=nx;
+  p.y=ny;
+ });
+
+ draw();
+}
+
+setInterval(npcTick,1400);
+
+
+/* =========================
+   MAYA FOLLOW
+========================= */
+
+function bringMaya(){
+
+ const maya=people["Maya Bell"];
+
+ if(rooms[player.room].type==="staff")return;
+
+ maya.room=player.room;
+
+ const spots=[
+  [player.x-1,player.y],
+  [player.x+1,player.y],
+  [player.x,player.y-1],
+  [player.x,player.y+1]
+ ];
+
+ const room=rooms[player.room];
+
+ const spot=spots.find(([x,y])=>
+  x>0&&x<W-1&&y>0&&y<H-1 &&
+  !room.objects.some(o=>o.x===x&&o.y===y)
+ );
+
+ if(spot){
+  maya.x=spot[0];
+  maya.y=spot[1];
+ }
+}
+
+
+/* =========================
+   DAY ADVANCE
+========================= */
+
+function goToBed(){
+
+ if(player.room!=="Your Room")return;
+ if(day>=3)return;
+
+ day++;
+ timeBlock=0;
+
+ parentWarnings=Math.max(0,parentWarnings-1);
+
+ resetMorning();
+
+ showScene(`
+ <h2>🌅 DAY ${day}</h2>
+
+ <p>
+ ${day===2
+ ? "The hotel wakes up full of rumours about the missing diamond."
+ : "Your final investigation day has begun."}
+ </p>
+
+ <p>
+ Detective Grimble is still investigating.
+
+ This is not necessarily reassuring.
+ </p>
+
+ <button onclick="closeScene()">Start Day ${day}</button>
+ `);
+
+ addNote(`Day ${day} has begun.`);
+
+ draw();
+}
+
+
+function resetMorning(){
+
+ const starts={
+  "Maya Bell":["Maya's Room",4,3],
+  "Mrs Bell":["Lobby",2,3],
+  "Lady Celestine":["Lady Celestine's Suite",4,3],
+  "Sebastian":["Dining Room",3,3],
+  "Clara Vale":["Lounge",4,3],
+  "Marco Bellini":["Ballroom",3,3],
+  "Mr Harris":["Dining Room",6,3],
+  "Felix Crane":["Garden",6,4],
+  "Amelia Frost":["Lounge",6,3],
+  "Detective Grimble":["Lobby",5,3]
+ };
+
+ Object.entries(starts).forEach(([name,s])=>{
+
+  if(people[name]&&!people[name].hidden){
+   people[name].room=s[0];
+   people[name].x=s[1];
+   people[name].y=s[2];
+  }
+ });
+}
+
+
+/* =========================
+   NOTEBOOK
+========================= */
+
+function addEvidence(text){
+
+ if(!evidence.includes(text)){
+  evidence.push(text);
+
+  document.getElementById("message").innerHTML+=
+  `<br><br>📓 <b>Evidence added!</b>`;
+ }
+}
+
+
+function addNote(text){
+
+ if(!notes.includes(text)){
+  notes.push(text);
+ }
+}
+
+
+function hasEvidence(word){
+
+ return evidence.some(e=>
+  e.toLowerCase().includes(word.toLowerCase())
+ );
+}
+
+
+function openNotebook(){
+
+ hideGame();
+
+ document.getElementById("notebook").style.display="block";
+
+ showNotes("people");
+}
+
+
+function closeNotebook(){
+
+ document.getElementById("notebook").style.display="none";
+
+ showGame();
+}
+
+
+function showNotes(tab){
+
+ const box=document.getElementById("noteCards");
+
+ if(tab==="people"){
+
+  box.innerHTML=`
+  <h3>👥 People</h3>
+
+  <div class="cards">
+
+  ${Object.keys(people)
+   .filter(n=>!people[n].background)
+   .map(name=>`
+    <div class="card">
+     <b>${name}</b>
+     <br>
+     <span class="small">
+     Last seen: ${lastSeen[name]||"Unknown"}
+     </span>
+    </div>
+   `).join("")}
+
+  </div>
+  `;
+ }
+
+
+ if(tab==="evidence"){
+
+  box.innerHTML=`
+  <h3>🔎 Evidence</h3>
+
+  ${evidence.length
+   ? evidence.map(e=>`<div class="card">${e}</div>`).join("")
+   : `<div class="card">No evidence yet.</div>`}
+
+  <h3>📝 Notes</h3>
+
+  ${notes.length
+   ? notes.map(n=>`<div class="card">${n}</div>`).join("")
+   : `<div class="card">No notes yet.</div>`}
+  `;
+ }
+
+
+ if(tab==="leads"){
+
+  box.innerHTML=`
+  <h3>🧭 Current Leads</h3>
+
+  ${!theft ? `
+   <div class="card">
+    👥 Meet some of the guests.
+   </div>
+
+   <div class="card">
+    🏨 Explore upstairs and the garden.
+   </div>
+
+   <div class="card">
+    💬 Maya knows a LOT about this hotel.
+   </div>
+
+   <div class="card">
+    💎 Attend the Blue Diamond presentation tonight.
+   </div>
+  ` : `
+   <div class="card">
+    🔑 Who had access to hotel master keys?
+   </div>
+
+   <div class="card">
+    📷 Felix took photographs during the evening.
+   </div>
+
+   <div class="card">
+    🛍️ Look for anything connected to blue velvet.
+   </div>
+
+   <div class="card">
+    🚪 Why was Room 13 opened?
+   </div>
+
+   <div class="card">
+    💬 Talk to Maya again on different days.
+   </div>
+  `}
+  `;
+ }
+
+
+ if(tab==="accuse"){
+
+  if(!theft){
+
+   box.innerHTML=`
+   <div class="card">
+    Nobody has stolen anything yet.
+
+    <br><br>
+
+    Please don't become Detective Grimble before
+    Detective Grimble even arrives. 😂
+   </div>
+   `;
+
+   return;
+  }
+
+  const suspects=Object.keys(people)
+   .filter(name=>
+    !people[name].background &&
+    name!=="Detective Grimble"
+   );
+
+  box.innerHTML=`
+  <h3>⚖️ Final Accusation</h3>
+
+  <div class="card">
+
+  <b>Who planned the theft?</b>
+
+  <br>
+
+  <select id="mastermind">
+   <option value="">Choose...</option>
+   ${suspects.map(n=>`<option>${n}</option>`).join("")}
+  </select>
+
+  <br><br>
+
+  <b>Who helped?</b>
+
+  <br>
+
+  <select id="helper">
+   <option value="">Choose...</option>
+   ${suspects.map(n=>`<option>${n}</option>`).join("")}
+  </select>
+
+  <br><br>
+
+  <button onclick="accuse()">⚖️ Present my case</button>
+
+  </div>
+  `;
+ }
+}
+
+
+/* =========================
+   ACCUSE
+========================= */
+
+function accuse(){
+
+ const mastermind=document.getElementById("mastermind").value;
+ const helper=document.getElementById("helper").value;
+
+ const proof=
+ hasEvidence("master key") &&
+ hasEvidence("blue pouch") &&
+ (
+  hasEvidence("dark-teal") ||
+  hasEvidence("teal jacket")
+ ) &&
+ (
+  hasEvidence("Harris") ||
+  hasEvidence("staff staircase")
+ );
+
+ if(mastermind==="Mrs Bell"&&helper==="Mr Harris"&&proof){
+
+  gameOver=true;
+
+  document.getElementById("noteCards").innerHTML=`
+  <h2>🏆 CASE SOLVED!</h2>
+
+  <div class="card">
+
+  You explain everything.
+
+  <br><br>
+
+  <b>Mrs Bell planned the theft.</b>
+
+  <br><br>
+
+  <b>Mr Harris helped her.</b>
+
+  <br><br>
+
+  Maya unknowingly carried the blue pouch,
+  believing it was a present.
+
+  <br><br>
+
+  The master-key log, torn teal uniform,
+  Harris's movements and blue velvet evidence
+  reveal what really happened.
+
+  <br><br>
+
+  The Blue Diamond is recovered. 💎
+
+  <br><br>
+
+  Detective Grimble clears his throat.
+
+  <br><br>
+
+  “Exactly as I suspected.”
+
+  <br><br>
+
+  Maya:
+
+  <br><br>
+
+  “No it wasn't.”
+
+  😂
+
+  <br><br>
+
+  Lady Celestine gives you the £1,000 reward.
+
+  </div>
+  `;
+
+ }else if(mastermind==="Mrs Bell"&&helper==="Mr Harris"){
+
+  document.getElementById("noteCards").innerHTML=`
+  <div class="card">
+
+  Your theory might be right...
+
+  <br><br>
+
+  but you can't prove it yet.
+
+  <br><br>
+
+  Look for evidence involving:
+
+  <br><br>
+
+  🔑 Master keys<br>
+  🛍️ Blue velvet<br>
+  👕 Dark-teal clothing<br>
+  👞 Harris's movements
+
+  </div>
+
+  <button onclick="showNotes('accuse')">Back</button>
+  `;
+
+ }else{
+
+  document.getElementById("noteCards").innerHTML=`
+  <div class="card">
+
+  Something doesn't fit.
+
+  <br><br>
+
+  You haven't lost — keep investigating.
+
+  </div>
+
+  <button onclick="showNotes('accuse')">Back</button>
+  `;
+ }
+}
+
+
+/* =========================
+   MAP
+========================= */
+
+function openMap(){
+
+ hideGame();
+
+ document.getElementById("map").style.display="block";
+
+ drawMap(rooms[player.room].floor);
+}
+
+
+function closeMap(){
+
+ document.getElementById("map").style.display="none";
+
+ showGame();
+}
+
+
+function drawMap(floor){
+
+ const names=Object.keys(rooms)
+ .filter(name=>rooms[name].floor===floor);
+
+ document.getElementById("mapCards").innerHTML=
+ names.map(name=>`
+
+ <div class="card ${name===player.room?"current":""}">
+
+  <b>${name}</b>
+
+  ${name===player.room?"<br>📍 You are here":""}
+
+  <br>
+
+  <span class="small">
+  ${
+   Object.entries(lastSeen)
+   .filter(([person,r])=>r===name)
+   .map(([person])=>person)
+   .join(", ")
+  }
+  </span>
+
+ </div>
+
+ `).join("");
+}
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function showChoices(items){
+
+ const box=document.getElementById("choices");
+
+ box.innerHTML="";
+
+ items.forEach(([label,action])=>{
+
+  const button=document.createElement("button");
+
+  button.textContent=label;
+  button.onclick=action;
+
+  box.appendChild(button);
+ });
+}
+
+
+function clearChoices(){
+ document.getElementById("choices").innerHTML="";
+}
+
+
+function finishTalk(){
+
+ clearChoices();
+
+ paused=false;
+
+ draw();
+}
+
+
+function message(text){
+ document.getElementById("message").innerHTML=text;
+}
+
+
+function backgroundMessage(text){
+
+ document.getElementById("message").innerHTML=
+ `<b>🏨 Around the hotel...</b><br><br>${text}`;
+}
+
+
+function showScene(html){
+
+ paused=true;
+
+ document.getElementById("sceneContent").innerHTML=html;
+
+ document.getElementById("scene").style.display="flex";
+}
+
+
+function closeScene(){
+
+ document.getElementById("scene").style.display="none";
+
+ paused=false;
+
+ draw();
+}
+
+
+function hideGame(){
+
+ paused=true;
+
+ document.getElementById("room").style.display="none";
+ document.getElementById("controls").style.display="none";
+ document.getElementById("choices").style.display="none";
+ document.getElementById("message").style.display="none";
+}
+
+
+function showGame(){
+
+ document.getElementById("room").style.display="grid";
+ document.getElementById("controls").style.display="block";
+ document.getElementById("choices").style.display="block";
+ document.getElementById("message").style.display="block";
+
+ paused=false;
+
+ draw();
+}
+
+
+function sendHome(){
+
+ player.room="Your Room";
+ player.x=4;
+ player.y=4;
+}
+
+
+function floorName(f){
+
+ return {
+  ground:"Ground Floor",
+  first:"First Floor",
+  second:"Second Floor",
+  garden:"Garden"
+ }[f]||f;
+}
+
+</script>
+
+</body>
+</html>
