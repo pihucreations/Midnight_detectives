@@ -1,316 +1,385 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>The Blue Diamond Mystery</title>
-
 <style>
-
+*{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#11182b;
-  color:white;
-  text-align:center;
+ margin:0;
+ background:#0f1728;
+ color:#fff;
+ font-family:Arial,sans-serif;
+ text-align:center
+}
+button,input,select{
+ font:inherit;
+ border:0;
+ border-radius:10px;
+ padding:9px 11px;
+ margin:4px
+}
+button{background:#e7c762;cursor:pointer}
+button:disabled{opacity:.45}
+.hidden{display:none!important}
+
+.panel{
+ max-width:760px;
+ margin:12px auto;
+ padding:16px;
+ background:#1c2942;
+ border-radius:14px
 }
 
-#game{
-  max-width:760px;
-  margin:auto;
-  padding:15px;
-}
-
-button,
-input,
-select{
-  font-size:16px;
-  padding:11px;
-  margin:6px;
-  border:0;
-  border-radius:10px;
-}
-
-button{
-  background:#e7c864;
-  cursor:pointer;
-}
-
-.character{
-  font-size:38px;
-  background:#29324a;
-  border:3px solid transparent;
-}
-
-.character.selected{
-  border-color:gold;
-}
-
-#choices button{
-  display:block;
-  width:85%;
-  margin:10px auto;
+#topbar{
+ display:none;
+ max-width:760px;
+ margin:8px auto;
+ padding:9px;
+ background:#1c2942;
+ border-radius:12px;
+ justify-content:space-around;
+ gap:8px;
+ flex-wrap:wrap
 }
 
 #roomName{
-  font-size:22px;
-  font-weight:bold;
-  margin-top:15px;
+ font-size:22px;
+ font-weight:700;
+ margin:10px
 }
 
 #room{
-  display:none;
-  grid-template-columns:repeat(7,1fr);
-  gap:3px;
-  max-width:600px;
-  margin:15px auto;
-  padding:8px;
-  background:#72573e;
-  border:5px solid #c6a45a;
-  border-radius:12px;
+ display:none;
+ grid-template-columns:repeat(9,1fr);
+ gap:3px;
+ max-width:760px;
+ margin:auto;
+ padding:6px;
+ background:#70543a;
+ border:4px solid #c7a35a;
+ border-radius:14px
 }
 
 .tile{
-  height:52px;
-  background:#d8c8aa;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:27px;
-  border-radius:5px;
+ height:56px;
+ background:#d8c6a4;
+ border-radius:5px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ position:relative;
+ overflow:hidden;
+ font-size:25px
 }
 
-.door{
-  background:#765034;
-}
+.garden{background:#9cbe83}
+.staff{background:#b9b4aa}
+.suite{background:#e0cfac}
+.bath{background:#c7d8dc}
+.door{background:#765036}
+.stairs{background:#aa9271}
 
-#controls{
-  display:none;
-}
-
-#talkButton,
-#inspectButton{
-  display:none;
-}
-
-#talkButton{
-  background:#70c88b;
-}
-
-#inspectButton{
-  background:#79aee8;
-}
-
-#notebookButton{
-  display:none;
-  background:#c79cf2;
-}
+#controls{display:none;margin:9px}
 
 #message{
-  max-width:600px;
-  margin:15px auto;
-  padding:15px;
-  min-height:60px;
-  background:#1d253d;
-  border-radius:12px;
+ max-width:760px;
+ min-height:90px;
+ margin:10px auto;
+ padding:14px;
+ background:#1c2942;
+ border-radius:12px;
+ line-height:1.45
 }
 
-#evidenceBox{
-  max-width:600px;
-  margin:15px auto;
-  padding:10px;
-  background:#252d47;
-  border-radius:10px;
+#choices{
+ max-width:760px;
+ margin:auto
 }
 
-#notebook{
-  display:none;
-  max-width:650px;
-  margin:20px auto;
-  padding:15px;
-  background:#f1e5bd;
-  color:#222;
-  border-radius:12px;
-  text-align:left;
+#choices button{
+ display:block;
+ width:94%;
+ margin:6px auto
 }
 
-#notebook h2,
-#notebook h3{
-  text-align:center;
+.good{background:#7cc98c}
+.info{background:#76b7e8}
+.warn{background:#eca66e}
+.listen{background:#d59ae9}
+
+.overlay{
+ display:none;
+ max-width:820px;
+ margin:12px auto;
+ padding:15px;
+ background:#efe1b8;
+ color:#222;
+ border-radius:14px;
+ text-align:left
 }
 
-.noteCard{
-  background:white;
-  padding:12px;
-  margin:10px 0;
-  border-radius:10px;
+.tabs{text-align:center}
+
+.tabs button{
+ background:#5e4932;
+ color:#fff
 }
 
-.notebookTabs{
-  text-align:center;
+.cards{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+ gap:8px
 }
 
-.notebookTabs button{
-  background:#5e4b32;
-  color:white;
+.card{
+ background:#fff;
+ padding:10px;
+ border-radius:10px
 }
 
-.suspicionButton{
-  font-size:14px;
-  padding:8px;
+.current{
+ outline:3px solid #347bd3
 }
 
-.ruleBox{
-  background:#1d253d;
-  max-width:620px;
-  margin:15px auto;
-  padding:15px;
-  border-radius:12px;
-  text-align:left;
+.small{
+ font-size:12px;
+ opacity:.75
 }
 
+/* PEOPLE */
+
+.person{
+ width:42px;
+ height:52px;
+ position:relative;
+ transform-origin:bottom center
+}
+
+.person.child{
+ transform:scale(.82)
+}
+
+.head{
+ position:absolute;
+ width:18px;
+ height:18px;
+ left:12px;
+ top:3px;
+ background:var(--skin);
+ border-radius:45%
+}
+
+.hair{
+ position:absolute;
+ width:20px;
+ height:9px;
+ left:11px;
+ top:1px;
+ background:var(--hair);
+ border-radius:10px 10px 3px 3px
+}
+
+.body{
+ position:absolute;
+ width:23px;
+ height:21px;
+ left:9px;
+ top:22px;
+ background:var(--shirt);
+ border-radius:6px
+}
+
+.arm{
+ position:absolute;
+ width:5px;
+ height:17px;
+ top:24px;
+ background:var(--skin);
+ border-radius:4px
+}
+
+.arm.a{
+ left:5px;
+ transform:rotate(7deg)
+}
+
+.arm.b{
+ right:5px;
+ transform:rotate(-7deg)
+}
+
+.leg{
+ position:absolute;
+ width:7px;
+ height:11px;
+ top:42px;
+ background:var(--pants)
+}
+
+.leg.a{left:10px}
+.leg.b{right:10px}
+
+.eye{
+ position:absolute;
+ width:2px;
+ height:2px;
+ top:10px;
+ background:#222;
+ border-radius:50%;
+ z-index:2
+}
+
+.eye.a{left:17px}
+.eye.b{left:24px}
+
+.tag{
+ position:absolute;
+ left:50%;
+ transform:translateX(-50%);
+ bottom:-2px;
+ font-size:8px;
+ color:#222;
+ white-space:nowrap;
+ max-width:60px;
+ overflow:hidden;
+ text-overflow:ellipsis
+}
+
+.player{
+ filter:drop-shadow(0 0 5px #1d70ff)
+}
+
+#banner{
+ display:none;
+ position:fixed;
+ inset:0;
+ background:rgba(8,12,22,.95);
+ z-index:50;
+ align-items:center;
+ justify-content:center;
+ flex-direction:column;
+ padding:25px
+}
 </style>
 </head>
 
 <body>
 
-<div id="game">
+<div id="banner"></div>
+
+<div id="app">
 
 <h1>💎 The Blue Diamond Mystery</h1>
 
-<div id="rules">
+<div id="start" class="panel">
+<h2>Blackwood Grand Hotel</h2>
 
-<h2>🎮 How to Play</h2>
+<p>
+You have three hotel days.
+On the first evening, Lady Celestine will show everyone
+the famous Blue Ashbourne Diamond.
+</p>
 
-<div class="ruleBox">
+<input id="playerName" placeholder="Your name" />
 
-<p><b>Your mission:</b> Find out who stole Lady Celestine's Blue Diamond.</p>
+<br>
 
-<p>⬆️ ⬇️ ⬅️ ➡️ <b>Move:</b> Use the arrow buttons to walk around.</p>
+<button onclick="setAge('child')">🧒 Child</button>
+<button onclick="setAge('adult')">🧑 Adult</button>
 
-<p>🚪 <b>Doors:</b> Walk onto a door to enter another room.</p>
+<p id="ageLabel">Choose child or adult.</p>
 
-<p>💬 <b>People:</b> Stand beside somebody and press Talk.</p>
-
-<p>🔎 <b>Objects:</b> Stand beside an object and press Inspect.</p>
-
-<p>📓 <b>Notebook:</b> Your notebook remembers suspects, evidence and mysteries.</p>
-
-<p>🚨 <b>Contradictions:</b> If someone's story does not match the evidence, your notebook may spot it.</p>
-
-<p>⚖️ <b>Accusations:</b> You need enough evidence before you can prove who did it.</p>
-
-<p><b>Important:</b> Explore carefully. Some clues only make sense after you talk to someone!</p>
-
+<button onclick="startGame()">🏨 Check in</button>
 </div>
 
-<button id="rulesButton">✅ I understand — Start</button>
-
+<div id="topbar">
+<span id="dayLabel"></span>
+<span id="timeLabel"></span>
+<span id="floorLabel"></span>
+<span id="deadlineLabel"></span>
 </div>
-
-
-<div id="setup" style="display:none">
-
-<h2>Create your character</h2>
-
-<input id="nameInput" placeholder="Enter your name">
-
-<h3>Choose your character</h3>
-
-<div>
-<button class="character" data-character="👧🏻">👧🏻</button>
-<button class="character" data-character="👦🏽">👦🏽</button>
-<button class="character" data-character="👩🏾">👩🏾</button>
-<button class="character" data-character="👨🏻">👨🏻</button>
-<button class="character" data-character="🧑🏼">🧑🏼</button>
-<button class="character" data-character="👩🏽">👩🏽</button>
-</div>
-
-<h3>Child or adult?</h3>
-
-<button id="childButton">🧒 Child</button>
-<button id="adultButton">🧑 Adult</button>
-
-<h3>Why are you staying here?</h3>
-
-<select id="reason">
-<option>🏖️ Holiday</option>
-<option>🎂 Birthday trip</option>
-<option>👨‍👩‍👧 Visiting family</option>
-<option>🎭 Seeing a show</option>
-<option>🧳 Travelling with family</option>
-</select>
-
-<br><br>
-
-<button id="startButton">🏨 Check into hotel</button>
-
-</div>
-
-
-<div id="choices"></div>
 
 <div id="roomName"></div>
 
 <div id="room"></div>
 
-
 <div id="controls">
 
-<button data-move="0,-1">⬆️</button>
+<button onclick="movePlayer(0,-1)">⬆️</button><br>
+
+<button onclick="movePlayer(-1,0)">⬅️</button>
+
+<button id="talkBtn" class="good hidden" onclick="talk()">
+💬 Talk
+</button>
+
+<button id="inspectBtn" class="info hidden" onclick="inspectObject()">
+🔎 Inspect
+</button>
+
+<button id="listenBtn" class="listen hidden" onclick="listenAtDoor()">
+👂 Listen
+</button>
+
+<button onclick="movePlayer(1,0)">➡️</button><br>
+
+<button onclick="movePlayer(0,1)">⬇️</button>
 
 <br>
 
-<button data-move="-1,0">⬅️</button>
+<button onclick="openMap()">🗺️ Map</button>
+<button onclick="openNotebook()">📓 Notebook</button>
 
-<button id="talkButton">💬 Talk</button>
-
-<button id="inspectButton">🔎 Inspect</button>
-
-<button data-move="1,0">➡️</button>
-
-<br>
-
-<button data-move="0,1">⬇️</button>
-
-<br>
-
-<button id="notebookButton">📓 Notebook</button>
+<button id="bedBtn" class="warn hidden" onclick="goToBed()">
+🌙 Go to bed
+</button>
 
 </div>
 
+<div id="choices"></div>
 
 <div id="message">
-Read the rules to begin.
+Check in to begin.
 </div>
 
 
-<div id="evidenceBox">
-🎒 Evidence:
-<span id="evidence">Nothing yet</span>
+<div id="map" class="overlay">
+
+<h2>🗺️ Hotel Map</h2>
+
+<div class="tabs">
+<button onclick="drawMap('ground')">Ground</button>
+<button onclick="drawMap('first')">First</button>
+<button onclick="drawMap('second')">Second</button>
+<button onclick="drawMap('garden')">Garden</button>
 </div>
 
-
-<div id="notebook">
-
-<h2>📓 Detective Notebook</h2>
-
-<div class="notebookTabs">
-
-<button data-tab="suspects">👥 Suspects</button>
-<button data-tab="evidence">🔎 Evidence</button>
-<button data-tab="contradictions">🚨 Contradictions</button>
-<button data-tab="mysteries">❓ Mysteries</button>
-<button data-tab="accuse">⚖️ Accuse</button>
-
-</div>
-
-<div id="notebookContent"></div>
+<div id="mapCards" class="cards"></div>
 
 <div style="text-align:center">
-<button id="closeNotebook">⬅️ Back to Hotel</button>
+<button onclick="closeMap()">Back</button>
+</div>
+
+</div>
+
+
+<div id="notebook" class="overlay">
+
+<h2>📓 Notebook</h2>
+
+<div class="tabs">
+<button onclick="showNotes('people')">People</button>
+<button onclick="showNotes('evidence')">Evidence</button>
+<button onclick="showNotes('leads')">Leads</button>
+<button onclick="showNotes('accuse')">Accuse</button>
+</div>
+
+<div id="noteCards"></div>
+
+<div style="text-align:center">
+<button onclick="closeNotebook()">Back</button>
 </div>
 
 </div>
@@ -320,1569 +389,3177 @@ Read the rules to begin.
 
 <script>
 
-/* =========================
-ELEMENTS
-========================= */
+const W=9;
+const H=7;
 
-const rules = document.getElementById("rules");
-const setup = document.getElementById("setup");
+let player={
+ name:'',
+ age:'',
+ room:'Your Room',
+ x:4,
+ y:5
+};
 
-const nameInput = document.getElementById("nameInput");
+let day=1;
+let minutes=16*60;
 
-const childButton = document.getElementById("childButton");
-const adultButton = document.getElementById("adultButton");
-const startButton = document.getElementById("startButton");
+let theft=false;
+let grimble=false;
+let gameOver=false;
+let paused=false;
 
-const roomElement = document.getElementById("room");
-const roomNameElement = document.getElementById("roomName");
+let nearbyPerson=null;
+let nearbyObject=null;
 
-const controls = document.getElementById("controls");
+let mayaFriend=false;
+let mayaFollow=false;
 
-const talkButton = document.getElementById("talkButton");
-const inspectButton = document.getElementById("inspectButton");
-const notebookButton = document.getElementById("notebookButton");
+let parentWarnings=0;
 
-const choicesBox = document.getElementById("choices");
-const messageBox = document.getElementById("message");
-
-const evidenceText = document.getElementById("evidence");
-
-const notebook = document.getElementById("notebook");
-const notebookContent = document.getElementById("notebookContent");
-
-
-/* =========================
-PLAYER
-========================= */
-
-let playerName = "";
-let playerCharacter = "";
-let playerAge = "";
-
-let currentRoom = "Ballroom";
-
-let playerX = 3;
-let playerY = 4;
-
-let nearbyPerson = null;
-let nearbyObject = null;
-
-const width = 7;
-const height = 6;
+let evidence=[];
+let notes=[];
+let searched=[];
+let lastSeen={};
 
 
-/* =========================
-DETECTIVE DATA
-========================= */
+/* =====================
+   HOTEL ROOMS
+===================== */
 
-let evidence = [];
+const rooms={
 
-let talkedTo = [];
+'Lobby':{
+ floor:'ground',
+ type:'normal',
 
-let suspicions = {
-  Marco:"not sure",
-  Clara:"not sure",
-  Harris:"not sure",
-  Sebastian:"not sure"
+ doors:[
+  {x:4,y:0,to:'Ballroom',sx:4,sy:5},
+  {x:0,y:3,to:'Lounge',sx:7,sy:3},
+  {x:8,y:3,to:'Dining Room',sx:1,sy:3},
+  {x:4,y:6,to:'Grand Staircase',sx:4,sy:1}
+ ],
+
+ objects:[
+  {
+   x:2,y:2,
+   icon:'🛎️',
+   name:'Reception',
+   pre:'Brass bells, guest books and neat rows of keys.',
+   post:'The master-key cabinet is not fully closed.',
+   clue:'Reception master-key cabinet was left open'
+  },
+
+  {
+   x:6,y:4,
+   icon:'🛋️',
+   name:'Lobby sofa',
+   pre:'Deep green velvet and too many cushions.'
+  }
+ ]
+},
+
+
+'Ballroom':{
+ floor:'ground',
+ type:'normal',
+
+ doors:[
+  {x:4,y:6,to:'Lobby',sx:4,sy:1}
+ ],
+
+ objects:[
+  {
+   x:4,y:2,
+   icon:'💎',
+   name:'Diamond display',
+   pre:"The Blue Ashbourne Diamond sparkles on Lady Celestine's silver clutch.",
+   post:'The diamond is gone. Its chain was cut cleanly.',
+   clue:'The diamond chain was cut cleanly'
+  },
+
+  {
+   x:1,y:2,
+   icon:'🎹',
+   name:'Grand piano',
+   pre:'Marco has been practising here.'
+  }
+ ]
+},
+
+
+'Lounge':{
+ floor:'ground',
+ type:'normal',
+
+ doors:[
+  {x:8,y:3,to:'Lobby',sx:1,sy:3},
+  {x:4,y:6,to:'Garden',sx:4,sy:1}
+ ],
+
+ objects:[
+  {
+   x:2,y:1,
+   icon:'🔥',
+   name:'Fireplace',
+   pre:'A warm fire crackles.',
+   post:'A broken brass hotel key tag is under the grate.',
+   clue:'Broken hotel key tag found by the lounge fireplace'
+  },
+
+  {
+   x:5,y:4,
+   icon:'📚',
+   name:'Bookshelf',
+   pre:'Mystery novels. Convenient.'
+  }
+ ]
+},
+
+
+'Dining Room':{
+ floor:'ground',
+ type:'normal',
+
+ doors:[
+  {x:0,y:3,to:'Lobby',sx:7,sy:3},
+  {x:8,y:3,to:'Kitchen',sx:1,sy:3}
+ ],
+
+ objects:[
+  {
+   x:3,y:2,
+   icon:'🍽️',
+   name:'Dinner table',
+   pre:'Everything is set for dinner.'
+  },
+
+  {
+   x:6,y:1,
+   icon:'🧾',
+   name:'Receipt',
+   post:'A drinks receipt was signed by Mr Harris at 8:07 PM.',
+   clue:'Mr Harris signed a drinks receipt at 8:07 PM'
+  }
+ ]
+},
+
+
+'Kitchen':{
+ floor:'ground',
+ type:'staff',
+
+ doors:[
+  {x:0,y:3,to:'Dining Room',sx:7,sy:3},
+  {x:8,y:3,to:'Staff Hall',sx:1,sy:3}
+ ],
+
+ objects:[
+  {
+   x:2,y:1,
+   icon:'🥖',
+   name:'Bread shelf',
+   pre:'Fresh bread smells amazing.'
+  },
+
+  {
+   x:6,y:2,
+   icon:'🛍️',
+   name:'Blue velvet pouch',
+   post:'An empty blue velvet pouch is hidden behind folded cloths.',
+   clue:'Empty blue velvet pouch hidden in the kitchen'
+  }
+ ]
+},
+
+
+'Staff Hall':{
+ floor:'ground',
+ type:'staff',
+
+ doors:[
+  {x:0,y:3,to:'Kitchen',sx:7,sy:3},
+  {x:8,y:2,to:'Hotel Office',sx:1,sy:3},
+  {x:8,y:5,to:'Garden',sx:1,sy:5},
+  {x:4,y:0,to:'Staff Staircase',sx:4,sy:5}
+ ],
+
+ objects:[
+  {
+   x:5,y:3,
+   icon:'🔐',
+   name:'Key log',
+   post:"The log shows Mrs Bell's master key opened Room 13 at 8:14 PM.",
+   clue:'Mrs Bell master key opened Room 13 at 8:14 PM'
+  },
+
+  {
+   x:2,y:2,
+   icon:'🧥',
+   name:'Coat hooks',
+   pre:'Dark teal staff jackets hang here.'
+  }
+ ]
+},
+
+
+'Hotel Office':{
+ floor:'ground',
+ type:'staff',
+
+ doors:[
+  {x:0,y:3,to:'Staff Hall',sx:7,sy:2}
+ ],
+
+ objects:[
+  {
+   x:5,y:1,
+   icon:'🗑️',
+   name:'Shred bin',
+   post:'A torn note reads: HARRIS — STAFF STAIRS — 8:12.',
+   clue:'Shredded note links Harris to the staff stairs at 8:12 PM'
+  },
+
+  {
+   x:3,y:4,
+   icon:'🖥️',
+   name:'Security computer',
+   post:'The staff-stair camera was disabled during the theft.',
+   clue:'Staff-stair camera was disabled during the theft'
+  }
+ ]
+},
+
+
+'Grand Staircase':{
+ floor:'ground',
+ type:'normal',
+
+ doors:[
+  {x:4,y:0,to:'First Floor Landing',sx:4,sy:5},
+  {x:4,y:6,to:'Lobby',sx:4,sy:5}
+ ],
+
+ objects:[
+  {
+   x:4,y:3,
+   icon:'🪜',
+   name:'Grand staircase',
+   pre:'A huge curved staircase under a chandelier.'
+  }
+ ]
+},
+
+
+'First Floor Landing':{
+ floor:'first',
+ type:'normal',
+
+ doors:[
+  {x:4,y:6,to:'Grand Staircase',sx:4,sy:1},
+  {x:4,y:0,to:'Second Floor Landing',sx:4,sy:5},
+
+  {x:0,y:1,to:'Your Room',sx:7,sy:3},
+  {x:0,y:3,to:"Maya's Room",sx:7,sy:3},
+  {x:0,y:5,to:"Mrs Bell's Room",sx:7,sy:3},
+
+  {x:8,y:1,to:"Clara's Room",sx:1,sy:3},
+  {x:8,y:3,to:"Sebastian's Room",sx:1,sy:3},
+  {x:8,y:5,to:"Marco's Room",sx:1,sy:3}
+ ],
+
+ objects:[
+  {
+   x:4,y:3,
+   icon:'🪴',
+   name:'Landing plant',
+   pre:'A giant fern in a brass pot.'
+  }
+ ]
+},
+
+
+'Your Room':{
+ floor:'first',
+ type:'bedroom',
+
+ doors:[
+  {x:8,y:3,to:'First Floor Landing',sx:1,sy:1}
+ ],
+
+ objects:[
+  {
+   x:2,y:1,
+   icon:'🛏️',
+   name:'Bed',
+   pre:'Soft pillows, warm duvet, bedside lamp.'
+  },
+
+  {
+   x:4,y:1,
+   icon:'🪟',
+   name:'Window',
+   pre:'You can see the garden below.'
+  },
+
+  {
+   x:2,y:5,
+   icon:'🧳',
+   name:'Suitcase',
+   pre:'Your things make the room feel homely.'
+  },
+
+  {
+   x:6,y:5,
+   icon:'🚿',
+   name:'Bathroom door',
+   pre:'Your little private bathroom.'
+  }
+ ]
+},
+
+
+"Maya's Room":{
+ floor:'first',
+ type:'bedroom',
+
+ doors:[
+  {x:8,y:3,to:'First Floor Landing',sx:1,sy:3}
+ ],
+
+ objects:[
+  {
+   x:2,y:1,
+   icon:'🛏️',
+   name:"Maya's bed",
+   pre:'Bright blanket, mismatched pillows and a stuffed fox.'
+  },
+
+  {
+   x:5,y:1,
+   icon:'🧸',
+   name:'Toy shelf',
+   pre:'Books, pencils, toys and an unreasonable amount of glitter.'
+  },
+
+  {
+   x:2,y:5,
+   icon:'🗺️',
+   name:'Hand-drawn map',
+   pre:'SECRET is written on three different corridors.',
+   post:'It shows the staff stairs and garden shortcut.',
+   clue:'Maya map shows a staff route to the garden'
+  },
+
+  {
+   x:6,y:5,
+   icon:'🎨',
+   name:'Drawing desk',
+   pre:'Maya has drawn everyone in the hotel.'
+  }
+ ]
+},
+
+
+"Mrs Bell's Room":{
+ floor:'first',
+ type:'bedroom',
+
+ doors:[
+  {x:8,y:3,to:'First Floor Landing',sx:1,sy:5}
+ ],
+
+ objects:[
+  {
+   x:2,y:1,
+   icon:'🛏️',
+   name:'Bed',
+   pre:'Very neat. Not one cushion is out of place.'
+  },
+
+  {
+   x:5,y:1,
+   icon:'🧥',
+   name:'Wardrobe',
+   post:'A dark-teal uniform jacket has a fresh torn sleeve.',
+   clue:'Mrs Bell dark-teal jacket has a torn sleeve'
+  },
+
+  {
+   x:2,y:5,
+   icon:'🔑',
+   name:'Bedside drawer',
+   post:'An envelope marked SPARE MASTER KEY is empty.',
+   clue:'Mrs Bell spare master-key envelope is empty'
+  },
+
+  {
+   x:6,y:5,
+   icon:'🖼️',
+   name:'Family photo',
+   pre:'Mrs Bell and Maya smiling in the hotel garden.'
+  }
+ ]
+},
+
+
+"Clara's Room":{
+ floor:'first',
+ type:'bedroom',
+
+ doors:[
+  {x:0,y:3,to:'First Floor Landing',sx:7,sy:1}
+ ],
+
+ objects:[
+  {
+   x:2,y:1,
+   icon:'🛏️',
+   name:'Bed',
+   pre:'A colourful scarf is thrown over the foot of the bed.'
+  },
+
+  {
+   x:5,y:1,
+   icon:'👗',
+   name:'Costume rail',
+   post:'Many stage costumes, but no hotel uniform.'
+  },
+
+  {
+   x:2,y:5,
+   icon:'🎭',
+   name:'Make-up case',
+   pre:'Brushes, powders and stage make-up.'
+  }
+ ]
+},
+
+
+"Sebastian's Room":{
+ floor:'first',
+ type:'bedroom',
+
+ doors:[
+  {x:0,y:3,to:'First Floor Landing',sx:7,sy:3}
+ ],
+
+ objects:[
+  {
+   x:2,y:1,
+   icon:'🛏️',
+   name:'Bed',
+   pre:'A newspaper lies folded on the blanket.'
+  },
+
+  {
+   x:5,y:1,
+   icon:'✉️',
+   name:'Letters',
+   post:'Several letters show Sebastian owes a lot of money.',
+   clue:'Sebastian has serious debts'
+  },
+
+  {
+   x:2,y:5,
+   icon:'♟️',
+   name:'Chess set',
+   pre:'A half-finished game.'
+  }
+ ]
+},
+
+
+"Marco's Room":{
+ floor:'first',
+ type:'bedroom',
+
+ doors:[
+  {x:0,y:3,to:'First Floor Landing',sx:7,sy:5}
+ ],
+
+ objects:[
+  {
+   x:2,y:1,
+   icon:'🛏️',
+   name:'Bed',
+   pre:'Sheet music is scattered across it.'
+  },
+
+  {
+   x:5,y:1,
+   icon:'📱',
+   name:'Phone',
+   post:'His call history confirms a call at 8:09 PM.',
+   clue:'Marco phone confirms his 8:09 PM call'
+  },
+
+  {
+   x:2,y:5,
+   icon:'🎼',
+   name:'Music case',
+   pre:'Scores, pencils and tuning tools.'
+  }
+ ]
+},
+
+
+'Second Floor Landing':{
+ floor:'second',
+ type:'normal',
+
+ doors:[
+  {x:4,y:6,to:'First Floor Landing',sx:4,sy:1},
+  {x:4,y:0,to:'Room 13',sx:1,sy:3},
+
+  {x:0,y:1,to:"Lady Celestine's Suite",sx:7,sy:3},
+  {x:0,y:4,to:"Felix's Room",sx:7,sy:3},
+
+  {x:8,y:1,to:"Amelia's Room",sx:1,sy:3},
+  {x:8,y:4,to:"Mr Harris's Room",sx:1,sy:3}
+ ],
+
+ objects:[
+  {
+   x:4,y:3,
+   icon:'🖼️',
+   name:'Founder portrait',
+   pre:'The hotel founder looks suspicious of everyone.'
+  }
+ ]
+},
+
+
+"Lady Celestine's Suite":{
+ floor:'second',
+ type:'suite',
+
+ doors:[
+  {x:8,y:3,to:'Second Floor Landing',sx:1,sy:1},
+  {x:4,y:6,to:'Celestine Bathroom',sx:4,sy:1}
+ ],
+
+ objects:[
+  {
+   x:1,y:1,
+   icon:'🛏️',
+   name:'Four-poster bed',
+   pre:'Huge, soft and ridiculously grand.'
+  },
+
+  {
+   x:3,y:1,
+   icon:'🛋️',
+   name:'Sitting area',
+   pre:'Velvet chairs around a marble fireplace.'
+  },
+
+  {
+   x:6,y:1,
+   icon:'💍',
+   name:'Jewellery cabinet',
+   post:'Other expensive jewellery is untouched.',
+   clue:'Thief ignored Lady Celestine other jewellery'
+  },
+
+  {
+   x:6,y:5,
+   icon:'🪞',
+   name:'Dressing table',
+   post:'A note confirms Amelia checked the clasp before the gala.',
+   clue:'Amelia checked the diamond clasp before the gala'
+  },
+
+  {
+   x:1,y:5,
+   icon:'🧳',
+   name:'Travel trunks',
+   pre:'Leather trunks with brass corners.'
+  }
+ ]
+},
+
+
+'Celestine Bathroom':{
+ floor:'second',
+ type:'bath',
+
+ doors:[
+  {x:4,y:0,to:"Lady Celestine's Suite",sx:4,sy:5}
+ ],
+
+ objects:[
+  {
+   x:2,y:2,
+   icon:'🛁',
+   name:'Bath',
+   pre:'A giant claw-foot bath.'
+  },
+
+  {
+   x:6,y:2,
+   icon:'🧴',
+   name:'Cabinet',
+   pre:'Perfume, soaps and creams.'
+  }
+ ]
+},
+
+
+"Felix's Room":{
+ floor:'second',
+ type:'bedroom',
+
+ doors:[
+  {x:8,y:3,to:'Second Floor Landing',sx:1,sy:4}
+ ],
+
+ objects:[
+  {
+   x:2,y:1,
+   icon:'🛏️',
+   name:'Bed',
+   pre:'Camera straps and memory-card cases are everywhere.'
+  },
+
+  {
+   x:5,y:1,
+   icon:'📷',
+   name:'Camera bag',
+   post:'An 8:12 photo shows a dark-teal sleeve near the staff route.',
+   clue:'Felix 8:12 photo shows a dark-teal sleeve near the staff route'
+  },
+
+  {
+   x:2,y:5,
+   icon:'💻',
+   name:'Laptop',
+   post:'Hundreds of gala photographs are copying across.'
+  }
+ ]
+},
+
+
+"Amelia's Room":{
+ floor:'second',
+ type:'bedroom',
+
+ doors:[
+  {x:0,y:3,to:'Second Floor Landing',sx:7,sy:1}
+ ],
+
+ objects:[
+  {
+   x:2,y:1,
+   icon:'🛏️',
+   name:'Bed',
+   pre:'A thick jewellery book is open on the duvet.'
+  },
+
+  {
+   x:5,y:1,
+   icon:'🛠️',
+   name:'Tool case',
+   post:'Professional jewellery cutters. Suspicious-looking, but normal for her job.',
+   clue:'Amelia owns cutters that could cut the chain'
+  },
+
+  {
+   x:2,y:5,
+   icon:'📖',
+   name:'Reference book',
+   pre:'Antique jewellery diagrams.'
+  }
+ ]
+},
+
+
+"Mr Harris's Room":{
+ floor:'second',
+ type:'bedroom',
+
+ doors:[
+  {x:0,y:3,to:'Second Floor Landing',sx:7,sy:4}
+ ],
+
+ objects:[
+  {
+   x:2,y:1,
+   icon:'🛏️',
+   name:'Bed',
+   pre:'His staff waistcoat is folded neatly.'
+  },
+
+  {
+   x:5,y:1,
+   icon:'👞',
+   name:'Shoes',
+   post:'Grey dust is packed into the soles.',
+   clue:'Harris shoes contain staff-stair dust'
+  },
+
+  {
+   x:2,y:5,
+   icon:'🧺',
+   name:'Laundry bag',
+   post:'A blue velvet fibre is caught in the fabric.',
+   clue:'Blue velvet fibre found in Harris room'
+  }
+ ]
+},
+
+
+'Room 13':{
+ floor:'second',
+ type:'bedroom',
+
+ doors:[
+  {x:0,y:3,to:'Second Floor Landing',sx:4,sy:1}
+ ],
+
+ objects:[
+  {
+   x:3,y:2,
+   icon:'📦',
+   name:'Storage box',
+   post:'Inside are a torn white glove and a blue velvet fibre.',
+   clue:'Room 13 contains a torn glove and blue velvet fibre'
+  },
+
+  {
+   x:6,y:2,
+   icon:'🪑',
+   name:'Covered furniture',
+   post:'Old hotel furniture under sheets.'
+  }
+ ]
+},
+
+
+'Staff Staircase':{
+ floor:'second',
+ type:'staff',
+
+ doors:[
+  {x:4,y:6,to:'Staff Hall',sx:4,sy:1},
+  {x:4,y:0,to:'Second Floor Landing',sx:4,sy:5}
+ ],
+
+ objects:[
+  {
+   x:2,y:3,
+   icon:'👣',
+   name:'Dusty step',
+   post:'Fresh prints disturb the grey dust.',
+   clue:'Fresh footprints used the staff staircase'
+  }
+ ]
+},
+
+
+'Garden':{
+ floor:'garden',
+ type:'garden',
+
+ doors:[
+  {x:4,y:0,to:'Lounge',sx:4,sy:5},
+  {x:0,y:5,to:'Staff Hall',sx:7,sy:5}
+ ],
+
+ objects:[
+  {
+   x:4,y:3,
+   icon:'⛲',
+   name:'Fountain',
+   pre:'Water sparkles under fairy lights.',
+   post:'A damp footprint points toward the staff entrance.',
+   clue:'Damp footprint leads toward the staff entrance'
+  },
+
+  {
+   x:1,y:1,
+   icon:'🌳',
+   name:'Hedge',
+   post:'A blue velvet thread is caught on a branch.',
+   clue:'Blue velvet thread caught in garden hedge'
+  },
+
+  {
+   x:7,y:1,
+   icon:'🌹',
+   name:'Rose bed',
+   pre:'The garden smells amazing.'
+  },
+
+  {
+   x:7,y:5,
+   icon:'🪑',
+   name:'Bench',
+   pre:'A quiet place away from the hotel.'
+  }
+ ]
+}
+
 };
 
 
-/* =========================
-RULES
-========================= */
-
-document.getElementById("rulesButton")
-.addEventListener("click", () => {
-
-  rules.style.display = "none";
-  setup.style.display = "block";
-
-  showMessage(
-    "Create your character to begin."
-  );
-
-});
-
-
-/* =========================
-CHARACTER CREATOR
-========================= */
-
-document.querySelectorAll(".character")
-.forEach(button => {
-
-  button.addEventListener("click", () => {
-
-    document.querySelectorAll(".character")
-    .forEach(other => {
-      other.classList.remove("selected");
-    });
-
-    button.classList.add("selected");
-
-    playerCharacter =
-      button.dataset.character;
-
-  });
-
-});
-
-
-childButton.addEventListener("click", () => {
-
-  playerAge = "child";
-
-  childButton.textContent = "✅ 🧒 Child";
-  adultButton.textContent = "🧑 Adult";
-
-});
-
-
-adultButton.addEventListener("click", () => {
-
-  playerAge = "adult";
-
-  adultButton.textContent = "✅ 🧑 Adult";
-  childButton.textContent = "🧒 Child";
-
-});
-
-
-startButton.addEventListener("click", () => {
-
-  playerName =
-    nameInput.value.trim();
-
-  if(playerName === ""){
-    alert("Enter your name first!");
-    return;
-  }
-
-  if(playerCharacter === ""){
-    alert("Choose a character!");
-    return;
-  }
-
-  if(playerAge === ""){
-    alert("Choose child or adult!");
-    return;
-  }
-
-  setup.style.display = "none";
-
-  startStory();
-
-});
-
-
-/* =========================
-STORY
-========================= */
-
-function startStory(){
-
-  showMessage(`
-    ${playerCharacter}
-    <b>${playerName}</b>
-    arrives at the Blackwood Grand Hotel.
-    <br><br>
-
-    Suddenly...
-    <br><br>
-
-    😱 <b>"MY DIAMOND!"</b>
-    <br><br>
-
-    Lady Celestine's famous
-    Blue Diamond has vanished.
-    💎
-  `);
-
-  if(playerAge === "child"){
-
-    showChoices([
-      ["🔎 Investigate", guardianStops],
-      ["😇 Stay out of it", mysteriousNote]
-    ]);
-
-  }else{
-
-    showChoices([
-      ["🔎 Investigate", enterHotel],
-      ["🙅 Stay out of it", adultSuspect]
-    ]);
-
-  }
-
-}
-
-
-function guardianStops(){
-
-  showMessage(`
-    🧑‍🧑‍🧒 <b>Your guardian:</b>
-    <br><br>
-
-    "Absolutely NOT!"
-    😑
-    <br><br>
-
-    "You are not investigating
-    a stolen diamond."
-  `);
-
-  showChoices([
-    ["🤫 Sneak away", enterHotel],
-    ["😇 Okay...", mysteriousNote]
-  ]);
-
-}
-
-
-function mysteriousNote(){
-
-  showMessage(`
-    You walk away.
-    <br><br>
-
-    Then you notice a folded note.
-    📜
-    <br><br>
-
-    <b>
-    YOU ARE IN DANGER.
-    <br>
-    GO TO ROOM 13.
-    </b>
-  `);
-
-  showChoices([
-    ["😳 Investigate", enterHotel]
-  ]);
-
-}
-
-
-function adultSuspect(){
-
-  showMessage(`
-    You decide to stay out of it.
-    <br><br>
-
-    Hotel security approaches.
-    <br><br>
-
-    "Someone matching your description
-    was seen near Lady Celestine."
-    😳
-  `);
-
-  showChoices([
-    ["🔎 Investigate", enterHotel]
-  ]);
-
-}
-
-
-/* =========================
-ROOM DATA
-========================= */
-
-const rooms = {
-
-Ballroom:{
-
-people:[
-
-{
-name:"Lady Celestine",
-icon:"👒",
-x:5,
-y:1,
-id:"Celestine",
-text:`
-👒 <b>Lady Celestine</b>
-<br><br>
-"The diamond was still attached
-to my clutch at 9:10."
-`
+/* =====================
+   HOTEL PEOPLE
+===================== */
+
+const people={
+
+'Maya Bell':{
+ child:true,
+ skin:'#c78b68',
+ hair:'#3a261d',
+ shirt:'#e7a05c',
+ pants:'#536781',
+ room:'First Floor Landing',
+ x:3,
+ y:3,
+ route:[
+  "Maya's Room",
+  'First Floor Landing',
+  'Lobby',
+  'Lounge',
+  'Garden',
+  'Lobby'
+ ]
 },
 
-{
-name:"Marco",
-icon:"🎹",
-x:1,
-y:1,
-id:"Marco",
-text:`
-🎹 <b>Marco the Pianist</b>
-<br><br>
-"I never left the piano.
-Not even once."
-`
-}
-
-],
-
-objects:[
-
-{
-name:"Silver Clutch",
-icon:"👜",
-x:5,
-y:2,
-clue:"✂️ Cut diamond chain",
-text:`
-👜 You examine the clutch.
-<br><br>
-The diamond chain was
-<b>cut cleanly.</b>
-✂️
-`
-}
-
-],
-
-doors:[
-{x:3,y:0,to:"Library",startX:3,startY:4},
-{x:6,y:3,to:"Garden",startX:1,startY:3},
-{x:0,y:3,to:"Kitchen",startX:5,startY:3}
-]
-
+'Mrs Bell':{
+ skin:'#c78b68',
+ hair:'#34241d',
+ shirt:'#2e666c',
+ pants:'#303940',
+ room:'Lobby',
+ x:2,
+ y:3,
+ route:[
+  'Lobby',
+  'Staff Hall',
+  'Hotel Office',
+  'Lobby',
+  "Mrs Bell's Room"
+ ]
 },
 
-
-Library:{
-
-people:[
-
-{
-name:"Sebastian",
-icon:"🎩",
-x:2,
-y:2,
-id:"Sebastian",
-text:`
-🎩 <b>Sebastian</b>
-<br><br>
-"I was in this library
-the entire evening."
-`
-}
-
-],
-
-objects:[
-
-{
-name:"Library Record",
-icon:"📖",
-x:5,
-y:1,
-clue:"📖 Sebastian returned his book at 8:55",
-text:`
-📖 The library record says:
-<br><br>
-Sebastian borrowed a book at 8:40.
-<br><br>
-He returned it at
-<b>8:55.</b>
-😳
-`
-}
-
-],
-
-doors:[
-{x:3,y:5,to:"Ballroom",startX:3,startY:1},
-{x:6,y:3,to:"Room 13",startX:1,startY:3}
-]
-
+'Lady Celestine':{
+ skin:'#e8bfa0',
+ hair:'#d6cab9',
+ shirt:'#8c5e92',
+ pants:'#5a475e',
+ room:'Ballroom',
+ x:6,
+ y:3,
+ route:[
+  'Ballroom',
+  'Lounge',
+  "Lady Celestine's Suite",
+  'Ballroom'
+ ]
 },
 
-
-Garden:{
-
-people:[
-
-{
-name:"Clara Vale",
-icon:"🎭",
-x:4,
-y:2,
-id:"Clara",
-text:`
-🎭 <b>Clara Vale</b>
-<br><br>
-"I was outside in the garden.
-That's why my shoes are muddy."
-`
-}
-
-],
-
-objects:[
-
-{
-name:"Footprints",
-icon:"👣",
-x:2,
-y:3,
-clue:"👣 Muddy footprints lead INTO the hotel",
-text:`
-👣 You examine the footprints.
-<br><br>
-They lead
-<b>towards the hotel.</b>
-<br><br>
-Not away from it.
-🤔
-`
-}
-
-],
-
-doors:[
-{x:0,y:3,to:"Ballroom",startX:5,startY:3}
-]
-
+'Sebastian':{
+ skin:'#dcae89',
+ hair:'#5a402f',
+ shirt:'#65517d',
+ pants:'#333846',
+ room:'Lounge',
+ x:3,
+ y:3,
+ route:[
+  'Lounge',
+  'Lobby',
+  'Dining Room',
+  "Sebastian's Room"
+ ]
 },
 
-
-Kitchen:{
-
-people:[
-
-{
-name:"Mr Harris",
-icon:"🍷",
-x:2,
-y:2,
-id:"Harris",
-text:`
-🍷 <b>Mr Harris</b>
-<br><br>
-"I was serving drinks.
-I never carried any blue bag."
-`
-}
-
-],
-
-objects:[
-
-{
-name:"Blue Velvet Bag",
-icon:"🛍️",
-x:4,
-y:1,
-clue:"🛍️ Blue velvet bag",
-text:`
-🛍️ You inspect the bag.
-<br><br>
-Something shiny is caught
-inside the lining.
-✨
-`
-}
-
-],
-
-doors:[
-{x:6,y:3,to:"Ballroom",startX:1,startY:3}
-]
-
+'Clara Vale':{
+ skin:'#d2a07c',
+ hair:'#773136',
+ shirt:'#a84c68',
+ pants:'#4c3c48',
+ room:'Lounge',
+ x:5,
+ y:3,
+ route:[
+  'Lounge',
+  'Ballroom',
+  'Lobby',
+  "Clara's Room"
+ ]
 },
 
-
-"Room 13":{
-
-people:[],
-
-objects:[
-
-{
-name:"Secret Note",
-icon:"📜",
-x:2,
-y:1,
-clue:"📜 Code 413",
-text:`
-📜 The note says:
-<br><br>
-<b>4 - 1 - 3</b>
-<br><br>
-It looks like a code.
-`
+'Marco Bellini':{
+ skin:'#b67b5b',
+ hair:'#251a16',
+ shirt:'#3f6b86',
+ pants:'#29333e',
+ room:'Ballroom',
+ x:2,
+ y:3,
+ route:[
+  'Ballroom',
+  'Dining Room',
+  'Lobby',
+  "Marco's Room"
+ ]
 },
 
-{
-name:"Locked Box",
-icon:"📦",
-x:4,
-y:2,
-special:"box"
-}
+'Mr Harris':{
+ skin:'#865941',
+ hair:'#28201c',
+ shirt:'#715d40',
+ pants:'#313638',
+ room:'Dining Room',
+ x:4,
+ y:3,
+ route:[
+  'Dining Room',
+  'Kitchen',
+  'Staff Hall',
+  "Mr Harris's Room"
+ ]
+},
 
-],
+'Felix Crane':{
+ skin:'#dfb493',
+ hair:'#92734b',
+ shirt:'#49776e',
+ pants:'#343d46',
+ room:'Lobby',
+ x:6,
+ y:3,
+ route:[
+  'Lobby',
+  'Lounge',
+  'Ballroom',
+  "Felix's Room"
+ ]
+},
 
-doors:[
-{x:0,y:3,to:"Library",startX:5,startY:3}
-]
+'Amelia Frost':{
+ skin:'#edc09f',
+ hair:'#c9aa68',
+ shirt:'#6878aa',
+ pants:'#353b4b',
+ room:'Ballroom',
+ x:3,
+ y:4,
+ route:[
+  'Ballroom',
+  'Lounge',
+  "Amelia's Room"
+ ]
+},
 
+'Detective Grimble':{
+ skin:'#d8ac88',
+ hair:'#555',
+ shirt:'#6b533e',
+ pants:'#302c29',
+ room:'Lobby',
+ x:4,
+ y:3,
+ route:[
+  'Lobby',
+  'Ballroom',
+  'Lounge',
+  'Dining Room'
+ ],
+ hidden:true
 }
 
 };
 
 
-/* =========================
-ENTER HOTEL
-========================= */
+/* =====================
+   START
+===================== */
 
-function enterHotel(){
+function setAge(age){
 
-  clearChoices();
+ player.age=age;
 
-  currentRoom = "Ballroom";
+ document.getElementById('ageLabel').textContent=
+ age==='child'
+ ? '🧒 Child selected'
+ : '🧑 Adult selected';
+}
 
-  playerX = 3;
-  playerY = 4;
 
-  roomElement.style.display = "grid";
-  controls.style.display = "block";
-  notebookButton.style.display = "inline-block";
+function startGame(){
 
-  showMessage(`
-    🎮 <b>Investigation started!</b>
-    <br><br>
+ const n=
+ document.getElementById('playerName').value.trim();
 
-    Use the arrows to walk.
-    <br>
-    🚪 Walk onto doors.
-    <br>
-    💬 Stand beside people.
-    <br>
-    🔎 Stand beside objects.
-    <br>
-    📓 Use your notebook whenever you want.
+ if(!n){
+  alert('Enter your name first!');
+  return;
+ }
+
+ if(!player.age){
+  alert('Choose child or adult!');
+  return;
+ }
+
+ player.name=n;
+
+ document.getElementById('start').classList.add('hidden');
+
+ document.getElementById('topbar').style.display='flex';
+ document.getElementById('room').style.display='grid';
+ document.getElementById('controls').style.display='block';
+
+ if(player.age==='child'){
+
+  message(`
+  You unpack in your cosy room.
+
+  <br><br>
+
+  Your parent says:
+
+  <br><br>
+
+  “Explore if you like, but stay out of staff-only areas
+  and be back for bed.”
+
+  <br><br>
+
+  The gala is tonight.
   `);
 
-  drawRoom();
+ }else{
 
+  message(`
+  You unpack in your room.
+
+  <br><br>
+
+  The gala is tonight,
+  and you have time to explore first.
+  `);
+ }
+
+ draw();
 }
 
 
-/* =========================
-DRAW ROOM
-========================= */
+/* =====================
+   DISPLAY
+===================== */
 
-function drawRoom(){
+function floorName(f){
 
-  roomElement.innerHTML = "";
+ return {
+  ground:'Ground Floor',
+  first:'First Floor',
+  second:'Second Floor',
+  garden:'Garden'
+ }[f]||f;
+}
 
-  roomNameElement.textContent =
-    "🏨 " + currentRoom;
 
-  const data = rooms[currentRoom];
+function timeText(){
 
-  for(let y=0;y<height;y++){
+ let h=Math.floor(minutes/60);
+ let m=minutes%60;
 
-    for(let x=0;x<width;x++){
+ const suffix=h>=12?'PM':'AM';
 
-      const tile =
-        document.createElement("div");
+ h%=12;
 
-      tile.className = "tile";
+ if(h===0){
+  h=12;
+ }
 
-      const person =
-        data.people.find(
-          p => p.x===x && p.y===y
-        );
+ return `${h}:${String(m).padStart(2,'0')} ${suffix}`;
+}
 
-      const object =
-        data.objects.find(
-          o => o.x===x && o.y===y
-        );
 
-      const door =
-        data.doors.find(
-          d => d.x===x && d.y===y
-        );
+function personHTML(name,p,isPlayer=false){
 
-      if(
-        playerX===x &&
-        playerY===y
-      ){
+ return `
+ <div
+ class="person ${p.child?'child':''} ${isPlayer?'player':''}"
+ style="
+ --skin:${p.skin};
+ --hair:${p.hair};
+ --shirt:${p.shirt};
+ --pants:${p.pants}
+ ">
+  <div class="head"></div>
+  <div class="hair"></div>
+  <div class="eye a"></div>
+  <div class="eye b"></div>
+  <div class="body"></div>
+  <div class="arm a"></div>
+  <div class="arm b"></div>
+  <div class="leg a"></div>
+  <div class="leg b"></div>
+  <div class="tag">${name}</div>
+ </div>
+ `;
+}
 
-        tile.textContent =
-          playerCharacter;
 
-      }
+function draw(){
 
-      else if(person){
+ if(gameOver){
+  return;
+ }
 
-        tile.textContent =
-          person.icon;
+ const r=rooms[player.room];
+ const board=document.getElementById('room');
 
-      }
+ board.innerHTML='';
 
-      else if(object){
+ document.getElementById('roomName').textContent=
+ player.room;
 
-        tile.textContent =
-          object.icon;
+ document.getElementById('dayLabel').textContent=
+ `Day ${day}`;
 
-      }
+ document.getElementById('timeLabel').textContent=
+ timeText();
 
-      else if(door){
+ document.getElementById('floorLabel').textContent=
+ floorName(r.floor);
 
-        tile.textContent = "🚪";
-        tile.classList.add("door");
+ document.getElementById('deadlineLabel').textContent=
+ theft
+ ? '⏳ Solve by Day 3, 8 PM'
+ : '';
 
-      }
+ for(let y=0;y<H;y++){
 
-      roomElement.appendChild(tile);
+  for(let x=0;x<W;x++){
 
-    }
+   const tile=document.createElement('div');
 
+   tile.className='tile';
+
+   if(r.type==='garden'){
+    tile.classList.add('garden');
+   }
+
+   if(r.type==='staff'){
+    tile.classList.add('staff');
+   }
+
+   if(r.type==='suite'){
+    tile.classList.add('suite');
+   }
+
+   if(r.type==='bath'){
+    tile.classList.add('bath');
+   }
+
+   const door=
+   r.doors.find(d=>d.x===x&&d.y===y);
+
+   const object=
+   r.objects.find(o=>o.x===x&&o.y===y);
+
+   const npc=
+   Object.entries(people).find(([name,p])=>
+    !p.hidden &&
+    p.room===player.room &&
+    p.x===x &&
+    p.y===y
+   );
+
+   if(player.x===x && player.y===y){
+
+    tile.innerHTML=
+    personHTML(
+     player.name,
+     {
+      skin:'#d6a57d',
+      hair:'#36251d',
+      shirt:'#3979ad',
+      pants:'#303b50',
+      child:player.age==='child'
+     },
+     true
+    );
+
+   }else if(npc){
+
+    tile.innerHTML=
+    personHTML(npc[0],npc[1]);
+
+   }else if(object){
+
+    tile.textContent=object.icon;
+
+   }else if(door){
+
+    const stair=
+    door.to.includes('Stair') ||
+    door.to.includes('Landing') ||
+    player.room.includes('Stair');
+
+    tile.textContent=
+    stair ? '🪜' : '🚪';
+
+    tile.classList.add(
+     stair ? 'stairs' : 'door'
+    );
+   }
+
+   board.appendChild(tile);
   }
+ }
 
-  checkNearby();
+ checkNearby();
 
+ document.getElementById('bedBtn').classList.toggle(
+  'hidden',
+  !(player.room==='Your Room' && minutes>=20*60)
+ );
 }
 
 
-/* =========================
-MOVEMENT
-========================= */
+/* =====================
+   PLAYER MOVEMENT
+===================== */
 
-function move(dx,dy){
+function isBlocked(room,x,y){
 
-  const newX = playerX + dx;
-  const newY = playerY + dy;
+ const objectBlocked=
+ room.objects.some(o=>o.x===x&&o.y===y);
+
+ const personBlocked=
+ Object.values(people).some(p=>
+  !p.hidden &&
+  p.room===player.room &&
+  p.x===x &&
+  p.y===y
+ );
+
+ return objectBlocked || personBlocked;
+}
+
+
+function movePlayer(dx,dy){
+
+ if(gameOver || paused){
+  return;
+ }
+
+ clearChoices();
+
+ const nx=player.x+dx;
+ const ny=player.y+dy;
+
+ if(nx<0 || nx>=W || ny<0 || ny>=H){
+  return;
+ }
+
+ const room=rooms[player.room];
+
+ const door=
+ room.doors.find(d=>d.x===nx&&d.y===ny);
+
+ if(door){
+
+  const destination=
+  rooms[door.to];
 
   if(
-    newX<0 ||
-    newX>=width ||
-    newY<0 ||
-    newY>=height
+   player.age==='child' &&
+   destination.type==='staff'
   ){
-    return;
-  }
 
-  const data =
-    rooms[currentRoom];
+   parentWarnings++;
 
-  const personThere =
-    data.people.find(
-      p => p.x===newX && p.y===newY
-    );
+   if(parentWarnings===1){
 
-  const objectThere =
-    data.objects.find(
-      o => o.x===newX && o.y===newY
-    );
+    message(`
+    😬 Your parent calls after you:
 
-  if(personThere || objectThere){
-    return;
-  }
+    <br><br>
 
-  const doorThere =
-    data.doors.find(
-      d => d.x===newX && d.y===newY
-    );
-
-  if(doorThere){
-
-    currentRoom =
-      doorThere.to;
-
-    playerX =
-      doorThere.startX;
-
-    playerY =
-      doorThere.startY;
-
-    clearChoices();
-
-    showMessage(`
-      🚪 You enter the
-      <b>${currentRoom}</b>.
+    “Stay out of staff-only areas!”
     `);
 
-    drawRoom();
+   }else if(parentWarnings===2){
+
+    message(`
+    😠 Your parent catches you near
+    another staff area.
+
+    <br><br>
+
+    “I already warned you.”
+    `);
+
+   }else{
+
+    message(`
+    😱 Caught again.
+
+    <br><br>
+
+    Your parent marches you back to your room.
+
+    <br><br>
+
+    You lose 20 minutes.
+    `);
+
+    sendHome();
+
+    minutes+=20;
+
+    draw();
 
     return;
+   }
   }
 
-  playerX = newX;
-  playerY = newY;
+  player.room=door.to;
+  player.x=door.sx;
+  player.y=door.sy;
 
-  drawRoom();
+  advanceTime(3);
 
+  if(mayaFollow){
+   moveMayaWithPlayer();
+  }
+
+  draw();
+
+  return;
+ }
+
+ if(isBlocked(room,nx,ny)){
+  return;
+ }
+
+ player.x=nx;
+ player.y=ny;
+
+ advanceTime(1);
+
+ draw();
 }
 
 
-/* =========================
-ARROWS
-========================= */
+/* =====================
+   GAME TIME
+===================== */
 
-document
-.querySelectorAll("[data-move]")
-.forEach(button => {
+function advanceTime(amount){
 
-  button.addEventListener("click", () => {
+ minutes+=amount;
 
-    const parts =
-      button.dataset.move.split(",");
+ if(
+  day===1 &&
+  !theft &&
+  minutes>=20*60
+ ){
 
-    move(
-      Number(parts[0]),
-      Number(parts[1])
-    );
+  triggerTheft();
+ }
 
-  });
+ if(
+  theft &&
+  !grimble &&
+  minutes>=20*60+20
+ ){
 
-});
+  detectiveArrival();
+ }
+
+ if(
+  player.age==='child' &&
+  minutes>=22*60+15 &&
+  player.room!=='Your Room'
+ ){
+
+  message(`
+  🌙 Your parent finds you.
+
+  <br><br>
+
+  “Bed. Now.”
+
+  <br><br>
+
+  You are taken back to your room.
+  `);
+
+  sendHome();
+ }
+
+ if(
+  day===3 &&
+  minutes>=20*60
+ ){
+
+  badEnding();
+ }
+}
 
 
-/* =========================
-NEARBY
-========================= */
+function triggerTheft(){
+
+ theft=true;
+
+ message(`
+ 💡 <b>FLICKER.</b>
+
+ <br><br>
+
+ A scream comes from the Ballroom.
+
+ <br><br>
+
+ 💎 <b>The Blue Diamond has been stolen!</b>
+
+ <br><br>
+
+ You have until Day 3 at 8 PM to solve it.
+ `);
+
+ addNote(
+ 'The Blue Diamond disappeared at about 8:00 PM on Day 1.'
+ );
+}
+
+
+function detectiveArrival(){
+
+ grimble=true;
+
+ people['Detective Grimble'].hidden=false;
+ people['Detective Grimble'].room='Lobby';
+ people['Detective Grimble'].x=4;
+ people['Detective Grimble'].y=3;
+
+ message(`
+ 🚔 Detective Grimble arrives.
+
+ <br><br>
+
+ He looks around for about ten seconds.
+
+ <br><br>
+
+ “Sebastian looks worried.
+ Very suspicious.”
+
+ <br><br>
+
+ Oh dear. 😂
+ `);
+
+ addNote(
+ 'Grimble immediately suspected Sebastian for looking worried.'
+ );
+}
+
+
+/* =====================
+   DAYS + BEDTIME
+===================== */
+
+function sendHome(){
+
+ player.room='Your Room';
+ player.x=4;
+ player.y=5;
+}
+
+
+function goToBed(){
+
+ if(player.room!=='Your Room'){
+  return;
+ }
+
+ if(day>=3){
+  return;
+ }
+
+ day++;
+
+ minutes=8*60;
+
+ parentWarnings=
+ Math.max(0,parentWarnings-1);
+
+ resetMorning();
+
+ showBanner(
+  `🌅 DAY ${day}`,
+  day===2
+  ? 'A full new day to investigate.'
+  : 'Final day. Solve it before Grimble does!'
+ );
+
+ draw();
+}
+
+
+function showBanner(title,text){
+
+ const banner=
+ document.getElementById('banner');
+
+ banner.innerHTML=`
+ <h1>${title}</h1>
+ <p>${text}</p>
+ <button onclick="closeBanner()">Start the day</button>
+ `;
+
+ banner.style.display='flex';
+
+ paused=true;
+}
+
+
+function closeBanner(){
+
+ document.getElementById('banner').style.display='none';
+
+ paused=false;
+}
+
+
+function resetMorning(){
+
+ const starts={
+
+  'Maya Bell':[
+   "Maya's Room",4,3
+  ],
+
+  'Mrs Bell':[
+   'Lobby',2,3
+  ],
+
+  'Lady Celestine':[
+   "Lady Celestine's Suite",4,3
+  ],
+
+  'Sebastian':[
+   'Dining Room',3,3
+  ],
+
+  'Clara Vale':[
+   'Lounge',4,3
+  ],
+
+  'Marco Bellini':[
+   'Ballroom',3,3
+  ],
+
+  'Mr Harris':[
+   'Dining Room',6,3
+  ],
+
+  'Felix Crane':[
+   'Garden',6,4
+  ],
+
+  'Amelia Frost':[
+   'Lounge',6,3
+  ],
+
+  'Detective Grimble':[
+   'Lobby',5,3
+  ]
+ };
+
+ for(const [name,spot] of Object.entries(starts)){
+
+  if(
+   people[name] &&
+   !people[name].hidden
+  ){
+
+   people[name].room=spot[0];
+   people[name].x=spot[1];
+   people[name].y=spot[2];
+  }
+ }
+}
+
+
+/* =====================
+   NPC WALKING
+===================== */
+
+function npcTick(){
+
+ if(
+  paused ||
+  gameOver ||
+  !document.getElementById('start')
+   .classList.contains('hidden')
+ ){
+  return;
+ }
+
+ for(const [name,p] of Object.entries(people)){
+
+  if(p.hidden){
+   continue;
+  }
+
+  if(
+   name==='Maya Bell' &&
+   mayaFollow
+  ){
+   continue;
+  }
+
+  /*
+   IF YOU CAN SEE THEM:
+   they walk one square instead of teleporting.
+  */
+
+  if(p.room===player.room){
+
+   lastSeen[name]=p.room;
+
+   const directions=[
+    [1,0],
+    [-1,0],
+    [0,1],
+    [0,-1]
+   ];
+
+   const d=
+   directions[
+    Math.floor(
+     Math.random()*directions.length
+    )
+   ];
+
+   const nx=p.x+d[0];
+   const ny=p.y+d[1];
+
+   const room=rooms[p.room];
+
+   const hitsObject=
+   room.objects.some(o=>
+    o.x===nx &&
+    o.y===ny
+   );
+
+   const hitsPlayer=
+   nx===player.x &&
+   ny===player.y;
+
+   const hitsPerson=
+   Object.values(people).some(other=>
+    other!==p &&
+    !other.hidden &&
+    other.room===p.room &&
+    other.x===nx &&
+    other.y===ny
+   );
+
+   if(
+    nx>0 &&
+    nx<W-1 &&
+    ny>0 &&
+    ny<H-1 &&
+    !hitsObject &&
+    !hitsPlayer &&
+    !hitsPerson
+   ){
+
+    p.x=nx;
+    p.y=ny;
+   }
+
+  }else if(Math.random()<0.08){
+
+   /*
+   OFFSCREEN:
+   characters continue their hotel routine.
+  */
+
+   p.routeIndex=
+   ((p.routeIndex||0)+1) %
+   p.route.length;
+
+   p.room=
+   p.route[p.routeIndex];
+
+   p.x=
+   1+Math.floor(Math.random()*7);
+
+   p.y=
+   1+Math.floor(Math.random()*5);
+  }
+ }
+
+ draw();
+}
+
+
+setInterval(npcTick,1200);
+
+
+/* =====================
+   MAYA FOLLOWING
+===================== */
+
+function moveMayaWithPlayer(){
+
+ const maya=
+ people['Maya Bell'];
+
+ if(
+  rooms[player.room].type==='staff' ||
+  player.room==="Mrs Bell's Room" ||
+  player.room==="Lady Celestine's Suite"
+ ){
+  return;
+ }
+
+ maya.room=player.room;
+
+ const possible=[
+  [player.x-1,player.y],
+  [player.x+1,player.y],
+  [player.x,player.y-1],
+  [player.x,player.y+1]
+ ];
+
+ const room=
+ rooms[player.room];
+
+ const spot=
+ possible.find(([x,y])=>
+
+  x>0 &&
+  x<W-1 &&
+  y>0 &&
+  y<H-1 &&
+
+  !room.objects.some(o=>
+   o.x===x &&
+   o.y===y
+  )
+ );
+
+ if(spot){
+
+  maya.x=spot[0];
+  maya.y=spot[1];
+ }
+}
+
+
+/* =====================
+   NEARBY ACTIONS
+===================== */
 
 function checkNearby(){
 
-  nearbyPerson = null;
-  nearbyObject = null;
+ nearbyPerson=null;
+ nearbyObject=null;
 
-  const data =
-    rooms[currentRoom];
+ for(const [name,p] of Object.entries(people)){
 
-  for(const person of data.people){
-
-    const distance =
-      Math.abs(playerX-person.x)
-      +
-      Math.abs(playerY-person.y);
-
-    if(distance===1){
-
-      nearbyPerson =
-        person;
-
-      break;
-    }
-
+  if(
+   p.hidden ||
+   p.room!==player.room
+  ){
+   continue;
   }
 
-  for(const object of data.objects){
+  const distance=
+  Math.abs(player.x-p.x) +
+  Math.abs(player.y-p.y);
 
-    const distance =
-      Math.abs(playerX-object.x)
-      +
-      Math.abs(playerY-object.y);
-
-    if(distance===1){
-
-      nearbyObject =
-        object;
-
-      break;
-    }
-
+  if(distance===1){
+   nearbyPerson=name;
   }
+ }
 
-  if(nearbyPerson){
+ for(const object of rooms[player.room].objects){
 
-    talkButton.style.display =
-      "inline-block";
+  const distance=
+  Math.abs(player.x-object.x) +
+  Math.abs(player.y-object.y);
 
-    talkButton.textContent =
-      "💬 " + nearbyPerson.name;
-
-  }else{
-
-    talkButton.style.display =
-      "none";
-
+  if(distance===1){
+   nearbyObject=object;
   }
+ }
 
-  if(nearbyObject){
+ const talk=
+ document.getElementById('talkBtn');
 
-    inspectButton.style.display =
-      "inline-block";
+ const inspect=
+ document.getElementById('inspectBtn');
 
-    inspectButton.textContent =
-      "🔎 " + nearbyObject.name;
+ const listen=
+ document.getElementById('listenBtn');
 
-  }else{
+ talk.classList.toggle(
+  'hidden',
+  !nearbyPerson
+ );
 
-    inspectButton.style.display =
-      "none";
+ inspect.classList.toggle(
+  'hidden',
+  !nearbyObject
+ );
 
-  }
+ if(nearbyPerson){
+  talk.textContent=
+  '💬 '+nearbyPerson;
+ }
 
+ if(nearbyObject){
+  inspect.textContent=
+  '🔎 '+nearbyObject.name;
+ }
+
+ listen.classList.toggle(
+  'hidden',
+  !(
+   theft &&
+   day>=2 &&
+   player.room==='Staff Hall'
+  )
+ );
 }
 
 
-/* =========================
-TALK
-========================= */
+/* =====================
+   TALKING
+===================== */
 
-talkButton.addEventListener("click", () => {
+function talk(){
 
-  if(!nearbyPerson){
-    return;
-  }
+ if(!nearbyPerson){
+  return;
+ }
 
-  if(
-    !talkedTo.includes(
-      nearbyPerson.id
-    )
-  ){
+ paused=true;
 
-    talkedTo.push(
-      nearbyPerson.id
-    );
+ lastSeen[nearbyPerson]=
+ player.room;
 
-  }
+ if(nearbyPerson==='Maya Bell'){
 
-  clearChoices();
+  mayaTalk();
 
-  showMessage(
-    nearbyPerson.text
+  return;
+ }
+
+ const name=
+ nearbyPerson;
+
+ const options=[
+  [
+   '🙂 Chat',
+   ()=>chat(name)
+  ]
+ ];
+
+ if(theft){
+
+  options.push(
+   [
+    '💎 Ask about the theft',
+    ()=>theftChat(name)
+   ],
+   [
+    '🕘 Ask for alibi',
+    ()=>alibi(name)
+   ]
   );
 
-});
+  if(evidence.length>=2){
 
-
-/* =========================
-INSPECT
-========================= */
-
-inspectButton.addEventListener("click", () => {
-
-  if(!nearbyObject){
-    return;
+   options.push([
+    '🔎 Ask about evidence',
+    ()=>evidenceChat(name)
+   ]);
   }
+ }
 
-  if(
-    nearbyObject.special==="box"
-  ){
+ if(name==='Detective Grimble'){
 
-    lockedBox();
-    return;
-  }
+  options.push([
+   '🕵️ Who do you suspect?',
+   grimbleTheory
+  ]);
+ }
 
-  clearChoices();
-
-  showMessage(
-    nearbyObject.text
-  );
-
-  if(nearbyObject.clue){
-
-    addEvidence(
-      nearbyObject.clue
-    );
-
-  }
-
-});
+ showChoices(options);
+}
 
 
-/* =========================
-LOCKED BOX
-========================= */
+/* =====================
+   MAYA
+===================== */
 
-function lockedBox(){
+function mayaTalk(){
 
-  showMessage(`
-    📦 Three number wheels.
+ const options=[];
+
+ options.push([
+  '💬 What are you doing?',
+  ()=>{
+
+   if(day===1 && !theft){
+
+    message(`
+    Maya:
+
     <br><br>
-    What is the code?
-  `);
 
-  showChoices([
-    ["413",openBox],
-    ["431",wrongCode],
-    ["314",wrongCode],
-    ["134",wrongCode]
+    “Exploring.
+
+    Living in a hotel is brilliant.
+
+    There are secret stairs,
+    weird guests,
+    and one cupboard that smells like old socks.”
+
+    😂
+    `);
+
+   }else if(day===2){
+
+    message(`
+    Maya:
+
+    <br><br>
+
+    “Grimble asked whether I stole the diamond
+    because I'm small enough to hide under tables.”
+
+    <br><br>
+
+    “I told him that was ridiculous.”
+    `);
+
+   }else{
+
+    message(`
+    Maya:
+
+    <br><br>
+
+    “We HAVE to solve this today.
+
+    Grimble is getting dangerously confident.”
+    `);
+   }
+
+   doneTalk();
+  }
+ ]);
+
+
+ if(
+  player.age==='child' &&
+  !mayaFriend
+ ){
+
+  options.push([
+   '🤝 Want to be friends?',
+   ()=>{
+
+    mayaFriend=true;
+
+    addNote(
+     'You and Maya became friends.'
+    );
+
+    message(`
+    Maya:
+
+    <br><br>
+
+    “YES!
+
+    Detective team.”
+
+    <br><br>
+
+    “Also, if Mum catches us,
+    this was definitely your idea.”
+
+    😑
+    `);
+
+    doneTalk();
+   }
+  ]);
+ }
+
+
+ if(mayaFriend){
+
+  options.push([
+   mayaFollow
+   ? '👋 Stop following me'
+   : '👣 Come with me',
+
+   ()=>{
+
+    mayaFollow=
+    !mayaFollow;
+
+    if(mayaFollow){
+
+     moveMayaWithPlayer();
+
+     message(`
+     Maya:
+
+     <br><br>
+
+     “Detective team!”
+     `);
+
+    }else{
+
+     message(`
+     Maya:
+
+     <br><br>
+
+     “Okay.
+
+     I'll look around too.”
+     `);
+    }
+
+    doneTalk();
+   }
   ]);
 
+
+  options.push([
+   '🏨 Tell me hotel secrets',
+   ()=>{
+
+    message(`
+    Maya:
+
+    <br><br>
+
+    “Room 13 is storage now.
+
+    The staff stairs go upstairs.
+
+    There's another staff entrance
+    through the garden.
+
+    Mum has keys to nearly everything.”
+    `);
+
+    addNote(
+     'Maya says Room 13 is storage and the garden has a staff entrance.'
+    );
+
+    doneTalk();
+   }
+  ]);
+ }
+
+
+ if(theft){
+
+  options.push([
+   '👀 Did you see anything?',
+   ()=>{
+
+    message(`
+    Maya:
+
+    <br><br>
+
+    “I saw Mr Harris near the staff corridor
+    just before everyone started shouting.”
+
+    <br><br>
+
+    “He looked VERY nervous.”
+    `);
+
+    addNote(
+     'Maya saw Harris near the staff corridor around the theft.'
+    );
+
+    doneTalk();
+   }
+  ]);
+
+
+  options.push([
+   '👩 Where was your mum?',
+   ()=>{
+
+    if(day===1){
+
+     message(`
+     Maya:
+
+     <br><br>
+
+     “Mum said she was at Reception.”
+     `);
+
+    }else{
+
+     message(`
+     Maya:
+
+     <br><br>
+
+     “Mum said she was at Reception...
+
+     but she gave me a little blue pouch
+     and told me to carry it upstairs.”
+
+     <br><br>
+
+     “She said it was a present.
+
+     I didn't know what was inside.”
+     `);
+
+     addEvidence(
+      'Maya says Mrs Bell gave her a blue pouch to carry'
+     );
+    }
+
+    doneTalk();
+   }
+  ]);
+ }
+
+
+ if(
+  day===3 &&
+  theft
+ ){
+
+  options.push([
+   '❤️ You seem worried',
+   ()=>{
+
+    message(`
+    Maya:
+
+    <br><br>
+
+    “Mum changed her teal uniform
+    after the theft.”
+
+    <br><br>
+
+    “One sleeve was ripped.
+
+    She said it caught on a cupboard.”
+    `);
+
+    addEvidence(
+     'Maya remembers Mrs Bell changing a torn teal uniform after the theft'
+    );
+
+    doneTalk();
+   }
+  ]);
+ }
+
+ showChoices(options);
 }
 
 
-function wrongCode(){
+/* =====================
+   OTHER CHATS
+===================== */
 
-  showMessage(`
-    ❌ Wrong code.
-  `);
+function chat(name){
 
+ const chats={
+
+  'Mrs Bell':
+  '“I hope you’re enjoying Blackwood Grand. Tonight is extremely important for the hotel.”',
+
+  'Lady Celestine':
+  '“The Blue Diamond has been in my family for generations.”',
+
+  'Sebastian':
+  '“Grimble has asked me about my finances four times.”',
+
+  'Clara Vale':
+  '“I’m an actress, not a jewel thief.”',
+
+  'Marco Bellini':
+  '“I came here to play piano, not become a suspect.”',
+
+  'Mr Harris':
+  '“Hotels are complicated places. People are always coming and going.”',
+
+  'Felix Crane':
+  '“I’ve taken hundreds of photographs.”',
+
+  'Amelia Frost':
+  '“I repair jewellery. Yes, that means I own tools.”',
+
+  'Detective Grimble':
+  '“Please stand back. I am thinking detective thoughts.”'
+ };
+
+ message(`
+ <b>${name}</b>
+
+ <br><br>
+
+ ${chats[name]}
+ `);
+
+ doneTalk();
 }
 
 
-function openBox(){
+function theftChat(name){
 
-  clearChoices();
+ const chats={
 
-  showMessage(`
-    🔓 CLICK!
-    <br><br>
+  'Mrs Bell':
+  '“Terrible for the hotel. I was at Reception.”',
 
-    Inside is...
-    <br><br>
+  'Lady Celestine':
+  '“The lights flickered. Seconds later, it was gone.”',
 
-    🧤 <b>A torn white glove.</b>
+  'Sebastian':
+  '“Debts do not make me a thief.”',
+
+  'Clara Vale':
+  '“Felix took photographs all evening.”',
+
+  'Marco Bellini':
+  '“I left the piano briefly for a phone call.”',
+
+  'Mr Harris':
+  '“I was serving drinks. That’s all.”',
+
+  'Felix Crane':
+  '“I haven’t checked every photograph yet.”',
+
+  'Amelia Frost':
+  '“The clasp was fine when I inspected it.”',
+
+  'Detective Grimble':
+  '“Diamonds are stolen by people who want diamonds. Excellent progress.”'
+ };
+
+ message(`
+ <b>${name}</b>
+
+ <br><br>
+
+ ${chats[name]}
+ `);
+
+ doneTalk();
+}
+
+
+function alibi(name){
+
+ const claims={
+
+  'Mrs Bell':'Reception.',
+
+  'Lady Celestine':
+  'The Ballroom.',
+
+  'Sebastian':
+  'The Lounge.',
+
+  'Clara Vale':
+  'The Lounge.',
+
+  'Marco Bellini':
+  'The piano, except for a phone call.',
+
+  'Mr Harris':
+  'The Dining Room.',
+
+  'Felix Crane':
+  'Taking photographs.',
+
+  'Amelia Frost':
+  'The Ballroom.',
+
+  'Detective Grimble':
+  'I was not here yet.'
+ };
+
+ message(`
+ <b>${name}</b>
+
+ <br><br>
+
+ “${claims[name]}”
+ `);
+
+ addNote(
+  `${name} claims: ${claims[name]}`
+ );
+
+ doneTalk();
+}
+
+
+function evidenceChat(name){
+
+ if(
+  name==='Mrs Bell' &&
+  hasEvidence('master key')
+ ){
+
+  message(`
+  You mention the Room 13 key log.
+
+  <br><br>
+
+  Mrs Bell freezes.
+
+  <br><br>
+
+  “Then somebody must have borrowed my key.”
+
+  <br><br>
+
+  But she never mentioned losing it before.
   `);
+
+  addNote(
+   'Mrs Bell changed her story after the key log was mentioned.'
+  );
+
+ }else if(
+  name==='Mr Harris' &&
+  hasEvidence('velvet')
+ ){
+
+  message(`
+  Harris:
+
+  <br><br>
+
+  “Blue velvet?
+
+  Never seen it.”
+
+  <br><br>
+
+  He answers much too quickly.
+  `);
+
+  addNote(
+   'Harris became nervous when asked about blue velvet.'
+  );
+
+ }else if(
+  name==='Felix Crane' &&
+  day>=2
+ ){
+
+  message(`
+  Felix:
+
+  <br><br>
+
+  “There is one photo at 8:12.
+
+  Someone in dark teal was near the staff route.
+
+  It's in my room.”
+  `);
+
+  addNote(
+   'Felix says his 8:12 photo may matter.'
+  );
+
+ }else{
+
+  message(`
+  ${name} does not reveal anything new yet.
+  `);
+ }
+
+ doneTalk();
+}
+
+
+function grimbleTheory(){
+
+ if(day===1){
+
+  message(`
+  Grimble:
+
+  <br><br>
+
+  “Sebastian.
+
+  He has debts.”
+
+  <br><br>
+
+  You:
+
+  “Anything else?”
+
+  <br><br>
+
+  Grimble:
+
+  “I dislike his moustache.”
+
+  <br><br>
+
+  Sebastian does not have a moustache.
+  `);
+
+ }else if(day===2){
+
+  message(`
+  Grimble:
+
+  <br><br>
+
+  “Amelia owns cutters.
+
+  Case nearly closed!”
+
+  <br><br>
+
+  Amelia:
+
+  “I repair jewellery!”
+  `);
+
+ }else{
+
+  message(`
+  Grimble:
+
+  <br><br>
+
+  “I have narrowed it down to several people.”
+
+  <br><br>
+
+  You:
+
+  “That is not narrowing it down.”
+  `);
+ }
+
+ doneTalk();
+}
+
+
+function doneTalk(){
+
+ clearChoices();
+
+ paused=false;
+
+ draw();
+}
+
+
+/* =====================
+   SEARCHING
+===================== */
+
+function inspectObject(){
+
+ if(!nearbyObject){
+  return;
+ }
+
+ paused=true;
+
+ const object=
+ nearbyObject;
+
+ const text=
+ theft
+ ? (
+   object.post ||
+   object.pre ||
+   'Nothing useful.'
+  )
+ : (
+   object.pre ||
+   'Nothing important yet.'
+  );
+
+ message(`
+ <b>${object.icon} ${object.name}</b>
+
+ <br><br>
+
+ ${text}
+ `);
+
+ if(
+  theft &&
+  object.clue
+ ){
 
   addEvidence(
-    "🧤 Torn white glove"
+   object.clue
   );
+ }
 
+ const searchName=
+ player.room+' — '+object.name;
+
+ if(!searched.includes(searchName)){
+
+  searched.push(searchName);
+ }
+
+ minutes+=4;
+
+ paused=false;
+
+ draw();
 }
 
 
-/* =========================
-EVIDENCE
-========================= */
+/* =====================
+   EAVESDROPPING
+===================== */
 
-function addEvidence(clue){
+function listenAtDoor(){
 
-  if(!evidence.includes(clue)){
+ if(
+  !theft ||
+  day<2 ||
+  player.room!=='Staff Hall'
+ ){
+  return;
+ }
 
-    evidence.push(clue);
+ message(`
+ 👂 Behind the office door:
 
-  }
+ <br><br>
 
-  evidenceText.textContent =
-    evidence.join(" | ");
+ <b>Mrs Bell:</b>
 
+ “You were supposed to get rid of that pouch.”
+
+ <br><br>
+
+ <b>Mr Harris:</b>
+
+ “I hid it in the kitchen!”
+
+ <br><br>
+
+ <b>Mrs Bell:</b>
+
+ “And Room 13?”
+
+ <br><br>
+
+ The voices drop too low to hear.
+ `);
+
+ addEvidence(
+  'Overheard Mrs Bell and Harris discussing the hidden pouch and Room 13'
+ );
 }
 
 
-/* =========================
-NOTEBOOK
-========================= */
+/* =====================
+   NOTEBOOK DATA
+===================== */
 
-notebookButton.addEventListener(
-"click",
-() => {
+function addEvidence(text){
 
-  roomElement.style.display =
-    "none";
+ if(!evidence.includes(text)){
 
-  controls.style.display =
-    "none";
+  evidence.push(text);
 
-  notebook.style.display =
-    "block";
-
-  showNotebook("suspects");
-
-});
-
-
-document
-.getElementById("closeNotebook")
-.addEventListener("click", () => {
-
-  notebook.style.display =
-    "none";
-
-  roomElement.style.display =
-    "grid";
-
-  controls.style.display =
-    "block";
-
-  drawRoom();
-
-});
-
-
-document
-.querySelectorAll("[data-tab]")
-.forEach(button => {
-
-  button.addEventListener(
-    "click",
-    () => {
-
-      showNotebook(
-        button.dataset.tab
-      );
-
-    }
-  );
-
-});
-
-
-function showNotebook(tab){
-
-  if(tab==="suspects"){
-    suspectsPage();
-  }
-
-  if(tab==="evidence"){
-    evidencePage();
-  }
-
-  if(tab==="contradictions"){
-    contradictionsPage();
-  }
-
-  if(tab==="mysteries"){
-    mysteriesPage();
-  }
-
-  if(tab==="accuse"){
-    accusationPage();
-  }
-
+  document.getElementById('message').innerHTML+=
+  `<br><br>📓 <b>Evidence added!</b>`;
+ }
 }
 
 
-/* =========================
-SUSPECTS PAGE
-========================= */
+function addNote(text){
 
-function suspectsPage(){
+ if(!notes.includes(text)){
 
-  notebookContent.innerHTML =
-  "<h3>👥 Suspects</h3>";
-
-  const suspects = [
-    "Marco",
-    "Clara",
-    "Harris",
-    "Sebastian"
-  ];
-
-  suspects.forEach(name => {
-
-    const card =
-      document.createElement("div");
-
-    card.className =
-      "noteCard";
-
-    let statement =
-      "You have not questioned this person yet.";
-
-    if(
-      talkedTo.includes(name)
-    ){
-
-      if(name==="Marco"){
-        statement =
-        `"I never left the piano."`;
-      }
-
-      if(name==="Clara"){
-        statement =
-        `"I was in the garden."`;
-      }
-
-      if(name==="Harris"){
-        statement =
-        `"I never carried a blue bag."`;
-      }
-
-      if(name==="Sebastian"){
-        statement =
-        `"I was in the library all evening."`;
-      }
-
-    }
-
-    card.innerHTML = `
-      <b>${name}</b>
-      <br><br>
-
-      Statement:
-      ${statement}
-      <br><br>
-
-      Your opinion:
-      <b>${suspicions[name]}</b>
-      <br>
-    `;
-
-    ["⭐ Suspicious","❓ Not sure","✅ Probably innocent"]
-    .forEach(choice => {
-
-      const button =
-        document.createElement("button");
-
-      button.className =
-        "suspicionButton";
-
-      button.textContent =
-        choice;
-
-      button.onclick = () => {
-
-        if(choice.includes("Suspicious")){
-          suspicions[name]="suspicious";
-        }
-
-        if(choice.includes("Not sure")){
-          suspicions[name]="not sure";
-        }
-
-        if(choice.includes("innocent")){
-          suspicions[name]="probably innocent";
-        }
-
-        suspectsPage();
-
-      };
-
-      card.appendChild(button);
-
-    });
-
-    notebookContent.appendChild(card);
-
-  });
-
+  notes.push(text);
+ }
 }
 
 
-/* =========================
-EVIDENCE PAGE
-========================= */
+function hasEvidence(word){
 
-function evidencePage(){
-
-  notebookContent.innerHTML =
-  "<h3>🔎 Evidence</h3>";
-
-  if(evidence.length===0){
-
-    notebookContent.innerHTML += `
-      <div class="noteCard">
-      You haven't found any evidence yet.
-      </div>
-    `;
-
-    return;
-  }
-
-  evidence.forEach(clue => {
-
-    notebookContent.innerHTML += `
-      <div class="noteCard">
-      ${clue}
-      </div>
-    `;
-
-  });
-
+ return evidence.some(item=>
+  item.toLowerCase().includes(
+   word.toLowerCase()
+  )
+ );
 }
 
 
-/* =========================
-CONTRADICTIONS
-========================= */
+/* =====================
+   UI HELPERS
+===================== */
 
-function contradictionsPage(){
+function showChoices(items){
 
-  notebookContent.innerHTML =
-  "<h3>🚨 Contradictions</h3>";
+ const choices=
+ document.getElementById('choices');
 
-  let found = false;
+ choices.innerHTML='';
 
-  if(
-    talkedTo.includes("Sebastian")
-    &&
-    evidence.includes(
-      "📖 Sebastian returned his book at 8:55"
-    )
-  ){
+ for(const [label,action] of items){
 
-    found = true;
+  const button=
+  document.createElement('button');
 
-    notebookContent.innerHTML += `
-      <div class="noteCard">
+  button.textContent=label;
 
-      🚨 <b>Sebastian's story doesn't match!</b>
-      <br><br>
+  button.onclick=action;
 
-      Sebastian says he was in
-      the library all evening.
-      <br><br>
-
-      But the library record shows
-      he returned his book at 8:55.
-
-      </div>
-    `;
-
-  }
-
-  if(
-    talkedTo.includes("Harris")
-    &&
-    evidence.includes(
-      "🛍️ Blue velvet bag"
-    )
-  ){
-
-    found = true;
-
-    notebookContent.innerHTML += `
-      <div class="noteCard">
-
-      🚨 <b>Mr Harris may be hiding something.</b>
-      <br><br>
-
-      He says he never carried
-      a blue bag.
-      <br><br>
-
-      But a blue velvet bag
-      is sitting in the kitchen.
-
-      </div>
-    `;
-
-  }
-
-  if(!found){
-
-    notebookContent.innerHTML += `
-      <div class="noteCard">
-
-      No contradictions discovered yet.
-      <br><br>
-
-      Try talking to people AND
-      finding evidence.
-
-      </div>
-    `;
-
-  }
-
-}
-
-
-/* =========================
-MYSTERIES
-========================= */
-
-function mysteriesPage(){
-
-  notebookContent.innerHTML =
-  "<h3>❓ Mysteries</h3>";
-
-  notebookContent.innerHTML += `
-    <div class="noteCard">
-
-    ${evidence.includes("🧤 Torn white glove")
-      ? "✅"
-      : "❓"}
-
-    Who owns the torn white glove?
-
-    </div>
-
-    <div class="noteCard">
-
-    ${evidence.includes("📜 Code 413")
-      ? "✅"
-      : "❓"}
-
-    What is hidden in Room 13?
-
-    </div>
-
-    <div class="noteCard">
-
-    ${evidence.includes("🛍️ Blue velvet bag")
-      ? "✅"
-      : "❓"}
-
-    Why is there a blue velvet bag
-    in the kitchen?
-
-    </div>
-
-    <div class="noteCard">
-
-    ❓ Who actually stole the diamond?
-
-    </div>
-  `;
-
-}
-
-
-/* =========================
-ACCUSATION
-========================= */
-
-function accusationPage(){
-
-  notebookContent.innerHTML = `
-    <h3>⚖️ Make an Accusation</h3>
-
-    <div class="noteCard">
-
-    <p>
-    You need evidence before
-    making a serious accusation.
-    </p>
-
-    <label>I accuse:</label>
-
-    <select id="accused">
-
-    <option value="">
-    Choose someone
-    </option>
-
-    <option value="Marco">
-    🎹 Marco
-    </option>
-
-    <option value="Clara">
-    🎭 Clara
-    </option>
-
-    <option value="Harris">
-    🍷 Mr Harris
-    </option>
-
-    <option value="Sebastian">
-    🎩 Sebastian
-    </option>
-
-    </select>
-
-    <br><br>
-
-    <label>Because:</label>
-
-    <select id="reasonAccuse">
-
-    <option value="">
-    Choose a reason
-    </option>
-
-    <option value="lied">
-    They lied about where they were
-    </option>
-
-    <option value="bag">
-    They are connected to the blue bag
-    </option>
-
-    <option value="mud">
-    They had muddy shoes
-    </option>
-
-    <option value="glove">
-    They are connected to the glove
-    </option>
-
-    </select>
-
-    <br><br>
-
-    <button id="makeAccusation">
-    ⚖️ Make Accusation
-    </button>
-
-    </div>
-  `;
-
-  document
-  .getElementById("makeAccusation")
-  .onclick = makeAccusation;
-
-}
-
-
-function makeAccusation(){
-
-  const accused =
-    document.getElementById("accused").value;
-
-  const reason =
-    document.getElementById("reasonAccuse").value;
-
-
-  if(
-    accused==="" ||
-    reason===""
-  ){
-
-    alert(
-      "Choose a suspect AND a reason!"
-    );
-
-    return;
-  }
-
-
-  const enoughEvidence =
-    evidence.includes(
-      "📖 Sebastian returned his book at 8:55"
-    )
-    &&
-    evidence.includes(
-      "🧤 Torn white glove"
-    )
-    &&
-    talkedTo.includes(
-      "Sebastian"
-    );
-
-
-  if(
-    accused==="Sebastian"
-    &&
-    reason==="lied"
-    &&
-    enoughEvidence
-  ){
-
-    winGame();
-
-  }else{
-
-    notebookContent.innerHTML = `
-      <h3>⚖️ Accusation Failed</h3>
-
-      <div class="noteCard">
-
-      ❌ Lady Celestine shakes her head.
-      <br><br>
-
-      "That theory does not explain
-      all the evidence."
-      <br><br>
-
-      You need to investigate more.
-
-      </div>
-
-      <div style="text-align:center">
-
-      <button onclick="accusationPage()">
-      🔁 Try another accusation
-      </button>
-
-      </div>
-    `;
-
-  }
-
-}
-
-
-/* =========================
-ENDING
-========================= */
-
-function winGame(){
-
-  notebookContent.innerHTML = `
-    <h2>🎉 CASE SOLVED!</h2>
-
-    <div class="noteCard">
-
-    You accuse
-    <b>🎩 Sebastian.</b>
-    <br><br>
-
-    Sebastian says:
-    <br><br>
-
-    "You can't prove anything!"
-    😠
-    <br><br>
-
-    But you show everyone
-    the library record.
-    📖
-    <br><br>
-
-    Sebastian lied about being
-    in the library all evening.
-    <br><br>
-
-    Then you reveal the torn glove.
-    🧤
-    <br><br>
-
-    Hotel security searches his room...
-    <br><br>
-
-    💎 <b>THE BLUE DIAMOND!</b>
-    <br><br>
-
-    Lady Celestine keeps her promise
-    and gives you the
-    <b>£1,000 reward.</b>
-    💷
-    <br><br>
-
-    <b>${playerName}, you solved
-    The Blue Diamond Mystery!</b>
-
-    </div>
-  `;
-
-}
-
-
-/* =========================
-HELPERS
-========================= */
-
-function showMessage(text){
-
-  messageBox.innerHTML =
-    text;
-
+  choices.appendChild(button);
+ }
 }
 
 
 function clearChoices(){
 
-  choicesBox.innerHTML =
-    "";
-
+ document.getElementById('choices').innerHTML='';
 }
 
 
-function showChoices(options){
+function message(text){
 
-  clearChoices();
+ document.getElementById('message').innerHTML=text;
+}
 
-  options.forEach(option => {
 
-    const button =
-      document.createElement("button");
+function hideGame(){
 
-    button.textContent =
-      option[0];
+ paused=true;
 
-    button.addEventListener(
-      "click",
-      option[1]
-    );
+ document.getElementById('room').style.display='none';
 
-    choicesBox.appendChild(
-      button
-    );
+ document.getElementById('controls').style.display='none';
 
-  });
+ document.getElementById('choices').style.display='none';
 
+ document.getElementById('message').style.display='none';
+}
+
+
+function showGame(){
+
+ document.getElementById('room').style.display='grid';
+
+ document.getElementById('controls').style.display='block';
+
+ document.getElementById('choices').style.display='block';
+
+ document.getElementById('message').style.display='block';
+
+ paused=false;
+
+ draw();
+}
+
+
+/* =====================
+   MAP
+===================== */
+
+function openMap(){
+
+ hideGame();
+
+ document.getElementById('map').style.display='block';
+
+ drawMap(
+  rooms[player.room].floor
+ );
+}
+
+
+function closeMap(){
+
+ document.getElementById('map').style.display='none';
+
+ showGame();
+}
+
+
+function drawMap(floor){
+
+ const names=
+ Object.keys(rooms).filter(name=>
+  rooms[name].floor===floor
+ );
+
+ document.getElementById('mapCards').innerHTML=
+ names.map(name=>{
+
+  const seen=
+  Object.entries(lastSeen)
+  .filter(([person,room])=>
+   room===name
+  )
+  .map(([person])=>person)
+  .join(', ');
+
+  return `
+  <div class="card ${name===player.room?'current':''}">
+
+   <b>${name}</b>
+
+   ${
+    name===player.room
+    ? '<br>📍 You are here'
+    : ''
+   }
+
+   ${
+    seen
+    ? `<br><span class="small">Last seen: ${seen}</span>`
+    : ''
+   }
+
+  </div>
+  `;
+ }).join('');
+}
+
+
+/* =====================
+   NOTEBOOK
+===================== */
+
+function openNotebook(){
+
+ hideGame();
+
+ document.getElementById('notebook').style.display='block';
+
+ showNotes('people');
+}
+
+
+function closeNotebook(){
+
+ document.getElementById('notebook').style.display='none';
+
+ showGame();
+}
+
+
+function showNotes(tab){
+
+ const box=
+ document.getElementById('noteCards');
+
+
+ if(tab==='people'){
+
+  box.innerHTML=
+  `
+  <h3>👥 People</h3>
+
+  <div class="cards">
+
+  ${
+   Object.keys(people)
+   .map(name=>`
+
+   <div class="card">
+
+   <b>${name}</b>
+
+   <br>
+
+   <span class="small">
+   Last seen:
+   ${lastSeen[name]||'Unknown'}
+   </span>
+
+   </div>
+
+   `)
+   .join('')
+  }
+
+  </div>
+  `;
+ }
+
+
+ if(tab==='evidence'){
+
+  box.innerHTML=
+  `
+  <h3>🔎 Evidence</h3>
+
+  ${
+   evidence.length
+   ? evidence.map(item=>
+     `<div class="card">${item}</div>`
+    ).join('')
+   : '<div class="card">Nothing yet.</div>'
+  }
+
+  <h3>📝 Notes</h3>
+
+  ${
+   notes.length
+   ? notes.map(item=>
+     `<div class="card">${item}</div>`
+    ).join('')
+   : '<div class="card">No notes yet.</div>'
+  }
+
+  <h3>🚪 Searched</h3>
+
+  ${
+   searched.length
+   ? searched.map(item=>
+     `<div class="card">${item}</div>`
+    ).join('')
+   : '<div class="card">Nothing searched yet.</div>'
+  }
+  `;
+ }
+
+
+ if(tab==='leads'){
+
+  box.innerHTML=
+  `
+  <h3>🧭 Leads</h3>
+
+  <div class="card">
+  ${
+   theft
+   ? '❓ Who could use the hotel master keys?'
+   : '⏳ Meet people before the gala.'
+  }
+  </div>
+
+  ${
+   theft
+   ? `
+
+   <div class="card">
+   ${
+    hasEvidence('photo')
+    ? '✅'
+    : '❓'
+   }
+   Felix took photographs.
+   </div>
+
+   <div class="card">
+   ${
+    hasEvidence('velvet')
+    ? '✅'
+    : '❓'
+   }
+   Find the blue pouch.
+   </div>
+
+   <div class="card">
+   ${
+    hasEvidence('Room 13')
+    ? '✅'
+    : '❓'
+   }
+   Why is Room 13 important?
+   </div>
+
+   <div class="card">
+   💬 Keep talking to Maya on different days.
+   </div>
+
+   `
+   : ''
+  }
+  `;
+ }
+
+
+ if(tab==='accuse'){
+
+  if(!theft){
+
+   box.innerHTML=
+   `
+   <div class="card">
+   There has not been a crime yet. 😂
+   </div>
+   `;
+
+   return;
+  }
+
+  const names=
+  Object.keys(people)
+  .filter(name=>
+   name!=='Detective Grimble'
+  );
+
+  box.innerHTML=
+  `
+  <h3>⚖️ Accuse</h3>
+
+  <div class="card">
+
+  Mastermind:
+
+  <br>
+
+  <select id="master">
+
+  <option value="">
+  Choose
+  </option>
+
+  ${
+   names.map(name=>
+    `<option>${name}</option>`
+   ).join('')
+  }
+
+  </select>
+
+  <br><br>
+
+  Accomplice:
+
+  <br>
+
+  <select id="helper">
+
+  <option value="">
+  Choose
+  </option>
+
+  ${
+   names.map(name=>
+    `<option>${name}</option>`
+   ).join('')
+  }
+
+  </select>
+
+  <br><br>
+
+  <button onclick="accuse()">
+  Present case
+  </button>
+
+  </div>
+  `;
+ }
+}
+
+
+/* =====================
+   FINAL ACCUSATION
+===================== */
+
+function accuse(){
+
+ const master=
+ document.getElementById('master').value;
+
+ const helper=
+ document.getElementById('helper').value;
+
+ const strongEvidence=
+
+ hasEvidence('master key') &&
+
+ hasEvidence('blue pouch') &&
+
+ (
+  hasEvidence('dark-teal') ||
+  hasEvidence('teal uniform')
+ ) &&
+
+ (
+  hasEvidence('Harris') ||
+  hasEvidence('staff-stair')
+ );
+
+
+ if(
+  master==='Mrs Bell' &&
+  helper==='Mr Harris' &&
+  strongEvidence
+ ){
+
+  gameOver=true;
+
+  document.getElementById('noteCards').innerHTML=
+  `
+  <h2>🎉 CASE SOLVED!</h2>
+
+  <div class="card">
+
+  Mrs Bell planned the theft.
+
+  <br><br>
+
+  Mr Harris helped move and hide the diamond.
+
+  <br><br>
+
+  Maya carried the pouch without knowing
+  what it contained.
+
+  <br><br>
+
+  Grimble:
+
+  “Exactly what I was about to say.”
+
+  <br><br>
+
+  Maya:
+
+  “No you weren't.”
+
+  😂
+
+  <br><br>
+
+  💎 The diamond is recovered!
+
+  </div>
+  `;
+
+ }else if(
+  master==='Mrs Bell' &&
+  helper==='Mr Harris'
+ ){
+
+  document.getElementById('noteCards').innerHTML=
+  `
+  <div class="card">
+
+  Your theory may be right,
+  but you need stronger proof.
+
+  <br><br>
+
+  Look for:
+
+  <br><br>
+
+  🔑 master-key evidence
+
+  <br>
+
+  🛍️ blue-pouch evidence
+
+  <br>
+
+  👕 teal clothing
+
+  <br>
+
+  👞 evidence connecting Harris
+
+  </div>
+
+  <button onclick="showNotes('accuse')">
+  Back
+  </button>
+  `;
+
+ }else{
+
+  document.getElementById('noteCards').innerHTML=
+  `
+  <div class="card">
+
+  That theory does not explain
+  the evidence yet.
+
+  <br><br>
+
+  Keep investigating.
+
+  </div>
+
+  <button onclick="showNotes('accuse')">
+  Back
+  </button>
+  `;
+ }
+}
+
+
+/* =====================
+   WRONG ENDING
+===================== */
+
+function badEnding(){
+
+ if(gameOver){
+  return;
+ }
+
+ gameOver=true;
+
+ document.getElementById('controls').style.display='none';
+
+ message(`
+ ⏰ Day 3, 8 PM.
+
+ <br><br>
+
+ Grimble announces that Amelia did it
+ because she owns jewellery cutters.
+
+ <br><br>
+
+ Amelia:
+
+ “I REPAIR JEWELLERY!”
+
+ <br><br>
+
+ ❌ The wrong person is blamed.
+ `);
 }
 
 </script>
